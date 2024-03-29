@@ -15,4 +15,10 @@ public interface HomeworkOfStudentRepository extends JpaRepository<HomeworkOfStu
 
 	@Query("SELECT hos FROM HomeworkOfStudent hos WHERE hos.homework.id = :homework_id and hos.student.username = :student_name")
     List<HomeworkOfStudent> findAllByHomeworkIdAndUsername(@Param("homework_id") Long homeworkId, @Param("student_name") String username);
+	
+	@Query("SELECT hos FROM HomeworkOfStudent hos WHERE hos.homework.id = :homework_id and hos.student.id = :student_id")
+    List<HomeworkOfStudent> findAllByHomeworkIdAndStudentId(@Param("homework_id") Long homeworkId, @Param("student_id") Long studentId);
+	
+	@Query("SELECT hos FROM HomeworkOfStudent hos WHERE hos.homework.id = :homework_id")
+	List<HomeworkOfStudent> findAllByHomeworkId(@Param("homework_id") Long homeworkId);
 }

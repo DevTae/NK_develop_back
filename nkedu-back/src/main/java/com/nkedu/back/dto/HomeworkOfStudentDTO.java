@@ -43,4 +43,6 @@ public class HomeworkOfStudentDTO {
 	
 	private List<FileDataDTO> files;
 	
+	private List<Long> fileIds;
+	
 }

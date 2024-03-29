@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,20 +55,22 @@ public class HomeworkOfStudentController {
 		// Get Parameter 에 따른 리스트 조회 기능 제공
 		Status filterStatus = null;
 		
-		switch(Status.valueOf(filterOption)) {
-		case TODO:
-			filterStatus = Status.TODO;
-			break;
-		case COMPLETE:
-			filterStatus = Status.COMPLETE;
-			break;
-		case REJECT:
-			filterStatus = Status.REJECT;
-			break;
-		case SUBMIT:
-			filterStatus = Status.SUBMIT;
-			break;
-		default:
+		if(!ObjectUtils.isEmpty(filterStatus)) {
+			switch(Status.valueOf(filterOption)) {
+			case TODO:
+				filterStatus = Status.TODO;
+				break;
+			case COMPLETE:
+				filterStatus = Status.COMPLETE;
+				break;
+			case REJECT:
+				filterStatus = Status.REJECT;
+				break;
+			case SUBMIT:
+				filterStatus = Status.SUBMIT;
+				break;
+			default:
+			}
 		}
 		
 		// 권한에 따라 선생님의 경우 모든 제출을 확인할 수 있도록 하고, 학생의 경우 본인의 제출만을 확인할 수 있도록 함.
@@ -79,9 +82,9 @@ public class HomeworkOfStudentController {
 		List<HomeworkOfStudentDTO> homeworkOfStudentDTOs;
 		
 		if(roles.contains("ROLE_ADMIN") || roles.contains("ROLE_TEACHER")) {
-			homeworkOfStudentDTOs = homeworkOfStudentService.getHomeworkOfStudents(filterStatus);
+			homeworkOfStudentDTOs = homeworkOfStudentService.getHomeworkOfStudents(homeworkId, filterStatus);
 		} else {
-			homeworkOfStudentDTOs = homeworkOfStudentService.getHomeworkOfStudents(filterStatus, username);
+			homeworkOfStudentDTOs = homeworkOfStudentService.getHomeworkOfStudents(homeworkId, username, filterStatus);
 		}
 		
 		if (homeworkOfStudentDTOs != null) {
@@ -151,7 +154,10 @@ public class HomeworkOfStudentController {
 																		@PathVariable("submit_id") Long homeworkOfStudentId,
 																		@RequestBody HomeworkOfStudentDTO homeworkOfStudentDTO) {
 
-		HomeworkOfStudentDTO homeworkOfStudentDTO_ = homeworkOfStudentService.createHomeworkOfStudent(homeworkOfStudentDTO);
+		homeworkOfStudentDTO.setId(homeworkOfStudentId);
+		homeworkOfStudentDTO.setHomeworkId(homeworkId);
+		
+		HomeworkOfStudentDTO homeworkOfStudentDTO_ = homeworkOfStudentService.updateHomeworkOfStudent(homeworkOfStudentDTO);
 		
 		if (homeworkOfStudentDTO_ != null) {
 			return new ResponseEntity<>(homeworkOfStudentDTO_, HttpStatus.OK); 

@@ -24,13 +24,13 @@ public interface HomeworkOfStudentService {
 	 * 숙제 제출 리스트 조회
 	 * @return
 	 */
-	public List<HomeworkOfStudentDTO> getHomeworkOfStudents(Status filterStatus);
+	public List<HomeworkOfStudentDTO> getHomeworkOfStudents(Long homeworkId, Status filterStatus);
 	
 	/**
 	 * 숙제 제출 리스트 조회 (username 학생에 대해서만)
 	 * @return
 	 */
-	public List<HomeworkOfStudentDTO> getHomeworkOfStudents(Status filterStatus, String username);
+	public List<HomeworkOfStudentDTO> getHomeworkOfStudents(Long homeworkId, String username, Status filterStatus);
 	
 	/**
 	 * 숙제 제출 생성
