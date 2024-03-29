@@ -50,6 +50,7 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 		try {
 			
 			// 신규 등록만 가능하도록 진행
+			// 처음엔 무조건 TODO 로 설정하도록.
 			
 		} catch (Exception e) {
 			log.error("Failed: " + e.getMessage(),e);

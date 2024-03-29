@@ -27,6 +27,12 @@ public interface HomeworkOfStudentService {
 	public List<HomeworkOfStudentDTO> getHomeworkOfStudents(Status filterStatus);
 	
 	/**
+	 * 숙제 제출 리스트 조회 (username 학생에 대해서만)
+	 * @return
+	 */
+	public List<HomeworkOfStudentDTO> getHomeworkOfStudents(Status filterStatus, String username);
+	
+	/**
 	 * 숙제 제출 생성
 	 * @param homeworkOfStudentDTO
 	 * @return
