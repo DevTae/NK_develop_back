@@ -55,7 +55,7 @@ public class HomeworkOfStudentController {
 		// Get Parameter 에 따른 리스트 조회 기능 제공
 		Status filterStatus = null;
 		
-		if(!ObjectUtils.isEmpty(filterStatus)) {
+		if(!ObjectUtils.isEmpty(filterOption)) {
 			switch(Status.valueOf(filterOption)) {
 			case TODO:
 				filterStatus = Status.TODO;
