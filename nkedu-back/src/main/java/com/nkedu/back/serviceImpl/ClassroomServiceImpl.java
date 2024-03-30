@@ -29,13 +29,12 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     /**
      * Classroom 엔티티의 CRUD 관련 API 구현 코드입니다.
-     *
      * @author beom-i
      */
 
     @Override
     public boolean createClassroom(ClassroomDTO classroomDTO) {
-        try {
+        try{
             if (!ObjectUtils.isEmpty(classroomRepository.findOneById(classroomDTO.getId()))) {
                 throw new RuntimeException("이미 등록된 수업입니다.");
             }
@@ -44,19 +43,19 @@ public class ClassroomServiceImpl implements ClassroomService {
                     .build();
             classroomRepository.save(classroom);
             return true;
-        } catch (Exception e) {
-            log.error("Failed: " + e.getMessage(), e);
+        } catch(Exception e) {
+            log.error("Failed: " + e.getMessage(),e);
         }
         return false;
     }
 
     @Override
     public boolean deleteClassroomById(Long id) {
-        try {
+        try{
             classroomRepository.deleteById(id);
             return true;
-        } catch (Exception e) {
-            log.info("Failed: " + e.getMessage(), e);
+        }catch (Exception e){
+            log.info("Failed: " + e.getMessage(),e);
         }
         return false;
     }
@@ -66,10 +65,10 @@ public class ClassroomServiceImpl implements ClassroomService {
         try {
             Classroom searchedClassroom = classroomRepository.findOneById(id).get();
 
-            if (ObjectUtils.isEmpty(searchedClassroom))
+            if(ObjectUtils.isEmpty(searchedClassroom))
                 return false;
 
-            if (!ObjectUtils.isEmpty(classroomDTO.getClassname()))
+            if(!ObjectUtils.isEmpty(classroomDTO.getClassname()))
                 searchedClassroom.setClassname(classroomDTO.getClassname());
 
             classroomRepository.save(searchedClassroom);
@@ -89,7 +88,7 @@ public class ClassroomServiceImpl implements ClassroomService {
 
             List<Classroom> classrooms = classroomRepository.findAll();
 
-            for (Classroom classroom : classrooms) {
+            for(Classroom classroom : classrooms) {
                 ClassroomDTO classroomDTO = new ClassroomDTO();
                 classroomDTO.setId(classroom.getId());
                 classroomDTO.setClassname(classroom.getClassname());
@@ -97,7 +96,7 @@ public class ClassroomServiceImpl implements ClassroomService {
                 classroomDTOs.add(classroomDTO);
             }
             return classroomDTOs;
-        } catch (Exception e) {
+        } catch(Exception e) {
             log.info("[Failed] e : " + e.getMessage());
         }
 
@@ -106,7 +105,7 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     @Override
     public ClassroomDTO getClassroomById(Long id) {
-        try {
+        try{
             Classroom classroom = classroomRepository.findOneById(id).get();
 
             ClassroomDTO classroomDTO = new ClassroomDTO();
@@ -114,7 +113,7 @@ public class ClassroomServiceImpl implements ClassroomService {
             classroomDTO.setClassname(classroom.getClassname());
 
             return classroomDTO;
-        } catch (Exception e) {
+        } catch(Exception e){
             log.info("Failed e : " + e.getMessage());
         }
         return null;
@@ -152,12 +151,12 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     @Override
     public List<StudentOfClassroomDTO> getStudentOfClassroomsByClassroomId(Long classroom_id) {
-        try {
+        try{
             List<StudentOfClassroom> studentOfClassrooms = studentOfClassroomRepository.findAllByClassroomId(classroom_id);
 
             List<StudentOfClassroomDTO> studentOfClassroomDTOs = new ArrayList<>();
 
-            for (StudentOfClassroom studentOfClassroom : studentOfClassrooms) {
+            for(StudentOfClassroom studentOfClassroom : studentOfClassrooms){
 
                 StudentOfClassroomDTO studentOfClassroomDTO = StudentOfClassroomDTO.builder()
                         .studentDTO(StudentDTO.builder().id(studentOfClassroom.getStudent().getId()).build())
@@ -167,22 +166,113 @@ public class ClassroomServiceImpl implements ClassroomService {
                 studentOfClassroomDTOs.add(studentOfClassroomDTO);
             }
             return studentOfClassroomDTOs;
-        } catch (Exception e) {
+        } catch (Exception e){
             log.info("Failed e : " + e.getMessage());
-        }
-        return null;
+        } return null;
     }
 
 
     @Override
     public boolean deleteStudentOfClassroom(StudentOfClassroomDTO studentOfClassroomDTO) {
-        try {
+        try{
             Long classroom_id = studentOfClassroomDTO.getClassroomDTO().getId();
             Long student_id = studentOfClassroomDTO.getStudentDTO().getId();
 
-            studentOfClassroomRepository.delete(studentOfClassroomRepository.findOneByClassroomIdAndStudentId(classroom_id, student_id).get());
+            studentOfClassroomRepository.delete(studentOfClassroomRepository.findOneByClassroomIdAndStudentId(classroom_id,student_id).get());
             return true;
+        } catch (Exception e){
+            log.info("Failed e : " + e.getMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public TeacherOfClassroomDTO createTeacherOfClassroom(TeacherOfClassroomDTO teacherOfClassroomDTO) {
+        try {
+            Long class_id = teacherOfClassroomDTO.getClassroomDTO().getId();
+            Long teacher_id = teacherOfClassroomDTO.getTeacherDTO().getId();
+
+            Optional<TeacherOfClassroom> validateTeacherOfClassroom = teacherOfClassroomRepository.findOneByClassroomIdAndTeacherId(class_id, teacher_id);
+
+            // 중복 등록 방지를 위한 조건문
+            if (!ObjectUtils.isEmpty(validateTeacherOfClassroom)) {
+                log.info("이미 존재하는 TeacherOfClassroom 입니다. ");
+                return null;
+            }
+
+            TeacherOfClassroom teacherOfClassroom = TeacherOfClassroom.builder()
+                    .classroom(classroomRepository.findOneById(class_id).get())
+                    .teacher(teacherRepository.findOneById(teacher_id).get())
+                    .type(teacherOfClassroomDTO.isType())
+                    .build();
+
+            teacherOfClassroomRepository.save(teacherOfClassroom);
+
+            return teacherOfClassroomDTO;
+
         } catch (Exception e) {
+            log.info("[Failed] e : " + e.getMessage());
+        }
+
+        return null;
+    }
+
+    @Override
+    public List<TeacherOfClassroomDTO> getTeacherOfClassroomsByClassroomId(Long classroom_id) {
+        try{
+            List<TeacherOfClassroom> teacherOfClassrooms = teacherOfClassroomRepository.findAllByClassroomId(classroom_id);
+
+            List<TeacherOfClassroomDTO> teacherOfClassroomDTOs = new ArrayList<>();
+
+            for(TeacherOfClassroom teacherOfClassroom : teacherOfClassrooms){
+
+                TeacherOfClassroomDTO teacherOfClassroomDTO = TeacherOfClassroomDTO.builder()
+                        .teacherDTO(TeacherDTO.builder().id(teacherOfClassroom.getTeacher().getId()).build())
+                        .classroomDTO(ClassroomDTO.builder().id(teacherOfClassroom.getClassroom().getId()).build())
+                        .type(teacherOfClassroom.isType())
+                        .build();
+
+
+                teacherOfClassroomDTOs.add(teacherOfClassroomDTO);
+            }
+            return teacherOfClassroomDTOs;
+        } catch (Exception e){
+            log.info("Failed e : " + e.getMessage());
+        } return null;
+    }
+
+    @Override
+    public boolean updateTeacherOfClassroom(TeacherOfClassroomDTO teacherOfClassroomDTO){
+        try{
+            Long classroom_id = teacherOfClassroomDTO.getClassroomDTO().getId();
+            Long teacher_id = teacherOfClassroomDTO.getTeacherDTO().getId();
+
+            TeacherOfClassroom searchedTeacherOfClassroom = teacherOfClassroomRepository.findOneByClassroomIdAndTeacherId(classroom_id,teacher_id).get();
+
+            if(ObjectUtils.isEmpty(searchedTeacherOfClassroom))
+                return false;
+            if(!ObjectUtils.isEmpty(teacherOfClassroomDTO.isType()))
+                searchedTeacherOfClassroom.setType(teacherOfClassroomDTO.isType());
+
+            teacherOfClassroomRepository.save(searchedTeacherOfClassroom);
+            return true;
+        }catch (Exception e) {
+            log.info("[Failed] e : " + e.getMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteTeacherOfClassroom(TeacherOfClassroomDTO teacherOfClassroomDTO) {
+
+        try{
+            Long classroom_id = teacherOfClassroomDTO.getClassroomDTO().getId();
+            Long teacher_id = teacherOfClassroomDTO.getTeacherDTO().getId();
+
+            teacherOfClassroomRepository.delete(teacherOfClassroomRepository.findOneByClassroomIdAndTeacherId(classroom_id,teacher_id).get());
+            return true;
+
+        } catch (Exception e){
             log.info("Failed e : " + e.getMessage());
         }
         return false;
