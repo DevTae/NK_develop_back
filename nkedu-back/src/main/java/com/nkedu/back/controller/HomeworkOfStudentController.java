@@ -1,9 +1,16 @@
 package com.nkedu.back.controller;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,23 +55,37 @@ public class HomeworkOfStudentController {
 		// Get Parameter 에 따른 리스트 조회 기능 제공
 		Status filterStatus = null;
 		
-		switch(Status.valueOf(filterOption)) {
-		case TODO:
-			filterStatus = Status.TODO;
-			break;
-		case COMPLETE:
-			filterStatus = Status.COMPLETE;
-			break;
-		case REJECT:
-			filterStatus = Status.REJECT;
-			break;
-		case SUBMIT:
-			filterStatus = Status.REJECT;
-			break;
-		default:
+		if(!ObjectUtils.isEmpty(filterOption)) {
+			switch(Status.valueOf(filterOption)) {
+			case TODO:
+				filterStatus = Status.TODO;
+				break;
+			case COMPLETE:
+				filterStatus = Status.COMPLETE;
+				break;
+			case REJECT:
+				filterStatus = Status.REJECT;
+				break;
+			case SUBMIT:
+				filterStatus = Status.SUBMIT;
+				break;
+			default:
+			}
 		}
 		
-		List<HomeworkOfStudentDTO> homeworkOfStudentDTOs = homeworkOfStudentService.getHomeworkOfStudents(filterStatus);
+		// 권한에 따라 선생님의 경우 모든 제출을 확인할 수 있도록 하고, 학생의 경우 본인의 제출만을 확인할 수 있도록 함.
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+		String roles = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
+		
+		List<HomeworkOfStudentDTO> homeworkOfStudentDTOs;
+		
+		if(roles.contains("ROLE_ADMIN") || roles.contains("ROLE_TEACHER")) {
+			homeworkOfStudentDTOs = homeworkOfStudentService.getHomeworkOfStudents(homeworkId, filterStatus);
+		} else {
+			homeworkOfStudentDTOs = homeworkOfStudentService.getHomeworkOfStudents(homeworkId, username, filterStatus);
+		}
 		
 		if (homeworkOfStudentDTOs != null) {
 			return new ResponseEntity<>(homeworkOfStudentDTOs, HttpStatus.OK); 
@@ -133,7 +154,10 @@ public class HomeworkOfStudentController {
 																		@PathVariable("submit_id") Long homeworkOfStudentId,
 																		@RequestBody HomeworkOfStudentDTO homeworkOfStudentDTO) {
 
-		HomeworkOfStudentDTO homeworkOfStudentDTO_ = homeworkOfStudentService.createHomeworkOfStudent(homeworkOfStudentDTO);
+		homeworkOfStudentDTO.setId(homeworkOfStudentId);
+		homeworkOfStudentDTO.setHomeworkId(homeworkId);
+		
+		HomeworkOfStudentDTO homeworkOfStudentDTO_ = homeworkOfStudentService.updateHomeworkOfStudent(homeworkOfStudentDTO);
 		
 		if (homeworkOfStudentDTO_ != null) {
 			return new ResponseEntity<>(homeworkOfStudentDTO_, HttpStatus.OK); 
