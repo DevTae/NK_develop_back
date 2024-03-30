@@ -38,7 +38,7 @@ public class Homework {
 	private Long id;
 	
 	@ManyToOne
-	@JoinColumn(name="classroom_id", referencedColumnName="classroom_id")
+	@JoinColumn(name="classroom_id", referencedColumnName="id")
 	private Classroom classroom;
 	
 	@ManyToOne
