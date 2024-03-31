@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -25,6 +26,8 @@ import com.nkedu.back.repository.ParentOfStudentRepository;
 import com.nkedu.back.repository.ParentRepository;
 import com.nkedu.back.repository.StudentRepository;
 
+import jakarta.persistence.Tuple;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,6 +47,7 @@ public class ParentServiceImpl implements ParentService {
 	 * @author DevTae
 	 */
 	
+	@Transactional
 	@Override
 	public boolean createParent(ParentDTO parentDTO) {
 		try{
@@ -64,7 +68,7 @@ public class ParentServiceImpl implements ParentService {
 	        		.authorityName("ROLE_PARENT")
 	        		.build();
 	        authorities.add(authority_parent);
-	
+
 	        Parent parent = (Parent) Parent.builder()
 	                .username(parentDTO.getUsername())
 	                .password(passwordEncoder.encode(parentDTO.getPassword()))
@@ -76,8 +80,22 @@ public class ParentServiceImpl implements ParentService {
 	                .activated(true)
 	                .build();
 	
-	        parentRepository.save(parent);
+	        parent = parentRepository.save(parent);
+	        
+	        // 학생에 대한 정보가 있을 시, 연동 진행
+	        Relationship relationship = null;
+	        if(!ObjectUtils.isEmpty(parentDTO.getRelationship())) {
+	        	relationship = parentDTO.getRelationship();
+	        }
+	        if(!ObjectUtils.isEmpty(parentDTO.getStudentIds())) {
+	        	for(Long studentId : parentDTO.getStudentIds()) {
+	        		Student student = studentRepository.findById(studentId).get();
+	        		this.createParentOfStudent(parent, student, relationship != null ? relationship : Relationship.NOK);
+	        	}
+	        }
+	        
 	        return true;
+	        
         } catch(Exception e) {
         	log.error("Failed: " + e.getMessage(),e);
         }
@@ -96,6 +114,7 @@ public class ParentServiceImpl implements ParentService {
 		return false;
 	}
 
+	@Transactional
 	@Override
 	public boolean updateParent(String username, ParentDTO parentDTO) {
 		try {
@@ -116,6 +135,23 @@ public class ParentServiceImpl implements ParentService {
 				searchedParent.setBirth(parentDTO.getBirth());
 			
 			parentRepository.save(searchedParent);
+			
+			// 학생에 대한 정보가 있을 시, 연동 진행
+	        Relationship relationship = null;
+	        if(!ObjectUtils.isEmpty(parentDTO.getRelationship())) {
+	        	relationship = parentDTO.getRelationship();
+	        }
+			if(parentDTO.getStudentIds() != null) {
+				// 기존 학생-부모 관계 모두 삭제
+				List<ParentOfStudent> parentOfStudents = parentOfStudentRepository.findAllByParentname(searchedParent.getUsername()).get();
+				parentOfStudentRepository.deleteAll(parentOfStudents);
+				
+				// studentIds 로 등록된 모든 학생들 관계 주입
+				for(Long studentId : parentDTO.getStudentIds()) {
+					Student student = studentRepository.findById(studentId).get();
+	        		this.createParentOfStudent(searchedParent, student, relationship != null ? relationship : Relationship.NOK);
+	        	}
+			}
 			
 			return true;
 		} catch (Exception e) {
@@ -210,6 +246,7 @@ public class ParentServiceImpl implements ParentService {
 	 * @author DevTae
 	 */
 	
+	@Transactional
 	@Override
 	public ParentOfStudentDTO createParentOfStudent(ParentOfStudentDTO parentOfStudentDTO) {
 		
@@ -243,6 +280,35 @@ public class ParentServiceImpl implements ParentService {
 		return null;
 	}
 
+	// 서비스 내부에서 사용하는 함수, Parent, Student, Relationship 정보를 활용하여 부모-자식 간의 관계를 형성함.
+	@Transactional
+	public void createParentOfStudent(Parent parent, Student student, Relationship relationship) {
+		
+		try {
+			String parentname = parent.getUsername();
+			String studentname = student.getUsername();
+			
+			Optional<ParentOfStudent> optionalParentOfStudent = parentOfStudentRepository.findOneByParentnameAndStudentname(parentname, studentname);
+				
+			// 중복 등록 방지를 위한 조건문
+			if (!ObjectUtils.isEmpty(optionalParentOfStudent)) {
+				log.info("[Failed] Duplicated ParentOfStudent record occured. Skip it.");
+				return;
+			}
+			
+			ParentOfStudent parentOfStudent = ParentOfStudent.builder()
+								.parent(parent)
+								.student(student)
+								.relationship(relationship)
+								.build();
+			
+			parentOfStudentRepository.save(parentOfStudent);
+			
+		} catch (Exception e) {
+			log.info("[Failed] e : " + e.getMessage());
+		}
+	}
+
 	@Override
 	public List<ParentOfStudentDTO> getParentOfStudentsByParentname(String parentname) {
 
@@ -274,6 +340,7 @@ public class ParentServiceImpl implements ParentService {
 		return null;
 	}
 
+	@Transactional
 	@Override
 	public boolean deleteParentOfStudent(ParentOfStudentDTO parentOfStudentDTO) {
 		
