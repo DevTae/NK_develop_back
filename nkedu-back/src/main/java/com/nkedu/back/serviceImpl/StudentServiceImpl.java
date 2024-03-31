@@ -4,9 +4,13 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import com.nkedu.back.entity.Authority;
+import com.nkedu.back.entity.Parent;
+import com.nkedu.back.entity.ParentOfStudent;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -14,7 +18,9 @@ import org.springframework.util.ObjectUtils;
 import com.nkedu.back.api.StudentService;
 import com.nkedu.back.entity.School;
 import com.nkedu.back.entity.Student;
+import com.nkedu.back.dto.ParentDTO;
 import com.nkedu.back.dto.StudentDTO;
+import com.nkedu.back.repository.ParentOfStudentRepository;
 import com.nkedu.back.repository.SchoolRepository;
 import com.nkedu.back.repository.StudentRepository;
 
@@ -28,6 +34,7 @@ public class StudentServiceImpl implements StudentService  {
 
 	private final StudentRepository studentRepository;
 	private final SchoolRepository schoolRepository;
+	private final ParentOfStudentRepository parentOfStudentRepository;
 	private final PasswordEncoder passwordEncoder;
 
 	// 학생 계정 생성
@@ -141,6 +148,21 @@ public class StudentServiceImpl implements StudentService  {
 
 				studentDTO.setSchool(student.getSchool());
 				studentDTO.setGrade(student.getGrade());
+				
+				// 학생에 대한 부모님 정보 추가
+				List<ParentDTO> parentDTOs = new ArrayList<ParentDTO>();
+				List<ParentOfStudent> parentOfStudents = parentOfStudentRepository.findAllByStudentname(student.getUsername()).get();
+				for(int i = 0; i < parentOfStudents.size(); i++) {
+					Parent parent = parentOfStudents.get(i).getParent();
+					
+					ParentDTO parentDTO = ParentDTO.builder()
+												   .id(parent.getId())
+												   .nickname(parent.getNickname())
+												   .build();
+					
+					parentDTOs.add(parentDTO);
+				}
+				studentDTO.setParentDTOs(parentDTOs);
 
 				studentDTOs.add(studentDTO);
 			}
@@ -170,6 +192,21 @@ public class StudentServiceImpl implements StudentService  {
 			studentDTO.setSchool(student.getSchool());
 			studentDTO.setGrade(student.getGrade());
 
+			// 학생에 대한 부모님 정보 추가
+			List<ParentDTO> parentDTOs = new ArrayList<ParentDTO>();
+			List<ParentOfStudent> parentOfStudents = parentOfStudentRepository.findAllByStudentname(student.getUsername()).get();
+			for(int i = 0; i < parentOfStudents.size(); i++) {
+				Parent parent = parentOfStudents.get(i).getParent();
+				
+				ParentDTO parentDTO = ParentDTO.builder()
+											   .id(parent.getId())
+											   .nickname(parent.getNickname())
+											   .build();
+				
+				parentDTOs.add(parentDTO);
+			}
+			studentDTO.setParentDTOs(parentDTOs);
+			
 			return studentDTO;
 		} catch (Exception e) {
 			log.info("[Failed] e : " + e.getMessage());
