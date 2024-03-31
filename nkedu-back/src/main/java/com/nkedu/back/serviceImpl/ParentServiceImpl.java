@@ -17,6 +17,7 @@ import com.nkedu.back.entity.Authority;
 import com.nkedu.back.entity.Parent;
 import com.nkedu.back.entity.ParentOfStudent;
 import com.nkedu.back.entity.ParentOfStudent.Relationship;
+import com.nkedu.back.entity.Student;
 import com.nkedu.back.dto.ParentDTO;
 import com.nkedu.back.dto.ParentOfStudentDTO;
 import com.nkedu.back.dto.StudentDTO;
@@ -138,6 +139,21 @@ public class ParentServiceImpl implements ParentService {
 				parentDTO.setNickname(parent.getNickname());
 				parentDTO.setPhoneNumber(parent.getPhoneNumber());
 				parentDTO.setBirth(parent.getBirth());
+				
+				// 부모님에 대한 학생 정보 추가
+				List<StudentDTO> studentDTOs = new ArrayList<StudentDTO>();
+				List<ParentOfStudent> parentOfStudents = parentOfStudentRepository.findAllByParentname(parent.getUsername()).get();
+				for(int i = 0; i < parentOfStudents.size(); i++) {
+					Student student = parentOfStudents.get(i).getStudent();
+					
+					StudentDTO studentDTO = StudentDTO.builder()
+												      .id(student.getId())
+												      .nickname(student.getNickname())
+											    	  .build();
+								
+					studentDTOs.add(studentDTO);
+				}
+				parentDTO.setStudentDTOs(studentDTOs);
 
 				parentDTOs.add(parentDTO);
 			}
@@ -162,6 +178,21 @@ public class ParentServiceImpl implements ParentService {
 			parentDTO.setNickname(parent.getNickname());
 			parentDTO.setPhoneNumber(parent.getPhoneNumber());
 			parentDTO.setBirth(parent.getBirth());
+			
+			// 부모님에 대한 학생 정보 추가
+			List<StudentDTO> studentDTOs = new ArrayList<StudentDTO>();
+			List<ParentOfStudent> parentOfStudents = parentOfStudentRepository.findAllByParentname(parent.getUsername()).get();
+			for(int i = 0; i < parentOfStudents.size(); i++) {
+				Student student = parentOfStudents.get(i).getStudent();
+				
+				StudentDTO studentDTO = StudentDTO.builder()
+											      .id(student.getId())
+											      .nickname(student.getNickname())
+										    	  .build();
+							
+				studentDTOs.add(studentDTO);
+			}
+			parentDTO.setStudentDTOs(studentDTOs);
 			
 			return parentDTO;
 			

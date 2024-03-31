@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.nkedu.back.entity.Student;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import lombok.AllArgsConstructor;
@@ -35,6 +36,7 @@ public class ParentDTO {
 	private String phoneNumber;
 	
 	// 부모님 계정에 속한 학생 리스트
-	private List<ParentOfStudentDTO> parentOfStudents;
+	@JsonProperty("students")
+	private List<StudentDTO> studentDTOs;
 	
 }
