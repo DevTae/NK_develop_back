@@ -190,7 +190,9 @@ public class ParentServiceImpl implements ParentService {
 					studentDTOs.add(studentDTO);
 				}
 				parentDTO.setStudentDTOs(studentDTOs);
-
+				if(parentOfStudents.size() > 0)
+					parentDTO.setRelationship(parentOfStudents.get(0).getRelationship()); // 최상단의 relationship 바탕으로 반환
+							
 				parentDTOs.add(parentDTO);
 			}
 			
@@ -229,6 +231,8 @@ public class ParentServiceImpl implements ParentService {
 				studentDTOs.add(studentDTO);
 			}
 			parentDTO.setStudentDTOs(studentDTOs);
+			if(parentOfStudents.size() > 0)
+				parentDTO.setRelationship(parentOfStudents.get(0).getRelationship()); // 최상단의 relationship 바탕으로 반환
 			
 			return parentDTO;
 			

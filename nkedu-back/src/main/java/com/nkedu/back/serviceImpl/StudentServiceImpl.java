@@ -158,6 +158,7 @@ public class StudentServiceImpl implements StudentService  {
 					ParentDTO parentDTO = ParentDTO.builder()
 												   .id(parent.getId())
 												   .nickname(parent.getNickname())
+												   .relationship(parentOfStudents.get(i).getRelationship())
 												   .build();
 					
 					parentDTOs.add(parentDTO);
@@ -201,6 +202,7 @@ public class StudentServiceImpl implements StudentService  {
 				ParentDTO parentDTO = ParentDTO.builder()
 											   .id(parent.getId())
 											   .nickname(parent.getNickname())
+											   .relationship(parentOfStudents.get(i).getRelationship())
 											   .build();
 				
 				parentDTOs.add(parentDTO);
