@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.nkedu.back.entity.ParentOfStudent.Relationship;
+import com.nkedu.back.entity.Student;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import lombok.AllArgsConstructor;
@@ -35,6 +37,14 @@ public class ParentDTO {
 	private String phoneNumber;
 	
 	// 부모님 계정에 속한 학생 리스트
-	private List<ParentOfStudentDTO> parentOfStudents;
+	@JsonProperty("students")
+	private List<StudentDTO> studentDTOs;
+	
+	// 1회 다중 요청을 위한 primary key 를 담아둘 list 선언 
+	@JsonProperty("studentIds")
+	private List<Long> studentIds;
+	
+	// 학생과의 관계 (미설정 시 NOK 기본값)
+	private Relationship relationship;
 	
 }
