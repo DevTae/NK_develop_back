@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name="class_otice")
+@Table(name="class_notice")
 @Setter
 @Getter
 @SuperBuilder

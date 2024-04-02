@@ -23,11 +23,11 @@ public class ClassNoticeController {
      *
      * @author beom-i
      */
-    @PostMapping("/class-notice")
+    @PostMapping("/classroom/{classroom_id}/class-notice")
     //@PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Void> createClassNotice(@Validated @RequestBody ClassNoticeDTO classNoticeDTO) {
+    public ResponseEntity<Void> createClassNotice(@PathVariable("classroom_id") Long classroom_id,@Validated @RequestBody ClassNoticeDTO classNoticeDTO) {
 
-        boolean result = classNoticeService.createClassNotice(classNoticeDTO);
+        boolean result = classNoticeService.createClassNotice(classroom_id,classNoticeDTO);
 
         if (result == true) {
             return new ResponseEntity<>(null, HttpStatus.OK);
@@ -39,13 +39,13 @@ public class ClassNoticeController {
     /**
      * 특정 id의 수업 공지를 수정하는 controller 입니다.
      * (제목, 내용, 공지 공개 범위만 수정할 수 있습니다.)
-     * @param id, classNoticeDTO
+     * @param classroom_id,notice_id, classNoticeDTO
      * @author beom-i
      */
-    @PutMapping("/class-notice/{id}")
-    public ResponseEntity<Void> updateClassNotice(@PathVariable("id") Long id, @RequestBody ClassNoticeDTO classNoticeDTO) {
+    @PutMapping("/classroom/{classroom_id}/class-notice/{notice_id}")
+    public ResponseEntity<Void> updateClassNotice(@PathVariable("classroom_id") Long classroom_id,@PathVariable("notice_id") Long notice_id, @RequestBody ClassNoticeDTO classNoticeDTO) {
 
-        boolean result = classNoticeService.updateClassNotice(id, classNoticeDTO);
+        boolean result = classNoticeService.updateClassNotice(classroom_id,notice_id, classNoticeDTO);
 
         if (result == true) {
             return new ResponseEntity<>(null, HttpStatus.OK);
@@ -60,11 +60,11 @@ public class ClassNoticeController {
      *
      * @author beom-i
      */
-    @DeleteMapping("/class-notice/{id}")
+    @DeleteMapping("/classroom/{classroom_id}/class-notice/{notice_id}")
     //@PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Void> deleteClassNotice(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteClassNotice(@PathVariable("classroom_id") Long classroom_id,@PathVariable("notice_id") Long notice_id) {
 
-        boolean result = classNoticeService.deleteClassNoticeById(id);
+        boolean result = classNoticeService.deleteClassNoticeById(classroom_id,notice_id);
 
         if (result == true) {
             return new ResponseEntity<>(HttpStatus.OK);
