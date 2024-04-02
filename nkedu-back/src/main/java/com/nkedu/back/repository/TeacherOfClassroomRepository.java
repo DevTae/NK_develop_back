@@ -13,6 +13,11 @@ import java.util.Optional;
 @Repository
 public interface TeacherOfClassroomRepository extends JpaRepository<TeacherOfClassroom, Long> {
 
+
+    // 선생의 ID로 찾기
+    @Query("SELECT toc FROM TeacherOfClassroom toc WHERE toc.teacher.id = :teacher_id")
+    List<TeacherOfClassroom> findAllByTeacherId(@Param("teacher_id") Long teacher_id);
+
     // 수업의 ID로 찾기
     @Query("SELECT toc FROM TeacherOfClassroom toc WHERE toc.classroom.id = :classroom_id")
     List<TeacherOfClassroom> findAllByClassroomId(@Param("classroom_id") Long classroom_id);
@@ -21,5 +26,6 @@ public interface TeacherOfClassroomRepository extends JpaRepository<TeacherOfCla
     // 수업과 선생님의 ID로 찾기
     @Query("SELECT toc FROM TeacherOfClassroom toc WHERE toc.classroom.id = :classroom_id AND toc.teacher.id = :teacher_id")
     Optional<TeacherOfClassroom> findOneByClassroomIdAndTeacherId(@Param("classroom_id") Long classroom_id, @Param("teacher_id") Long teacher_id);
+
 
 }

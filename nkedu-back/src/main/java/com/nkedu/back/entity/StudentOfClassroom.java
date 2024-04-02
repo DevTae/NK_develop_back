@@ -24,11 +24,11 @@ public class StudentOfClassroom {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "student_id", referencedColumnName = "id")
     private Student student;
 
     @ManyToOne
-    @JoinColumn(name = "classroom_id")
+    @JoinColumn(name = "classroom_id", referencedColumnName = "id")
     private Classroom classroom;
 
 //    추후 개발 예정 by 시우님
