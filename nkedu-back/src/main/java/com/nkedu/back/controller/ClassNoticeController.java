@@ -56,8 +56,7 @@ public class ClassNoticeController {
 
     /**
      * 특정 수업 공지를 삭제하는 controller 입니다.
-     * @param id
-     *
+     * @param classroom_id, notice_id
      * @author beom-i
      */
     @DeleteMapping("/classroom/{classroom_id}/class-notice/{notice_id}")

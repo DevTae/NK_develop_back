@@ -28,6 +28,10 @@ public class Classroom {
     @Column(name="classname", length=40, nullable=false)
     private String classname;
 
+    @OneToMany(mappedBy = "classroom", cascade = CascadeType.REMOVE)
+    private Set<TeacherOfClassroom> teacherOfClassrooms;
+
+
     @ElementCollection
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "classroom_days", joinColumns = @JoinColumn(name = "id"))

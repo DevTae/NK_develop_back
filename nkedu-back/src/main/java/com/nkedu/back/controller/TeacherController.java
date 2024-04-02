@@ -93,7 +93,11 @@ public class TeacherController {
         }
     }
 
-    // -------
+    /**
+     * 선생님들을 조회할 때, 담당하는 Classroom을 포함하여 조회할 때 사용하는 API
+     * @param
+     * @author beom-i
+     */
 
     @GetMapping("/teacher/classroom")
     public ResponseEntity<List<TeacherWithClassroomDTO>> getTeachersWithClassrooms() {
@@ -106,6 +110,12 @@ public class TeacherController {
         }
     }
 
+    /**
+     * 특정 선생님을 조회할 때, 담당하는 Classroom을 포함하여 조회할 때 사용하는 API
+     * username : 조회하고 싶은 선생님 username
+     * @param username
+     * @author beom-i
+     */
     @GetMapping("/teacher/classroom/{username}")
     public ResponseEntity<TeacherWithClassroomDTO> getTeacherWithClassroom(@PathVariable("username") String username) {
         TeacherWithClassroomDTO teacherWithClassroomDTO = teacherService.getTeacherWithClassroom(username);
