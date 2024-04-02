@@ -6,8 +6,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.nkedu.back.dto.ClassroomDTO;
+import com.nkedu.back.dto.TeacherOfClassroomDTO;
+import com.nkedu.back.dto.TeacherWithClassroomDTO;
 import com.nkedu.back.entity.Authority;
 
+import com.nkedu.back.entity.TeacherOfClassroom;
+import com.nkedu.back.repository.TeacherOfClassroomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +30,7 @@ import com.nkedu.back.repository.TeacherRepository;
 public class TeacherServiceImpl implements TeacherService {
 
     private final TeacherRepository teacherRepository;
+    private final TeacherOfClassroomRepository teacherOfclassroomRepository;
     private final PasswordEncoder passwordEncoder;
 
 
@@ -154,6 +160,90 @@ public class TeacherServiceImpl implements TeacherService {
             log.info("[Failed] e : " + e.getMessage());
         }
 
+        return null;
+    }
+
+    @Override
+    public List<TeacherWithClassroomDTO> getTeachersWithClassroom() {
+        try {
+            // 조회할 모든 선생님을 담을 리스트
+            List<TeacherWithClassroomDTO> TeacherWithClassroomDTOs = new ArrayList<>();
+
+            List<Teacher> teachers = teacherRepository.findAll();
+
+            for (Teacher teacher : teachers) {
+
+                TeacherWithClassroomDTO teacherWithClassroomDTO = new TeacherWithClassroomDTO();
+
+                teacherWithClassroomDTO.setId(teacher.getId());
+                teacherWithClassroomDTO.setUsername(teacher.getUsername());
+                teacherWithClassroomDTO.setNickname(teacher.getNickname());
+                teacherWithClassroomDTO.setPhoneNumber(teacher.getPhoneNumber());
+                teacherWithClassroomDTO.setBirth(teacher.getBirth());
+
+                // 1. 선생님이 담당하고 있는 반의 리스트를 생성
+                List<TeacherOfClassroomDTO> teacherOfClassroomDTOs = new ArrayList<>();
+                // 2. 선생님이 담당하고 있는 선생-반 모든 관계테이블을 가져옴
+                List<TeacherOfClassroom> teacherOfClassrooms = teacherOfclassroomRepository.findAllByTeacherId(teacher.getId());
+                // 3. 모든 관계테이블을 돌면서 선생님이 담당하고 있는 반의 리스트에 추가시킴
+                for(TeacherOfClassroom teacherOfClassroom : teacherOfClassrooms){
+                    TeacherOfClassroomDTO TC = TeacherOfClassroomDTO.builder()
+                            .classroomDTO(ClassroomDTO.builder()
+                                    .id(teacherOfClassroom.getClassroom().getId())
+                                    .classname(teacherOfClassroom.getClassroom().getClassname())
+                                    .build())
+                            .type(teacherOfClassroom.isType()).build();
+                    teacherOfClassroomDTOs.add(TC);
+                }
+                // 4. 선생님의 DTO에 선생님이 담당하고 있는 반의 리스트를 넣음.
+                teacherWithClassroomDTO.setTeacherOfClassroomDTO(teacherOfClassroomDTOs);
+
+                // 5. 모든 선생님 리스트에 추가함.
+                TeacherWithClassroomDTOs.add(teacherWithClassroomDTO);
+            }
+
+            return TeacherWithClassroomDTOs;
+        } catch (Exception e) {
+            log.info("[Failed] e : " + e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public TeacherWithClassroomDTO getTeacherWithClassroom(String username) {
+        try {
+
+            Teacher teacher = teacherRepository.findOneByUsername(username).get();
+
+            TeacherWithClassroomDTO teacherWithClassroomDTO = new TeacherWithClassroomDTO();
+
+            teacherWithClassroomDTO.setId(teacher.getId());
+            teacherWithClassroomDTO.setUsername(teacher.getUsername());
+            teacherWithClassroomDTO.setNickname(teacher.getNickname());
+            teacherWithClassroomDTO.setPhoneNumber(teacher.getPhoneNumber());
+            teacherWithClassroomDTO.setBirth(teacher.getBirth());
+
+            // 1. 선생님이 담당하고 있는 반의 리스트를 생성
+            List<TeacherOfClassroomDTO> teacherOfClassroomDTOs = new ArrayList<>();
+            // 2. 선생님이 담당하고 있는 선생-반 모든 관계테이블을 가져옴
+            List<TeacherOfClassroom> teacherOfClassrooms = teacherOfclassroomRepository.findAllByTeacherId(teacher.getId());
+            // 3. 모든 관계테이블을 돌면서 선생님이 담당하고 있는 반의 리스트에 추가시킴
+            for(TeacherOfClassroom teacherOfClassroom : teacherOfClassrooms){
+                TeacherOfClassroomDTO TC = TeacherOfClassroomDTO.builder()
+                        .classroomDTO(ClassroomDTO.builder()
+                                .id(teacherOfClassroom.getClassroom().getId())
+                                .classname(teacherOfClassroom.getClassroom().getClassname())
+                                .build())
+                        .type(teacherOfClassroom.isType()).build();
+                teacherOfClassroomDTOs.add(TC);
+            }
+            // 4. 선생님의 DTO에 선생님이 담당하고 있는 반의 리스트를 넣음.
+            teacherWithClassroomDTO.setTeacherOfClassroomDTO(teacherOfClassroomDTOs);
+
+            return teacherWithClassroomDTO;
+        } catch (Exception e) {
+            log.info("[Failed] e : " + e.getMessage());
+        }
         return null;
     }
 }

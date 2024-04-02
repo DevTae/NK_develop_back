@@ -2,6 +2,7 @@ package com.nkedu.back.controller;
 
 import java.util.List;
 
+import com.nkedu.back.dto.TeacherWithClassroomDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -92,4 +93,27 @@ public class TeacherController {
         }
     }
 
+    // -------
+
+    @GetMapping("/teacher/classroom")
+    public ResponseEntity<List<TeacherWithClassroomDTO>> getTeachersWithClassrooms() {
+        List<TeacherWithClassroomDTO> teacherWithClassroomDTOs = teacherService.getTeachersWithClassroom();
+
+        if (teacherWithClassroomDTOs != null) {
+            return new ResponseEntity<>(teacherWithClassroomDTOs, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/teacher/classroom/{username}")
+    public ResponseEntity<TeacherWithClassroomDTO> getTeacherWithClassroom(@PathVariable("username") String username) {
+        TeacherWithClassroomDTO teacherWithClassroomDTO = teacherService.getTeacherWithClassroom(username);
+
+        if (teacherWithClassroomDTO != null) {
+            return new ResponseEntity<>(teacherWithClassroomDTO, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
