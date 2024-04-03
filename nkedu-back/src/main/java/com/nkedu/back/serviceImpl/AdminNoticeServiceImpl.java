@@ -40,6 +40,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
             Long admin_id = adminNoticeDTO.getAdminDTO().getId();
             AdminNoticeType adminNoticeType = adminNoticeDTO.getAdminNoticeType();
 
+            Timestamp current_time = new Timestamp(System.currentTimeMillis());
             // Q. noticeDTO로 ID를 받지 않는데 어떻게 중복 검증을 할 수 있는가?
             if (!ObjectUtils.isEmpty(adminNoticeRepository.findOneById(adminNoticeDTO.getId()))) {
                 throw new RuntimeException("이미 등록된 공지입니다.");
@@ -49,7 +50,8 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
                     .title(adminNoticeDTO.getTitle())
                     .content(adminNoticeDTO.getContent())
                     .adminNoticeType(adminNoticeType)
-                    .created(new Timestamp(System.currentTimeMillis()))
+                    .created(current_time)
+                    .updated(current_time)
                     .build();
 
             adminNoticeRepository.save(adminNotice);
@@ -84,6 +86,8 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
                 searchedAdminNotice.setContent(adminNoticeDTO.getContent());
             if(!ObjectUtils.isEmpty(adminNoticeDTO.getAdminNoticeType()))
                 searchedAdminNotice.setAdminNoticeType(adminNoticeDTO.getAdminNoticeType());
+
+            searchedAdminNotice.setUpdated(new Timestamp(System.currentTimeMillis()));
 
             adminNoticeRepository.save(searchedAdminNotice);
             return true;
@@ -136,6 +140,8 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
                         .adminDTO(AdminDTO.builder().id(adminNotice.getAdmin().getId()).build())
                         .title(adminNotice.getTitle())
                         .content(adminNotice.getContent())
+                        .created(adminNotice.getCreated())
+                        .updated(adminNotice.getUpdated())
                         .adminNoticeType(adminNotice.getAdminNoticeType())
                         .build();
                 adminNoticeDTOs.add(adminNoticeDTO);
@@ -159,6 +165,8 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
                     .adminDTO(AdminDTO.builder().id(adminNotice.getAdmin().getId()).build())
                     .title(adminNotice.getTitle())
                     .content(adminNotice.getContent())
+                    .created(adminNotice.getCreated())
+                    .updated(adminNotice.getUpdated())
                     .adminNoticeType(adminNotice.getAdminNoticeType())
                     .build();
             return adminNoticeDTO;

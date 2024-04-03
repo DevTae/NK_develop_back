@@ -45,6 +45,9 @@ public class ClassNotice {
     @Column(name="created", nullable=false)
     private Timestamp created;
 
+    @Column(name="updated", nullable=false)
+    private Timestamp updated;
+
     @Enumerated(EnumType.STRING)
     @Column(name="classNotice_type",nullable = false)
     private ClassNoticeType classNoticeType;

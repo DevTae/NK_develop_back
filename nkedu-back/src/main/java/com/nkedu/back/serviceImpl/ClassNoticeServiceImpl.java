@@ -47,13 +47,16 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
             // classNotice DTO 내 teacher가 classroom_id에 담당하고 있는 선생님인지 검증이 필요
             // 관리자는 어떻게 대응할지?
 
+            Timestamp current_time = new Timestamp(System.currentTimeMillis());
+
             ClassNotice classNotice = ClassNotice.builder()
                     .teacher(teacherRepository.findOneById(teacher_id).get())
                     .classroom(classroomRepository.findOneById(classroom_id).get())
                     .title(classNoticeDTO.getTitle())
                     .content(classNoticeDTO.getContent())
+                    .created(current_time)
+                    .updated(current_time)
                     .classNoticeType(classNoticeType)
-                    .created(new Timestamp(System.currentTimeMillis()))
                     .build();
 
             classNoticeRepository.save(classNotice);
@@ -93,6 +96,8 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
                 searchedClassNotice.setContent(classNoticeDTO.getContent());
             if(!ObjectUtils.isEmpty(classNoticeDTO.getClassNoticeType()))
                 searchedClassNotice.setClassNoticeType(classNoticeDTO.getClassNoticeType());
+
+            searchedClassNotice.setUpdated(new Timestamp(System.currentTimeMillis()));
 
             classNoticeRepository.save(searchedClassNotice);
 
@@ -144,6 +149,8 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
                         .teacherDTO(TeacherDTO.builder().id(teacher.getId()).build())
                         .title(classNotice.getTitle())
                         .content(classNotice.getContent())
+                        .created(classNotice.getCreated())
+                        .updated(classNotice.getUpdated())
                         .classNoticeType(classNotice.getClassNoticeType())
                         .build();
                 classNoticeDTOs.add(classNoticeDTO);
@@ -168,6 +175,8 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
                     .teacherDTO(TeacherDTO.builder().id(teacher.getId()).build())
                     .title(classNotice.getTitle())
                     .content(classNotice.getContent())
+                    .created(classNotice.getCreated())
+                    .updated(classNotice.getUpdated())
                     .classNoticeType(classNotice.getClassNoticeType())
                     .build();
 

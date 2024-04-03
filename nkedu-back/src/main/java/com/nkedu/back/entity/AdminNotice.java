@@ -42,9 +42,13 @@ public class AdminNotice {
     @Column(name="created", nullable=false)
     private Timestamp created;
 
+    @Column(name="updated", nullable=false)
+    private Timestamp updated;
+
     @Enumerated(EnumType.STRING)
     @Column(name="adminNotice_type",nullable = false)
     private AdminNoticeType adminNoticeType;
+
 
 
     /**

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nkedu.back.entity.AdminNotice.AdminNoticeType;
 import lombok.*;
 
+import java.sql.Timestamp;
+
 @Getter
 @Setter
 @Builder
@@ -20,6 +22,10 @@ public class AdminNoticeDTO {
     private String title;
 
     private String content;
+
+    private Timestamp created;
+
+    private Timestamp updated;
 
     private AdminNoticeType adminNoticeType;
 }
