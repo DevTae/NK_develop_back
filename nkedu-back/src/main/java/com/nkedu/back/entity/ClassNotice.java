@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name="class_otice")
+@Table(name="class_notice")
 @Setter
 @Getter
 @SuperBuilder
@@ -44,6 +44,9 @@ public class ClassNotice {
     @JsonIgnore
     @Column(name="created", nullable=false)
     private Timestamp created;
+
+    @Column(name="updated", nullable=false)
+    private Timestamp updated;
 
     @Enumerated(EnumType.STRING)
     @Column(name="classNotice_type",nullable = false)

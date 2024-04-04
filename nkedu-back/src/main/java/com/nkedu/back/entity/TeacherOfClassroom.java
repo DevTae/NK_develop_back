@@ -28,7 +28,7 @@ public class TeacherOfClassroom {
     private Teacher teacher;
 
     @ManyToOne
-    @JoinColumn(name = "classroom_id")
+    @JoinColumn(name = "classroom_id",referencedColumnName = "id")
     private Classroom classroom;
 
     @Column(name="type", nullable=false)

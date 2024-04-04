@@ -2,6 +2,7 @@ package com.nkedu.back.controller;
 
 import java.util.List;
 
+import com.nkedu.back.dto.TeacherWithClassroomDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -92,4 +93,37 @@ public class TeacherController {
         }
     }
 
+    /**
+     * 선생님들을 조회할 때, 담당하는 Classroom을 포함하여 조회할 때 사용하는 API
+     * @param
+     * @author beom-i
+     */
+
+    @GetMapping("/teacher/classroom")
+    public ResponseEntity<List<TeacherWithClassroomDTO>> getTeachersWithClassrooms() {
+        List<TeacherWithClassroomDTO> teacherWithClassroomDTOs = teacherService.getTeachersWithClassroom();
+
+        if (teacherWithClassroomDTOs != null) {
+            return new ResponseEntity<>(teacherWithClassroomDTOs, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * 특정 선생님을 조회할 때, 담당하는 Classroom을 포함하여 조회할 때 사용하는 API
+     * username : 조회하고 싶은 선생님 username
+     * @param username
+     * @author beom-i
+     */
+    @GetMapping("/teacher/classroom/{username}")
+    public ResponseEntity<TeacherWithClassroomDTO> getTeacherWithClassroom(@PathVariable("username") String username) {
+        TeacherWithClassroomDTO teacherWithClassroomDTO = teacherService.getTeacherWithClassroom(username);
+
+        if (teacherWithClassroomDTO != null) {
+            return new ResponseEntity<>(teacherWithClassroomDTO, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

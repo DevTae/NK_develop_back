@@ -3,6 +3,7 @@ package com.nkedu.back.repository;
 import com.nkedu.back.entity.ClassNotice;
 import com.nkedu.back.entity.ClassNotice.ClassNoticeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -23,8 +24,10 @@ public interface ClassNoticeRepository extends JpaRepository<ClassNotice,Long> {
     @Query("SELECT not FROM ClassNotice not WHERE not.classroom.id = :classroom_id AND not.classNoticeType IN :types")
     Optional<List<ClassNotice>> findByClassroomIdAndClassNoticeTypes(@Param("classroom_id") Long classroom_id, @Param("types")  List<ClassNoticeType> types);
 
-
     @Query("SELECT not FROM ClassNotice not WHERE not.classroom.id = :classroom_id AND not.id = :classNotice_id")
     Optional<ClassNotice> findOneByClassroomIdAndClassNoticeId(@Param("classroom_id") Long classroom_id, @Param("classNotice_id") Long classNotice_id);
 
+    //@Modifying
+    @Query("DELETE FROM ClassNotice not WHERE not.classroom.id = :classroom_id AND not.id = :classNotice_id")
+    void deleteByClassroomIdAndClassNoticeId(@Param("classroom_id") Long classroom_id, @Param("classNotice_id") Long classNotice_id);
 }

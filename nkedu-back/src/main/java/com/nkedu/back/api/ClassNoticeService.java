@@ -8,25 +8,25 @@ public interface ClassNoticeService {
 
     /**
      * 수업 공지 생성
-     * @param classNoticeDTO
+     * @param classroom_id, classNoticeDTO
      * @author beom-i
      */
-    public boolean createClassNotice(ClassNoticeDTO classNoticeDTO);
+    public boolean createClassNotice(Long classroom_id, ClassNoticeDTO classNoticeDTO);
 
     /**
      * 수업 공지 삭제
-     * @param id
+     * @param classroom_id, notice_id
      * @author beom-i
      */
-    public boolean deleteClassNoticeById(Long id);
+    public boolean deleteClassNoticeById(Long classroom_id,Long notice_id);
 
     /**
      * 수업 공지 설정 (param = 바꾸고 싶은 classNotice의 id, 바꿀 classNoticeDTO)
-     * @param id, classNoticeDTO
+     * @param classroom_id, notice_id, classNoticeDTO
      * @return boolean
      * @author beom-i
      */
-    public boolean updateClassNotice(Long id, ClassNoticeDTO classNoticeDTO);
+    public boolean updateClassNotice(Long classroom_id, Long notice_id, ClassNoticeDTO classNoticeDTO);
 
 
     /**

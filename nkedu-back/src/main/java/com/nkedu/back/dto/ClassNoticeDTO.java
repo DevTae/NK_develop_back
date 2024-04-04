@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nkedu.back.entity.ClassNotice.ClassNoticeType;
 import lombok.*;
 
+import java.sql.Timestamp;
+
 @Getter
 @Setter
 @Builder
@@ -24,6 +26,10 @@ public class ClassNoticeDTO {
     private String title;
 
     private String content;
+
+    private Timestamp created;
+
+    private Timestamp updated;
 
     private ClassNoticeType classNoticeType;
 }

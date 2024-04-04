@@ -4,7 +4,6 @@ import com.nkedu.back.api.ClassNoticeService;
 import com.nkedu.back.dto.ClassroomDTO;
 import com.nkedu.back.dto.ClassNoticeDTO;
 import com.nkedu.back.dto.TeacherDTO;
-import com.nkedu.back.entity.AdminNotice;
 import com.nkedu.back.entity.ClassNotice;
 import com.nkedu.back.entity.ClassNotice.ClassNoticeType;
 import com.nkedu.back.entity.Teacher;
@@ -39,24 +38,25 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
      */
 
     @Override
-    public boolean createClassNotice(ClassNoticeDTO classNoticeDTO) {
+    public boolean createClassNotice(Long classroom_id, ClassNoticeDTO classNoticeDTO) {
 
         try{
             Long teacher_id = classNoticeDTO.getTeacherDTO().getId();
-            Long classroom_id = classNoticeDTO.getClassroomDTO().getId();
             ClassNoticeType classNoticeType = classNoticeDTO.getClassNoticeType();
 
-            // Q. noticeDTO로 ID를 받지 않는데 어떻게 중복 검증을 할 수 있는가?
-            if (!ObjectUtils.isEmpty(classNoticeRepository.findOneById(classNoticeDTO.getId()))) {
-                throw new RuntimeException("이미 등록된 공지입니다.");
-            }
+            // classNotice DTO 내 teacher가 classroom_id에 담당하고 있는 선생님인지 검증이 필요
+            // 관리자는 어떻게 대응할지?
+
+            Timestamp current_time = new Timestamp(System.currentTimeMillis());
+
             ClassNotice classNotice = ClassNotice.builder()
                     .teacher(teacherRepository.findOneById(teacher_id).get())
                     .classroom(classroomRepository.findOneById(classroom_id).get())
                     .title(classNoticeDTO.getTitle())
                     .content(classNoticeDTO.getContent())
+                    .created(current_time)
+                    .updated(current_time)
                     .classNoticeType(classNoticeType)
-                    .created(new Timestamp(System.currentTimeMillis()))
                     .build();
 
             classNoticeRepository.save(classNotice);
@@ -68,9 +68,10 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
     }
 
     @Override
-    public boolean deleteClassNoticeById(Long id) {
+    public boolean deleteClassNoticeById(Long classroom_id, Long notice_id) {
         try{
-            classNoticeRepository.deleteById(id);
+            // 수업과 공지에 동시에 해당하는 공지를 삭제
+            classNoticeRepository.deleteByClassroomIdAndClassNoticeId(classroom_id,notice_id);
             return true;
         }catch (Exception e){
             log.info("Failed: " + e.getMessage(),e);
@@ -79,11 +80,13 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
     }
 
     @Override
-    public boolean updateClassNotice(Long id, ClassNoticeDTO classNoticeDTO) {
+    public boolean updateClassNotice(Long classroom_id, Long notice_id, ClassNoticeDTO classNoticeDTO) {
 
         try {
-            ClassNotice searchedClassNotice = classNoticeRepository.findOneById(id).get();
+            // classroom_id, notice_id 가 동시에 같은 공지를 가져옴
+            ClassNotice searchedClassNotice = classNoticeRepository.findOneByClassroomIdAndClassNoticeId(classroom_id,notice_id).get();
 
+            // 찾는 수업 공지가 없다면 중단
             if(ObjectUtils.isEmpty(searchedClassNotice))
                 return false;
 
@@ -93,6 +96,8 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
                 searchedClassNotice.setContent(classNoticeDTO.getContent());
             if(!ObjectUtils.isEmpty(classNoticeDTO.getClassNoticeType()))
                 searchedClassNotice.setClassNoticeType(classNoticeDTO.getClassNoticeType());
+
+            searchedClassNotice.setUpdated(new Timestamp(System.currentTimeMillis()));
 
             classNoticeRepository.save(searchedClassNotice);
 
@@ -144,6 +149,8 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
                         .teacherDTO(TeacherDTO.builder().id(teacher.getId()).build())
                         .title(classNotice.getTitle())
                         .content(classNotice.getContent())
+                        .created(classNotice.getCreated())
+                        .updated(classNotice.getUpdated())
                         .classNoticeType(classNotice.getClassNoticeType())
                         .build();
                 classNoticeDTOs.add(classNoticeDTO);
@@ -168,6 +175,8 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
                     .teacherDTO(TeacherDTO.builder().id(teacher.getId()).build())
                     .title(classNotice.getTitle())
                     .content(classNotice.getContent())
+                    .created(classNotice.getCreated())
+                    .updated(classNotice.getUpdated())
                     .classNoticeType(classNotice.getClassNoticeType())
                     .build();
 
