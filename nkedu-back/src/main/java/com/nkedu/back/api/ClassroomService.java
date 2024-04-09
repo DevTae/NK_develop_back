@@ -57,11 +57,11 @@ public interface ClassroomService {
     /**
      * 수업에 학생 추가
      *
-     * @param studentOfClassroomDTO
+     * @param classroom_id, classroomDTO
      * @return StudentOfClassroom
      * @author beom-i
      */
-    public StudentOfClassroomDTO createStudentOfClassroom(StudentOfClassroomDTO studentOfClassroomDTO);
+    public boolean createStudentOfClassroom(Long classroom_id, ClassroomDTO classroomDTO);
 
     /**
      * 수업에 속한 모든 학생 조회
@@ -70,14 +70,14 @@ public interface ClassroomService {
      * @return List<StudentOfClassroomDTO>
      * @author beom-i
      */
-    public List<StudentOfClassroomDTO> getStudentOfClassroomsByClassroomId(Long classroom_id);
+    public ClassroomDTO getStudentOfClassroomsByClassroomId(Long classroom_id);
 
     /**
      * 수업에 속한 학생 삭제
      *
-     * @param studentOfClassroomDTO
+     * @param classroom_id,classroomDTO
      * @return boolean
      * @author beom-i
      */
-    public boolean deleteStudentOfClassroom(StudentOfClassroomDTO studentOfClassroomDTO);
+    public boolean deleteStudentOfClassroom(Long classroom_id, ClassroomDTO classroomDTO);
 }

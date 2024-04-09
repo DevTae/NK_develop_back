@@ -114,7 +114,7 @@ public class ClassroomController {
         }
     }
 
-    /** 수업-학생 수업-선생 관련 CRUD API 입니다. */
+    /** 수업-학생 관련 CRUD API 입니다. */
 
     /**
      * 수업에 학생을 추가할 수 있는 controller 입니다.
@@ -122,20 +122,16 @@ public class ClassroomController {
      *
      * @author beom-i
      */
-    @PostMapping("/classroom/{classroom_id}/student/{student_id}")
+    @PostMapping("/classroom/{classroom_id}/student")
     //@PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<StudentOfClassroomDTO> createStudentOfClassroom(@PathVariable("classroom_id") Long classroom_id,
-                                                                    @PathVariable("student_id") Long student_id) {
+    public ResponseEntity<Void> createStudentOfClassroom(@PathVariable("classroom_id") Long classroom_id,
+                                                                          @Validated @RequestBody ClassroomDTO classroomDTO) {
 
-        StudentOfClassroomDTO studentOfClassroomDTO = StudentOfClassroomDTO.builder()
-                .classroomDTO(ClassroomDTO.builder().id(classroom_id).build())
-                .studentDTO(StudentDTO.builder().id(student_id).build())
-                .build();
 
-        studentOfClassroomDTO = classroomService.createStudentOfClassroom(studentOfClassroomDTO);
+        boolean result = classroomService.createStudentOfClassroom(classroom_id,classroomDTO);
 
-        if (ObjectUtils.isNotEmpty(studentOfClassroomDTO)) {
-            return new ResponseEntity<>(studentOfClassroomDTO, HttpStatus.OK);
+        if (result == true) {
+            return new ResponseEntity<>(null, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
@@ -147,14 +143,11 @@ public class ClassroomController {
      *
      * @author beom-i
      */
-    @DeleteMapping("/classroom/{classroom_id}/student/{student_id}")
+    @DeleteMapping("/classroom/{classroom_id}/student")
     //@PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteStudentOfClassroom(@PathVariable("classroom_id") Long classroom_id,
-                                                      @PathVariable("student_id") Long student_id) {
-        boolean result = classroomService.deleteStudentOfClassroom(StudentOfClassroomDTO.builder()
-                .classroomDTO(ClassroomDTO.builder().id(classroom_id).build())
-                .studentDTO(StudentDTO.builder().id(student_id).build())
-                .build());
+                                                         @Validated @RequestBody ClassroomDTO classroomDTO) {
+        boolean result = classroomService.deleteStudentOfClassroom(classroom_id,classroomDTO);
 
         if (result == true) {
             return new ResponseEntity<>(HttpStatus.OK);
@@ -172,11 +165,11 @@ public class ClassroomController {
      */
     @GetMapping ("/classroom/{classroom_id}/student")
     //@PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<StudentOfClassroomDTO>> getStudentOfClassroomsByClassroomId(@PathVariable("classroom_id") Long classroom_id) {
-        List<StudentOfClassroomDTO> StudentOfClassroomDTOs = classroomService.getStudentOfClassroomsByClassroomId(classroom_id);
+    public ResponseEntity<ClassroomDTO> getStudentOfClassroomsByClassroomId(@PathVariable("classroom_id") Long classroom_id) {
+        ClassroomDTO classroomDTO = classroomService.getStudentOfClassroomsByClassroomId(classroom_id);
 
-        if (StudentOfClassroomDTOs != null) {
-            return new ResponseEntity<>(StudentOfClassroomDTOs, HttpStatus.OK);
+        if (classroomDTO != null) {
+            return new ResponseEntity<>(classroomDTO, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }

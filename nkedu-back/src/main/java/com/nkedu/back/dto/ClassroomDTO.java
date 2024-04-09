@@ -20,11 +20,18 @@ public class ClassroomDTO {
 
     private String classname;
 
+    // 수업 요일
+    private Set<Day> days;
+
+    // Teaching 선생님의 정보
     @JsonProperty(value="TeachingTeacher")
     private TeacherDTO teachingTeacher;
 
+    // Assistant 선생님의 정보
     @JsonProperty(value="AssistantTeacher")
     private List<TeacherDTO> assistantTeachers;
 
-    private Set<Day> days;
+    // 반에 속해져 있는 학생들의 주키
+    @JsonProperty("studentIds")
+    private List<Long> studentIds;
 }

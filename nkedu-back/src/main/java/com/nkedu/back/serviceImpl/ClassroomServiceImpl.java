@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -307,53 +309,59 @@ public class ClassroomServiceImpl implements ClassroomService {
         return null;
     }
 
+    /**
+     * 수업-학생 관련 API 입니다.
+     *
+     * @author beom-i
+     * */
     @Override
-    public StudentOfClassroomDTO createStudentOfClassroom(StudentOfClassroomDTO studentOfClassroomDTO) {
+    public boolean createStudentOfClassroom(Long classroom_id, ClassroomDTO classroomDTO) {
         try {
-            Long class_id = studentOfClassroomDTO.getClassroomDTO().getId();
-            Long student_id = studentOfClassroomDTO.getStudentDTO().getId();
 
-            Optional<StudentOfClassroom> validateStudentOfClassroom = studentOfClassroomRepository.findOneByClassroomIdAndStudentId(class_id, student_id);
-
-            // 중복 등록 방지를 위한 조건문
-            if (!ObjectUtils.isEmpty(validateStudentOfClassroom)) {
-                log.info("이미 존재하는 StudentOfClassroom 입니다. ");
-                return null;
+            Classroom validateClassroom = classroomRepository.findOneById(classroom_id).get();
+            // Classroom의 존재 여부 판단
+            if (ObjectUtils.isEmpty(validateClassroom)) {
+                log.info("존재하지 않는 Classroom 입니다. ");
+                return false;
             }
 
-            StudentOfClassroom studentOfClassroom = StudentOfClassroom.builder()
-                    .classroom(classroomRepository.findOneById(class_id).get())
-                    .student(studentRepository.findOneById(student_id).get())
-                    .build();
+            // studentIds 없으면 Pass
+            if(!ObjectUtils.isEmpty(classroomDTO.getStudentIds())){
+                for(Long student_id : classroomDTO.getStudentIds()){
 
-            studentOfClassroomRepository.save(studentOfClassroom);
+                    // 만약 넣은 student id가 없으면 Pass (activated로 판단해야함)
+                    Student student = studentRepository.findOneById(student_id).get();
+                    if(ObjectUtils.isEmpty(student)) continue;
 
-            return studentOfClassroomDTO;
+                    StudentOfClassroom studentOfClassroom = StudentOfClassroom.builder()
+                            .classroom(classroomRepository.findOneById(classroom_id).get())
+                            .student(student)
+                            .build();
+                    studentOfClassroomRepository.save(studentOfClassroom);
+                }
+            }
+            return true;
 
         } catch (Exception e) {
             log.info("[Failed] e : " + e.getMessage());
         }
 
-        return null;
+        return false;
     }
 
     @Override
-    public List<StudentOfClassroomDTO> getStudentOfClassroomsByClassroomId(Long classroom_id) {
+    public ClassroomDTO getStudentOfClassroomsByClassroomId(Long classroom_id) {
         try{
             List<StudentOfClassroom> studentOfClassrooms = studentOfClassroomRepository.findAllByClassroomId(classroom_id);
 
-            List<StudentOfClassroomDTO> studentOfClassroomDTOs = new ArrayList<>();
+            List<Long> studentIds = new ArrayList<>();
 
             for(StudentOfClassroom studentOfClassroom : studentOfClassrooms){
 
-                StudentOfClassroomDTO studentOfClassroomDTO = StudentOfClassroomDTO.builder()
-                        .studentDTO(StudentDTO.builder().id(studentOfClassroom.getStudent().getId()).build())
-                        .classroomDTO(ClassroomDTO.builder().id(studentOfClassroom.getClassroom().getId()).build())
-                        .build();
-
-                studentOfClassroomDTOs.add(studentOfClassroomDTO);
+                studentIds.add(studentOfClassroom.getStudent().getId());
             }
-            return studentOfClassroomDTOs;
+            return ClassroomDTO.builder()
+                    .studentIds(studentIds).build();
         } catch (Exception e){
             log.info("Failed e : " + e.getMessage());
         } return null;
@@ -361,13 +369,29 @@ public class ClassroomServiceImpl implements ClassroomService {
 
 
     @Override
-    public boolean deleteStudentOfClassroom(StudentOfClassroomDTO studentOfClassroomDTO) {
+    public boolean deleteStudentOfClassroom(Long classroom_id, ClassroomDTO classroomDTO) {
         try{
-            Long classroom_id = studentOfClassroomDTO.getClassroomDTO().getId();
-            Long student_id = studentOfClassroomDTO.getStudentDTO().getId();
 
-            studentOfClassroomRepository.delete(studentOfClassroomRepository.findOneByClassroomIdAndStudentId(classroom_id,student_id).get());
+            Classroom validateClassroom = classroomRepository.findOneById(classroom_id).get();
+            // Classroom의 존재 여부
+            if (ObjectUtils.isEmpty(validateClassroom)) {
+                log.info("존재하지 않는 Classroom 입니다. ");
+                return false;
+            }
+
+            // studentIds 없으면 Pass
+            if(!ObjectUtils.isEmpty(classroomDTO.getStudentIds())){
+                for(Long student_id : classroomDTO.getStudentIds()){
+
+                    // 만약 넣은 student id가 없으면 Pass (activated로 판단해야함)
+                    Student student = studentRepository.findOneById(student_id).get();
+                    if(ObjectUtils.isEmpty(student)) continue;
+
+                    studentOfClassroomRepository.delete(studentOfClassroomRepository.findOneByClassroomIdAndStudentId(classroom_id,student_id).get());
+                }
+            }
             return true;
+
         } catch (Exception e){
             log.info("Failed e : " + e.getMessage());
         }
