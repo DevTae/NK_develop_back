@@ -41,7 +41,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     @Override
     public boolean createClassroom(ClassroomDTO classroomDTO) {
         try{
-            if (!ObjectUtils.isEmpty(classroomRepository.findOneById(classroomDTO.getId()))) {
+            if (!ObjectUtils.isEmpty(classroomRepository.findOneClassroomById(classroomDTO.getId()))) {
                 throw new Exception("이미 등록된 수업입니다.");
             }
 
@@ -51,6 +51,7 @@ public class ClassroomServiceImpl implements ClassroomService {
             Classroom classroom = (Classroom) Classroom.builder()
                     .classname(classroomDTO.getClassname())
                     .days(classroomDTO.getDays())
+                    .activated(true)
                     .build();
 
             classroomRepository.save(classroom);
@@ -72,21 +73,13 @@ public class ClassroomServiceImpl implements ClassroomService {
             Long classroom_id = classroom.getId();
             Long teaching_teacher_id = classroomDTO.getTeachingTeacher().getId();
 
-//            // 생성하는 과정이므로 중복 여부 확인
-//            if (!ObjectUtils.isEmpty(teacherOfClassroomRepository.findOneByClassroomIdAndTeacherId(classroom_id, teaching_teacher_id).get())) {
-//                throw new Exception("이미 존재하는 TeacherOfClassroom 입니다.");
-//            }
-
-
             TeacherOfClassroom teachingTeacherOfClassroom = TeacherOfClassroom.builder()
-                    .classroom(classroomRepository.findOneById(classroom_id).get())
+                    .classroom(classroomRepository.findOneClassroomById(classroom_id).get())
                     .teacher(teacherRepository.findOneById(teaching_teacher_id).get())
                     .type(true)
                     .build();
 
             teacherOfClassroomRepository.save(teachingTeacherOfClassroom);
-
-
 
             /**
              * 3. 요청받은 ClassroomDTO 내부에 AssistantTeacher 연결 (AssistantTeacher의 type =  false)
@@ -98,14 +91,8 @@ public class ClassroomServiceImpl implements ClassroomService {
 
                 Long assistant_teacher_id = assistantTeacherDTO.getId();
 
-
-//                // 생성하는 과정이므로 중복 여부 확인
-//                if (!ObjectUtils.isEmpty(teacherOfClassroomRepository.findOneByClassroomIdAndTeacherId(classroom_id, assistant_teacher_id).get())) {
-//                    throw new Exception("이미 존재하는 TeacherOfClassroom 입니다.");
-//                }
-
                 TeacherOfClassroom assistantTeacherOfClassroom = TeacherOfClassroom.builder()
-                        .classroom(classroomRepository.findOneById(classroom_id).get())
+                        .classroom(classroomRepository.findOneClassroomById(classroom_id).get())
                         .teacher(teacherRepository.findOneById(assistant_teacher_id).get())
                         .type(false)
                         .build();
@@ -120,15 +107,16 @@ public class ClassroomServiceImpl implements ClassroomService {
         return false;
     }
 
-    // Q. classroom을 삭제하면 그 수업과 선생님이 연결된 매핑 테이블은 자동으로 사라질까? 아니면 get처럼 하나하나 삭제해줘야 할까..?
     @Override
     public boolean deleteClassroomById(Long classroom_id) {
         try{
 
-//            Classroom searchedCalssroom = classroomRepository.findById(classroom_id).get();
-//
-//            classroomRepository.delete(searchedCalssroom);
-                classroomRepository.deleteById(classroom_id);
+            Classroom classroom = classroomRepository.findOneClassroomById(classroom_id).get();
+
+            classroom.setActivated(false);
+
+            classroomRepository.save(classroom);
+
             return true;
         }catch (Exception e){
             log.info("Failed: " + e.getMessage(),e);
@@ -152,7 +140,7 @@ public class ClassroomServiceImpl implements ClassroomService {
             /**
              * 1. Classroom 테이블을 수정하는 과정
              * */
-            Classroom searchedClassroom = classroomRepository.findOneById(classroom_id).get();
+            Classroom searchedClassroom = classroomRepository.findOneClassroomById(classroom_id).get();
 
             if(ObjectUtils.isEmpty(searchedClassroom)) return false;
 
@@ -177,7 +165,7 @@ public class ClassroomServiceImpl implements ClassroomService {
 
             // classroomId 한개만이어야함
             TeacherOfClassroom teachingTeacherOfClassroom = TeacherOfClassroom.builder()
-                    .classroom(classroomRepository.findOneById(classroom_id).get())
+                    .classroom(classroomRepository.findOneClassroomById(classroom_id).get())
                     .teacher(teacherRepository.findOneById(teaching_teacher_id).get())
                     .type(true)
                     .build();
@@ -195,7 +183,7 @@ public class ClassroomServiceImpl implements ClassroomService {
                 Long assistant_teacher_id = assistantTeacherDTO.getId();
 
                 TeacherOfClassroom assistantTeacherOfClassroom = TeacherOfClassroom.builder()
-                        .classroom(classroomRepository.findOneById(classroom_id).get())
+                        .classroom(classroomRepository.findOneClassroomById(classroom_id).get())
                         .teacher(teacherRepository.findOneById(assistant_teacher_id).get())
                         .type(false)
                         .build();
@@ -216,7 +204,7 @@ public class ClassroomServiceImpl implements ClassroomService {
         try {
             List<ClassroomDTO> classroomDTOs = new ArrayList<>();
 
-            List<Classroom> classrooms = classroomRepository.findAll();
+            List<Classroom> classrooms = classroomRepository.findAllClassroom();
 
             for(Classroom classroom : classrooms) {
                 ClassroomDTO classroomDTO = new ClassroomDTO();
@@ -266,7 +254,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     @Override
     public ClassroomDTO getClassroomById(Long id) {
         try{
-            Classroom classroom = classroomRepository.findOneById(id).get();
+            Classroom classroom = classroomRepository.findOneClassroomById(id).get();
 
             ClassroomDTO classroomDTO = new ClassroomDTO();
             classroomDTO.setId(classroom.getId());
@@ -318,7 +306,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     public boolean createStudentOfClassroom(Long classroom_id, ClassroomDTO classroomDTO) {
         try {
 
-            Classroom validateClassroom = classroomRepository.findOneById(classroom_id).get();
+            Classroom validateClassroom = classroomRepository.findOneClassroomById(classroom_id).get();
             // Classroom의 존재 여부 판단
             if (ObjectUtils.isEmpty(validateClassroom)) {
                 log.info("존재하지 않는 Classroom 입니다. ");
@@ -334,7 +322,7 @@ public class ClassroomServiceImpl implements ClassroomService {
                     if(ObjectUtils.isEmpty(student)) continue;
 
                     StudentOfClassroom studentOfClassroom = StudentOfClassroom.builder()
-                            .classroom(classroomRepository.findOneById(classroom_id).get())
+                            .classroom(classroomRepository.findOneClassroomById(classroom_id).get())
                             .student(student)
                             .build();
                     studentOfClassroomRepository.save(studentOfClassroom);
@@ -372,7 +360,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     public boolean deleteStudentOfClassroom(Long classroom_id, ClassroomDTO classroomDTO) {
         try{
 
-            Classroom validateClassroom = classroomRepository.findOneById(classroom_id).get();
+            Classroom validateClassroom = classroomRepository.findOneClassroomById(classroom_id).get();
             // Classroom의 존재 여부
             if (ObjectUtils.isEmpty(validateClassroom)) {
                 log.info("존재하지 않는 Classroom 입니다. ");

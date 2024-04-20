@@ -31,6 +31,9 @@ public class Classroom {
     @OneToMany(mappedBy = "classroom", cascade = CascadeType.REMOVE)
     private Set<TeacherOfClassroom> teacherOfClassrooms;
 
+    @Column(name="activated")
+    private boolean activated;
+
 
     @ElementCollection
     @Enumerated(EnumType.STRING)

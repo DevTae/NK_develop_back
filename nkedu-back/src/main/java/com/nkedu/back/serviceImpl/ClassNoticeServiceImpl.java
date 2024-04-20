@@ -51,7 +51,7 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
 
             ClassNotice classNotice = ClassNotice.builder()
                     .teacher(teacherRepository.findOneById(teacher_id).get())
-                    .classroom(classroomRepository.findOneById(classroom_id).get())
+                    .classroom(classroomRepository.findOneClassroomById(classroom_id).get())
                     .title(classNoticeDTO.getTitle())
                     .content(classNoticeDTO.getContent())
                     .created(current_time)
