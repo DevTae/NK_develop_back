@@ -31,6 +31,9 @@ public class StudentOfClassroom {
     @JoinColumn(name = "classroom_id", referencedColumnName = "id")
     private Classroom classroom;
 
+    @Column(name="activated")
+    private boolean activated;
+
 //    추후 개발 예정 by 시우님
 //    @Column(name="rate", nullable=false)
 //    private Long rate;

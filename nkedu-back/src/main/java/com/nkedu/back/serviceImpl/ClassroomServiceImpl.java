@@ -13,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -302,6 +300,7 @@ public class ClassroomServiceImpl implements ClassroomService {
      *
      * @author beom-i
      * */
+    @Transactional
     @Override
     public boolean createStudentOfClassroom(Long classroom_id, ClassroomDTO classroomDTO) {
         try {
@@ -317,23 +316,36 @@ public class ClassroomServiceImpl implements ClassroomService {
             if(!ObjectUtils.isEmpty(classroomDTO.getStudentIds())){
                 for(Long student_id : classroomDTO.getStudentIds()){
 
-                    // 만약 넣은 student id가 없으면 Pass (activated로 판단해야함)
-                    Student student = studentRepository.findOneById(student_id).get();
-                    if(ObjectUtils.isEmpty(student)) continue;
+                    // 만약 넣은 student id가 없으면 Pass
+                    Optional<Student> optionalStudent = studentRepository.findOneById(student_id);
+                    if (!optionalStudent.isPresent()) continue;
 
-                    StudentOfClassroom studentOfClassroom = StudentOfClassroom.builder()
-                            .classroom(classroomRepository.findOneClassroomById(classroom_id).get())
-                            .student(student)
-                            .build();
-                    studentOfClassroomRepository.save(studentOfClassroom);
+                    Student student = optionalStudent.get();
+                    Optional<StudentOfClassroom> optionalStudentOfClassroom = studentOfClassroomRepository.findOneByClassroomIdAndStudentId(classroom_id, student_id);
+
+                    // 1. 매핑 테이블이 아예 없는 경우
+                    if (!optionalStudentOfClassroom.isPresent()) {
+                        studentOfClassroomRepository.save(StudentOfClassroom.builder()
+                                .classroom(validateClassroom)
+                                .student(student)
+                                .activated(true)
+                                .build());
+                    }
+                    // 2. 매핑 테이블이 있는데 activated = false인 경우 -> activated = true로 바꿔줌
+                    else{
+                        StudentOfClassroom studentOfClassroom = optionalStudentOfClassroom.get();
+                        if (!studentOfClassroom.isActivated()) {
+                            studentOfClassroom.setActivated(true);
+                            studentOfClassroomRepository.save(studentOfClassroom);
+                        }
+                    }
+                    // 3. 매핑 테이블이 있는데 actiaved = true인 경우 -> 아무일도 없음
                 }
             }
             return true;
-
         } catch (Exception e) {
             log.info("[Failed] e : " + e.getMessage());
         }
-
         return false;
     }
 
@@ -346,7 +358,10 @@ public class ClassroomServiceImpl implements ClassroomService {
 
             for(StudentOfClassroom studentOfClassroom : studentOfClassrooms){
 
-                studentIds.add(studentOfClassroom.getStudent().getId());
+                // activated 가 활성화 되어있는 매핑 테이블만 가져옴
+                if(studentOfClassroom.isActivated()) {
+                    studentIds.add(studentOfClassroom.getStudent().getId());
+                }
             }
             return ClassroomDTO.builder()
                     .studentIds(studentIds).build();
@@ -356,13 +371,14 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
 
+    @Transactional
     @Override
     public boolean deleteStudentOfClassroom(Long classroom_id, ClassroomDTO classroomDTO) {
         try{
 
-            Classroom validateClassroom = classroomRepository.findOneClassroomById(classroom_id).get();
+            Optional<Classroom> optionalClassroom = classroomRepository.findOneClassroomById(classroom_id);
             // Classroom의 존재 여부
-            if (ObjectUtils.isEmpty(validateClassroom)) {
+            if (!optionalClassroom.isPresent()) {
                 log.info("존재하지 않는 Classroom 입니다. ");
                 return false;
             }
@@ -371,11 +387,16 @@ public class ClassroomServiceImpl implements ClassroomService {
             if(!ObjectUtils.isEmpty(classroomDTO.getStudentIds())){
                 for(Long student_id : classroomDTO.getStudentIds()){
 
-                    // 만약 넣은 student id가 없으면 Pass (activated로 판단해야함)
-                    Student student = studentRepository.findOneById(student_id).get();
-                    if(ObjectUtils.isEmpty(student)) continue;
+                    // 만약 넣은 student id가 없으면 Pass
+                    Optional<Student> optionalStudent = studentRepository.findOneById(student_id);
+                    if (!optionalStudent.isPresent()) continue;
 
-                    studentOfClassroomRepository.delete(studentOfClassroomRepository.findOneByClassroomIdAndStudentId(classroom_id,student_id).get());
+                    // 활성화 되어있든 안되어있든 일단 가져옴
+                    StudentOfClassroom studentOfClassroom = studentOfClassroomRepository.findOneByClassroomIdAndStudentId(classroom_id,student_id).get();
+
+                    // activated = false로 비활성화 처리하고 저장해줌
+                    studentOfClassroom.setActivated(false);
+                    studentOfClassroomRepository.save(studentOfClassroom);
                 }
             }
             return true;
