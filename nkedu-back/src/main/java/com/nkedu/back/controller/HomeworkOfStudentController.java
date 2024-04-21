@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mysql.cj.log.Log;
 import com.nkedu.back.api.HomeworkOfStudentService;
 import com.nkedu.back.dto.HomeworkOfStudentDTO;
 import com.nkedu.back.entity.HomeworkOfStudent.Status;
@@ -187,4 +188,46 @@ public class HomeworkOfStudentController {
 		}
 	}
 	
+	
+	/**
+	 * 스탑워치 정보 가져오기 
+	 * @param classroomId
+	 * @param homeworkId
+	 * @param homeworkOfStudentId
+	 * @return
+	 */
+	@GetMapping("/classroom/{classroom_id}/homework/{homework_id}/submit/{submit_id}/stopwatch")
+	public ResponseEntity<Double> getStopwatch(@PathVariable("classroom_id") Long classroomId,
+												@PathVariable("homework_id") Long homeworkId,
+												@PathVariable("submit_id") Long homeworkOfStudentId) {
+
+		try {
+			double result = homeworkOfStudentService.getStopwatch(homeworkOfStudentId);
+			return new ResponseEntity<>(result, HttpStatus.OK); 
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	/**
+	 * 스탑워치 정보 설정하기
+	 * @param homeworkOfStudentDTO
+	 * @param classroomId
+	 * @param homeworkId
+	 * @param homeworkOfStudentId
+	 * @return
+	 */
+	@PutMapping("/classroom/{classroom_id}/homework/{homework_id}/submit/{submit_id}/stopwatch")
+	public ResponseEntity<Boolean> setStopwatch(@RequestBody(required=true) HomeworkOfStudentDTO homeworkOfStudentDTO,
+												@PathVariable("classroom_id") Long classroomId,
+												@PathVariable("homework_id") Long homeworkId,
+												@PathVariable("submit_id") Long homeworkOfStudentId) {
+		boolean result = homeworkOfStudentService.setStopwatch(homeworkOfStudentId, homeworkOfStudentDTO);
+		
+		if(result == true) {
+			return new ResponseEntity<>(result, HttpStatus.OK);				
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 }

@@ -54,6 +54,7 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 															  .created(hos.getCreated())
 															  .updated(hos.getUpdated())
 															  .fileIds(list_of_fileIds)
+															  .stopwatch(hos.getStopwatch()) // 스탑워치 정보
 															  .build();
 			
 			return hosDTO;
@@ -212,6 +213,7 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 													 .created(now)
 													 .updated(now)
 													 .files(list_of_fileDatas)
+													 .stopwatch(0)
 													 .build();
 			
 			hos = homeworkOfStudentRepository.save(hos);
@@ -226,6 +228,7 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 									   .created(hos.getCreated())
 									   .updated(hos.getUpdated())
 									   .fileIds(homeworkOfStudentDTO.getFileIds())
+									   .stopwatch(hos.getStopwatch())
 									   .build();									   
 									   
 		} catch (Exception e) {
@@ -247,6 +250,9 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 				
 			if(!ObjectUtils.isEmpty(homeworkOfStudentDTO.getStatus()))
 				hos.setStatus(homeworkOfStudentDTO.getStatus());
+			
+			if(!ObjectUtils.isEmpty(homeworkOfStudentDTO.getStopwatch()))
+				hos.setStopwatch(homeworkOfStudentDTO.getStopwatch());
 				
 			if(!ObjectUtils.isEmpty(homeworkOfStudentDTO.getFileIds())) {
 				List<FileData> list_of_fileData = new ArrayList<FileData>();
@@ -271,6 +277,7 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 									   .created(hos.getCreated())
 									   .updated(hos.getUpdated())
 									   .fileIds(homeworkOfStudentDTO.getFileIds())
+									   .stopwatch(hos.getStopwatch())
 									   .build();		
 			
 		} catch (Exception e) {
@@ -297,5 +304,45 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 		
 		return false;
 	}
+	
+	
+	@Override
+	public double getStopwatch(Long homeworkOfStudentId) throws Exception {
+		try {
+			
+			HomeworkOfStudent hos = homeworkOfStudentRepository.findById(homeworkOfStudentId).get();
+			
+			double result = hos.getStopwatch();
+			
+			return result;
+			
+		} catch (Exception e) {
+			log.error("Failed: " + e.getMessage(),e);
+			
+			throw new Exception(e.getMessage());
+		}
+	}
+	
+	@Override
+	public boolean setStopwatch(Long homeworkOfStudentId, HomeworkOfStudentDTO homeworkOfStudentDTO) {
+		try {
+			if(ObjectUtils.isEmpty(homeworkOfStudentDTO.getStopwatch()))
+				return false;
+			
+			Double value = homeworkOfStudentDTO.getStopwatch();
+			
+			HomeworkOfStudent hos = homeworkOfStudentRepository.findById(homeworkOfStudentId).get();
+			hos.setStopwatch(value);
+			homeworkOfStudentRepository.save(hos);
+			
+			return true;
+			
+		} catch (Exception e) {
+			log.error("Failed: " + e.getMessage(),e);
+		}
+
+		return false;
+	}
+	
 
 }

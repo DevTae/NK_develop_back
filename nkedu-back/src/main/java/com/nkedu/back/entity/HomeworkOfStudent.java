@@ -74,6 +74,9 @@ public class HomeworkOfStudent {
 	@Column(name="updated")
 	private Timestamp updated;
 	
+	@Column(name="stopwatch")
+	private double stopwatch;
+	
 	// 숙제 상태 enum 제공
 	public enum Status {
 		TODO, // 아무런 진행 상태 없음
