@@ -16,7 +16,7 @@ public interface AdminNoticeRepository extends JpaRepository<AdminNotice,Long> {
 
     Optional<AdminNotice> findOneById(Long id);
 
-    @Query("SELECT not FROM AdminNotice not WHERE not.adminNoticeType IN :types")
+    @Query("SELECT not FROM AdminNotice not WHERE not.adminNoticeType IN :types AND not.admin.activated = true")
     Optional<List<AdminNotice>> findByAdminNoticeTypes(@Param("types") List<AdminNoticeType> types);
 
 
