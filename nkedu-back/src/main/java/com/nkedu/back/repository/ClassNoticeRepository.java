@@ -14,20 +14,17 @@ import java.util.Optional;
 @Repository
 public interface ClassNoticeRepository extends JpaRepository<ClassNotice,Long> {
 
-    Optional<ClassNotice> findOneById(Long id);
-
     // 특정 수업에 해당하는 공지 조회
-    @Query("SELECT not FROM ClassNotice not WHERE not.classroom.id = :classroom_id")
+    @Query("SELECT not FROM ClassNotice not WHERE not.classroom.id = :classroom_id AND not.classroom.activated = true")
     Optional<List<ClassNotice>> findAllByClassroomId(@Param("classroom_id") Long classroom_id);
 
     // 특정 수업에 해당하는 공지를 type에 따라 필터링하여 조회 (student or parent에 따라)
-    @Query("SELECT not FROM ClassNotice not WHERE not.classroom.id = :classroom_id AND not.classNoticeType IN :types")
+    @Query("SELECT not FROM ClassNotice not WHERE not.classroom.id = :classroom_id AND not.classNoticeType IN :types AND not.classroom.activated = true")
     Optional<List<ClassNotice>> findByClassroomIdAndClassNoticeTypes(@Param("classroom_id") Long classroom_id, @Param("types")  List<ClassNoticeType> types);
 
-    @Query("SELECT not FROM ClassNotice not WHERE not.classroom.id = :classroom_id AND not.id = :classNotice_id")
+    @Query("SELECT not FROM ClassNotice not WHERE not.classroom.id = :classroom_id AND not.id = :classNotice_id AND not.classroom.activated = true")
     Optional<ClassNotice> findOneByClassroomIdAndClassNoticeId(@Param("classroom_id") Long classroom_id, @Param("classNotice_id") Long classNotice_id);
 
-    //@Modifying
     @Query("DELETE FROM ClassNotice not WHERE not.classroom.id = :classroom_id AND not.id = :classNotice_id")
     void deleteByClassroomIdAndClassNoticeId(@Param("classroom_id") Long classroom_id, @Param("classNotice_id") Long classNotice_id);
 }
