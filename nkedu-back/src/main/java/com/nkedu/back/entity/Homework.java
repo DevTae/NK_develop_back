@@ -67,7 +67,4 @@ public class Homework {
 	@OneToMany(mappedBy="homework", cascade=CascadeType.ALL, orphanRemoval=true)
 	private List<HomeworkOfStudent> homeworkOfStudents;
 	
-	@OneToMany
-	private List<FileData> files;
-	
 }
