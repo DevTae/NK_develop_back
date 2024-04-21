@@ -77,7 +77,9 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public boolean deleteByUsername(String username) {
         try {
-            teacherRepository.delete(teacherRepository.findOneByUsername(username).get());
+        	Teacher teacher = teacherRepository.findOneByUsername(username).get();
+        	teacher.setActivated(false);;
+            teacherRepository.save(teacher);
 
             return true;
         } catch (Exception e) {

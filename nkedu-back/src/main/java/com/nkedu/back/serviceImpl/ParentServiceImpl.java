@@ -105,7 +105,9 @@ public class ParentServiceImpl implements ParentService {
 	@Override
 	public boolean deleteByUsername(String username) {
 		try {
-			parentRepository.delete(parentRepository.findOneByUsername(username).get());
+			Parent parent = parentRepository.findOneByUsername(username).get();
+			parent.setActivated(false);
+			parentRepository.save(parent);
 			
 			return true;
 		} catch (Exception e) {
