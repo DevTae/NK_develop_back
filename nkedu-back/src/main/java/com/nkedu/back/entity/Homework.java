@@ -1,10 +1,12 @@
 package com.nkedu.back.entity;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -59,5 +62,12 @@ public class Homework {
 	
 	@Column(name="deadline")
 	private Timestamp deadline;
+	
+	
+	@OneToMany(mappedBy="homework", cascade=CascadeType.ALL, orphanRemoval=true)
+	private List<HomeworkOfStudent> homeworkOfStudents;
+	
+	@OneToMany
+	private List<FileData> files;
 	
 }

@@ -1,8 +1,11 @@
 package com.nkedu.back.entity;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,6 +13,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +49,11 @@ public class FileData {
 	@Column(name="path")
 	private String path;
 
+	
+	@OneToMany(mappedBy="files", cascade=CascadeType.ALL, orphanRemoval=true)
+	private List<HomeworkOfStudent> homeworkOfStudents;
+	
+	
 	/*
 	 * 파일 종류에 따라 enum 으로 정의
 	 * 추후 필요에 따라 추가할 수 있음. (이미 추가된 속성은 변경하지 않아야 함. 중요!)
