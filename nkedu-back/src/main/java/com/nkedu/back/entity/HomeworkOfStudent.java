@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -56,7 +57,7 @@ public class HomeworkOfStudent {
 	private Status status;
 	
 	// 한 숙제에 여러 파일이 들어갈 수 있도록 JoinTable 설정
-	@ManyToMany
+	@ManyToMany(cascade=CascadeType.ALL) // 파일 정보가 삭제될 때 반영되도록 cascade 진행 (일부만)
 	@JoinTable(
 			name="homework_of_student_of_file",
 			joinColumns= {@JoinColumn(name="homework_of_student_id", referencedColumnName="id")},
