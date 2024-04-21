@@ -19,4 +19,7 @@ public interface ClassroomRepository extends JpaRepository<Classroom, Long> {
     @Query("SELECT c FROM Classroom c WHERE c.id = :classroom_id AND c.activated = true")
     Optional<Classroom> findOneClassroomById(@Param("classroom_id") Long classroom_id);
 
+    @Override
+    @Query("SELECT c FROM Classroom c WHERE c.id = :classroom_id AND c.activated = true")
+    Optional<Classroom> findById(@Param("classroom_id") Long id);
 }
