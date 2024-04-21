@@ -1,5 +1,6 @@
 package com.nkedu.back.repository;
 
+import com.nkedu.back.entity.Parent;
 import com.nkedu.back.entity.StudentOfClassroom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

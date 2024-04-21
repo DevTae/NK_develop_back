@@ -37,6 +37,7 @@ public class ClassroomServiceImpl implements ClassroomService {
      */
 
     @Override
+    @Transactional
     public boolean createClassroom(ClassroomDTO classroomDTO) {
         try{
             if (!ObjectUtils.isEmpty(classroomRepository.findOneClassroomById(classroomDTO.getId()))) {

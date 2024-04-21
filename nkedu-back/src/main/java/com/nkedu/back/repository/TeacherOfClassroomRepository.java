@@ -22,10 +22,8 @@ public interface TeacherOfClassroomRepository extends JpaRepository<TeacherOfCla
     @Query("SELECT toc FROM TeacherOfClassroom toc WHERE toc.classroom.id = :classroom_id AND toc.classroom.activated=true AND toc.teacher.activated = true")
     List<TeacherOfClassroom> findAllByClassroomId(@Param("classroom_id") Long classroom_id);
 
-
     // 수업과 선생님의 ID로 찾기
     @Query("SELECT toc FROM TeacherOfClassroom toc WHERE toc.classroom.id = :classroom_id AND toc.teacher.id = :teacher_id AND toc.classroom.activated=true AND toc.teacher.activated = true")
     Optional<TeacherOfClassroom> findOneByClassroomIdAndTeacherId(@Param("classroom_id") Long classroom_id, @Param("teacher_id") Long teacher_id);
-
 
 }

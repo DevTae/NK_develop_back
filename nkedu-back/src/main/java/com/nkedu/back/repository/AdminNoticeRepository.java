@@ -1,5 +1,6 @@
 package com.nkedu.back.repository;
 
+import com.nkedu.back.entity.Admin;
 import com.nkedu.back.entity.AdminNotice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,7 +19,8 @@ public interface AdminNoticeRepository extends JpaRepository<AdminNotice,Long> {
 
     @Query("SELECT not FROM AdminNotice not WHERE not.adminNoticeType IN :types AND not.admin.activated = true")
     Optional<List<AdminNotice>> findByAdminNoticeTypes(@Param("types") List<AdminNoticeType> types);
-
-
-
+    
+    @Override
+	@Query("SELECT not FROM AdminNotice not WHERE not.admin.activated = true")
+    List<AdminNotice> findAll();
 }

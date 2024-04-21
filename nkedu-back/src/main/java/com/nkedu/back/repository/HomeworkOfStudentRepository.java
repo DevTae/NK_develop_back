@@ -21,4 +21,8 @@ public interface HomeworkOfStudentRepository extends JpaRepository<HomeworkOfStu
 	
 	@Query("SELECT hos FROM HomeworkOfStudent hos WHERE hos.homework.id = :homework_id AND hos.student.activated = true")
 	List<HomeworkOfStudent> findAllByHomeworkId(@Param("homework_id") Long homeworkId);
+
+	@Override
+	@Query("SELECT hos FROM HomeworkOfStudent hos WHERE hos.student.activated = true")
+	List<HomeworkOfStudent> findAll();
 }
