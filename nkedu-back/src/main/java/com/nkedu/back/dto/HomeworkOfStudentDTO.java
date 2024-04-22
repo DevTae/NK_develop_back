@@ -18,7 +18,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(value=JsonInclude.Include.NON_NULL)
 public class HomeworkOfStudentDTO {
 	
 	private Long id;
@@ -40,6 +40,8 @@ public class HomeworkOfStudentDTO {
 	private Timestamp created;
 	
 	private Timestamp updated;
+	
+	private Double stopwatch;
 	
 	private List<FileDataDTO> files;
 	

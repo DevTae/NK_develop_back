@@ -1,5 +1,6 @@
 package com.nkedu.back.repository;
 
+import com.nkedu.back.entity.Parent;
 import com.nkedu.back.entity.StudentOfClassroom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,15 +14,15 @@ import java.util.Optional;
 public interface StudentOfClassroomRepository extends JpaRepository<StudentOfClassroom, Long> {
 
     // 수업의 ID로 찾기
-    @Query("SELECT soc FROM StudentOfClassroom soc WHERE soc.classroom.id = :classroom_id AND soc.activated = true")
+    @Query("SELECT soc FROM StudentOfClassroom soc WHERE soc.classroom.id = :classroom_id AND soc.activated = true AND soc.student.activated = true")
     List<StudentOfClassroom> findAllByClassroomId(@Param("classroom_id") Long classroom_id);
 
     // 수업과 학생의 ID로 활성화되어있는 매핑테이블 찾기
-    @Query("SELECT soc FROM StudentOfClassroom soc WHERE soc.classroom.id = :classroom_id AND soc.student.id = :student_id AND soc.activated = true")
+    @Query("SELECT soc FROM StudentOfClassroom soc WHERE soc.classroom.id = :classroom_id AND soc.student.id = :student_id AND soc.activated = true AND soc.student.activated = true")
     Optional<StudentOfClassroom> findActivatedOneByClassroomIdAndStudentId(@Param("classroom_id") Long classroom_id, @Param("student_id") Long student_id);
 
     // 수업과 학생의 ID로 활성화 / 비활성화 매핑테이블 둘다 찾기찾기
-    @Query("SELECT soc FROM StudentOfClassroom soc WHERE soc.classroom.id = :classroom_id AND soc.student.id = :student_id")
+    @Query("SELECT soc FROM StudentOfClassroom soc WHERE soc.classroom.id = :classroom_id AND soc.student.id = :student_id AND soc.student.activated = true")
     Optional<StudentOfClassroom> findOneByClassroomIdAndStudentId(@Param("classroom_id") Long classroom_id, @Param("student_id") Long student_id);
 
 }

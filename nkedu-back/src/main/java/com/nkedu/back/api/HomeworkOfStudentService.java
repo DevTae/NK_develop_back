@@ -54,4 +54,18 @@ public interface HomeworkOfStudentService {
 	 */
 	public boolean deleteHomeworkOfStudent(Long homeworkOfStudentId);
 	
+	/**
+	 * 숙제 스탑워치 가져오기
+	 * @param homeworkOfStudentId
+	 * @return
+	 */
+	public double getStopwatch(Long homeworkOfStudentId) throws Exception;
+	
+	/**
+	 * 숙제 스탑워치 수정하기
+	 * @param homeworkOfStudentId
+	 * @param homeworkOfStudenDTO
+	 * @return
+	 */
+	public boolean setStopwatch(Long homeworkOfStudentId, HomeworkOfStudentDTO homeworkOfStudenDTO);
 }

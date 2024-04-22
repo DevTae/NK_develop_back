@@ -87,7 +87,9 @@ public class StudentServiceImpl implements StudentService  {
 	// 학생 계정 삭제
 	public boolean deleteByUsername(String username) {
 		try{
-			studentRepository.delete(studentRepository.findOneByUsername(username).get());
+			Student student = studentRepository.findOneByUsername(username).get();
+			student.setActivated(false);
+			studentRepository.save(student);
 
 			return true;
 		} catch (Exception e){

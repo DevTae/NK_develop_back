@@ -37,7 +37,12 @@ public class ClassroomServiceImpl implements ClassroomService {
      */
 
     @Override
+    @Transactional
     public boolean createClassroom(ClassroomDTO classroomDTO) {
+    	
+    	Classroom classroom = null;
+    	boolean isSaved = false;
+    	
         try{
             if (!ObjectUtils.isEmpty(classroomRepository.findOneClassroomById(classroomDTO.getId()))) {
                 throw new Exception("이미 등록된 수업입니다.");
@@ -46,7 +51,7 @@ public class ClassroomServiceImpl implements ClassroomService {
             /**
              * 1. 요청받은 ClassroomDTO를 통해 새롭게 만든다. (Id는 새롭게 생성이므로 추가하지 않아도 내부적으로 생성됨)
              * */
-            Classroom classroom = (Classroom) Classroom.builder()
+            classroom = (Classroom) Classroom.builder()
                     .classname(classroomDTO.getClassname())
                     .days(classroomDTO.getDays())
                     .activated(true)
@@ -78,6 +83,7 @@ public class ClassroomServiceImpl implements ClassroomService {
                     .build();
 
             teacherOfClassroomRepository.save(teachingTeacherOfClassroom);
+            isSaved = true;
 
             /**
              * 3. 요청받은 ClassroomDTO 내부에 AssistantTeacher 연결 (AssistantTeacher의 type =  false)
@@ -100,6 +106,9 @@ public class ClassroomServiceImpl implements ClassroomService {
 
             return true;
         } catch(Exception e) {
+        	if(isSaved && classroom != null)
+        		classroomRepository.delete(classroom);
+        	
             log.error("Failed: " + e.getMessage(),e);
         }
         return false;

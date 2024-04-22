@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -72,6 +73,9 @@ public class HomeworkOfStudent {
 	
 	@Column(name="updated")
 	private Timestamp updated;
+	
+	@Column(name="stopwatch")
+	private double stopwatch;
 	
 	// 숙제 상태 enum 제공
 	public enum Status {

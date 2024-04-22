@@ -50,6 +50,10 @@ public class ParentServiceImpl implements ParentService {
 	@Transactional
 	@Override
 	public boolean createParent(ParentDTO parentDTO) {
+		
+		Parent parent = null;
+		boolean isSaved = false;
+		
 		try{
 	        if (!ObjectUtils.isEmpty(parentRepository.findOneByUsername(parentDTO.getUsername()))) {
 	            throw new RuntimeException("이미 가입되어 있는 유저입니다.");
@@ -69,7 +73,7 @@ public class ParentServiceImpl implements ParentService {
 	        		.build();
 	        authorities.add(authority_parent);
 
-	        Parent parent = (Parent) Parent.builder()
+	        parent = (Parent) Parent.builder()
 	                .username(parentDTO.getUsername())
 	                .password(passwordEncoder.encode(parentDTO.getPassword()))
 	                .nickname(parentDTO.getNickname())
@@ -81,6 +85,7 @@ public class ParentServiceImpl implements ParentService {
 	                .build();
 	
 	        parent = parentRepository.save(parent);
+	        isSaved = true; // 중도 저장 여부 확인
 	        
 	        // 학생에 대한 정보가 있을 시, 연동 진행
 	        Relationship relationship = null;
@@ -97,6 +102,11 @@ public class ParentServiceImpl implements ParentService {
 	        return true;
 	        
         } catch(Exception e) {
+        	
+        	// 자식이 없어서 등록 완료에 실패한 경우, 등록된 부모 삭제 진행
+        	if(isSaved && parent != null)
+        		parentRepository.delete(parent);
+        	
         	log.error("Failed: " + e.getMessage(),e);
         }
         return false;
@@ -105,7 +115,9 @@ public class ParentServiceImpl implements ParentService {
 	@Override
 	public boolean deleteByUsername(String username) {
 		try {
-			parentRepository.delete(parentRepository.findOneByUsername(username).get());
+			Parent parent = parentRepository.findOneByUsername(username).get();
+			parent.setActivated(false);
+			parentRepository.save(parent);
 			
 			return true;
 		} catch (Exception e) {
@@ -287,7 +299,6 @@ public class ParentServiceImpl implements ParentService {
 	// 서비스 내부에서 사용하는 함수, Parent, Student, Relationship 정보를 활용하여 부모-자식 간의 관계를 형성함.
 	@Transactional
 	public void createParentOfStudent(Parent parent, Student student, Relationship relationship) {
-		
 		try {
 			String parentname = parent.getUsername();
 			String studentname = student.getUsername();
