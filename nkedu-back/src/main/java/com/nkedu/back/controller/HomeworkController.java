@@ -1,12 +1,16 @@
 package com.nkedu.back.controller;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nkedu.back.api.HomeworkService;
 import com.nkedu.back.dto.HomeworkDTO;
+import com.nkedu.back.dto.HomeworkOfStudentDTO;
 import com.nkedu.back.dto.PageDTO;
-import com.nkedu.back.dto.StudentDTO;
+import com.nkedu.back.entity.HomeworkOfStudent.Status;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,7 +44,7 @@ public class HomeworkController {
 	private final HomeworkService homeworkService;
 
 	/**
-	 * 해당 class 에 대한 모든 homework 리스트 조회
+	 * 해당 classroom 에 대한 모든 homework 리스트 조회
 	 * @param classId
 	 */
 	@GetMapping("/classroom/{class_id}/homework/list")
@@ -63,15 +68,79 @@ public class HomeworkController {
 	 * @return
 	 */
 	@GetMapping("/classroom/{class_id}/homework")
-	public ResponseEntity<PageDTO<HomeworkDTO>> getHomeworks(@PathVariable("class_id") Long classId, @RequestParam(name="page", defaultValue="0") Integer page) {
+	public ResponseEntity<PageDTO<HomeworkDTO>> getHomeworks(@PathVariable("class_id") Long classId, @RequestParam(name="page", defaultValue="0") Integer page, @RequestParam(value="filter", required=false) String filterOption) {
+		
+		// Get Parameter 에 따른 리스트 조회 기능 제공
+		Status filterStatus = null;
+				
+		if(!ObjectUtils.isEmpty(filterOption)) {
+			switch(Status.valueOf(filterOption)) {
+			case TODO:
+				filterStatus = Status.TODO;
+				break;
+			case COMPLETE:
+				filterStatus = Status.COMPLETE;
+				break;
+			case REJECT:
+				filterStatus = Status.REJECT;
+				break;
+			case SUBMIT:
+				filterStatus = Status.SUBMIT;
+				break;
+			default:
+			}
+		}
+		
 		// 유저에 따라 정보를 가져오도록 함.
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = authentication.getName();
 				
-		PageDTO<HomeworkDTO> pageDTO = homeworkService.getHomeworks(classId, username, page); 
+		PageDTO<HomeworkDTO> pageDTO = homeworkService.getHomeworks(classId, username, page, filterStatus); 
 				
 		if (pageDTO != null) {
 			return new ResponseEntity<>(pageDTO, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	/**
+	 * 학생이 속한 모든 수업의 숙제를 모두 가져오는 숙제 리스트 페이지 별 조회 API
+	 * @param page
+	 * @param filterOption
+	 * @return
+	 */
+	@GetMapping("/homework")
+	public ResponseEntity<PageDTO<HomeworkDTO>> getHomeworks(@RequestParam(name="page", defaultValue="0") Integer page, @RequestParam(value="filter", required=false) String filterOption) {
+		// Get Parameter 에 따른 리스트 조회 기능 제공
+		Status filterStatus = null;
+				
+		if(!ObjectUtils.isEmpty(filterOption)) {
+			switch(Status.valueOf(filterOption)) {
+			case TODO:
+				filterStatus = Status.TODO;
+				break;
+			case COMPLETE:
+				filterStatus = Status.COMPLETE;
+				break;
+			case REJECT:
+				filterStatus = Status.REJECT;
+				break;
+			case SUBMIT:
+				filterStatus = Status.SUBMIT;
+				break;
+			default:
+			}
+		}
+		
+		// 본인의 숙제만을 확인할 수 있도록 함.
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+		
+		PageDTO<HomeworkDTO> homeworkDTOs = homeworkService.getHomeworks(username, page, filterStatus);
+		
+		if (homeworkDTOs != null) {
+			return new ResponseEntity<>(homeworkDTOs, HttpStatus.OK); 
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}

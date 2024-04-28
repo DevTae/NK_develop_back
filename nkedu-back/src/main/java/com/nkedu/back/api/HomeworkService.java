@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.nkedu.back.dto.HomeworkDTO;
 import com.nkedu.back.dto.PageDTO;
+import com.nkedu.back.entity.HomeworkOfStudent.Status;
 
 /**
  * 숙제 API 인터페이스 코드입니다.
@@ -34,7 +35,16 @@ public interface HomeworkService {
 	 * @param username
 	 * @return
 	 */
-	public PageDTO<HomeworkDTO> getHomeworks(Long classId, String username, Integer page);
+	public PageDTO<HomeworkDTO> getHomeworks(Long classId, String username, Integer page, Status status);
+	
+	/**
+	 * 학생의 모든 숙제에 대한 리스트 페이지 별 반환 (학생 숙제에 대한 Status 포함)
+	 * @param username
+	 * @param page
+	 * @param status
+	 * @return
+	 */
+	public PageDTO<HomeworkDTO> getHomeworks(String username, Integer page, Status status);
 	
 	/**
 	 * Homework 세부 조회 
