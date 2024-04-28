@@ -188,7 +188,7 @@ public class StudentServiceImpl implements StudentService  {
 
 			// 정렬 기준
 			List<Sort.Order> sorts = new ArrayList<>();
-			sorts.add(Sort.Order.desc("created"));
+			sorts.add(Sort.Order.asc("nickname"));
 			Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
 
 			// Page 조회

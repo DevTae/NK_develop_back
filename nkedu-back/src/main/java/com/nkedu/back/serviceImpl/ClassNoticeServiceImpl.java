@@ -178,11 +178,11 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
 
 			// 정렬 기준
 			List<Sort.Order> sorts = new ArrayList<>();
-			sorts.add(Sort.Order.asc("created"));
+			sorts.add(Sort.Order.desc("created"));
 			Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
 
 			// Page 조회
-            Page<ClassNotice> pageOfClassroom = null;
+            Page<ClassNotice> pageOfClassNotice = null;
 
             // 토큰에서 ROLE을 가져와서 ROLE에 따라 공지 타입 필터링 조회
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -192,22 +192,23 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
                 String authorityName = authority.getAuthority();
 
                 if (authorityName.equals("ROLE_ADMIN") || authorityName.equals("ROLE_TEACHER")) {
-                	pageOfClassroom = classNoticeRepository.findAllByClassroomId(id, pageable);
+                	pageOfClassNotice = classNoticeRepository.findAllByClassroomId(id, pageable);
                 }
                 else if (authorityName.equals("ROLE_STUDENT")) {
                     List<ClassNoticeType> types = Arrays.asList(ClassNoticeType.STUDENT, ClassNoticeType.ENTIRE);
-                    pageOfClassroom = classNoticeRepository.findByClassroomIdAndClassNoticeTypes(id, types, pageable);
+                    pageOfClassNotice = classNoticeRepository.findByClassroomIdAndClassNoticeTypes(id, types, pageable);
                 }
                 else if (authorityName.equals("ROLE_PARENT")) {
                     List<ClassNoticeType> types = Arrays.asList(ClassNoticeType.PARENT, ClassNoticeType.ENTIRE);
-                    pageOfClassroom = classNoticeRepository.findByClassroomIdAndClassNoticeTypes(id, types, pageable);
+                    pageOfClassNotice = classNoticeRepository.findByClassroomIdAndClassNoticeTypes(id, types, pageable);
                 }
             }
             
-            pageDTO.setCurrentPage(pageOfClassroom.getNumber());
-			pageDTO.setTotalPage(pageOfClassroom.getTotalPages());
+            // 페이지 정보 추가
+            pageDTO.setCurrentPage(pageOfClassNotice.getNumber());
+			pageDTO.setTotalPage(pageOfClassNotice.getTotalPages());
 
-            for(ClassNotice classNotice : pageOfClassroom.getContent()) {
+            for(ClassNotice classNotice : pageOfClassNotice.getContent()) {
                 Teacher teacher = teacherRepository.findOneById(classNotice.getTeacher().getId()).get();
 
                 if(ObjectUtils.isEmpty(teacher)) {
@@ -227,6 +228,7 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
                 classNoticeDTOs.add(classNoticeDTO);
             }
             
+            // 페이지 검색 결과 추가
             pageDTO.setResults(classNoticeDTOs);
             
             return pageDTO;
