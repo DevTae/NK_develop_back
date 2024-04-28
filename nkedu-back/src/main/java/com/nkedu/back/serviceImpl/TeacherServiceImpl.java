@@ -7,14 +7,24 @@ import java.util.List;
 import java.util.Set;
 
 import com.nkedu.back.dto.ClassroomDTO;
+import com.nkedu.back.dto.PageDTO;
+import com.nkedu.back.dto.ParentDTO;
+import com.nkedu.back.dto.StudentDTO;
 import com.nkedu.back.dto.TeacherOfClassroomDTO;
 import com.nkedu.back.dto.TeacherWithClassroomDTO;
 import com.nkedu.back.entity.Authority;
-
+import com.nkedu.back.entity.Parent;
+import com.nkedu.back.entity.ParentOfStudent;
+import com.nkedu.back.entity.Student;
 import com.nkedu.back.entity.TeacherOfClassroom;
 import com.nkedu.back.repository.TeacherOfClassroomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -141,6 +151,44 @@ public class TeacherServiceImpl implements TeacherService {
         }
 
         return null;
+    }
+    
+    @Override
+    public PageDTO<TeacherDTO> getTeachers(Integer page) {
+    	try {
+			PageDTO<TeacherDTO> pageDTO = new PageDTO<>();
+			List<TeacherDTO> teacherDTOs = new ArrayList<>();
+
+			// 정렬 기준
+			List<Sort.Order> sorts = new ArrayList<>();
+			sorts.add(Sort.Order.desc("created"));
+			Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+
+			// Page 조회
+			Page<Teacher> pageOfTeacher = teacherRepository.findAll(pageable);
+			
+			pageDTO.setCurrentPage(pageOfTeacher.getNumber());
+			pageDTO.setTotalPage(pageOfTeacher.getTotalPages());
+			
+			for(Teacher teacher : pageOfTeacher.getContent()) {
+				TeacherDTO teacherDTO = new TeacherDTO();
+                teacherDTO.setId(teacher.getId());
+                teacherDTO.setUsername(teacher.getUsername());
+                teacherDTO.setNickname(teacher.getNickname());
+                teacherDTO.setPhoneNumber(teacher.getPhoneNumber());
+                teacherDTO.setBirth(teacher.getBirth());
+
+                teacherDTOs.add(teacherDTO);
+			}
+			
+			pageDTO.setResults(teacherDTOs);
+			
+			return pageDTO;
+			
+		} catch(Exception e) {
+			log.info("[Failed] e : " + e.getMessage());
+		}
+		return null;
     }
 
     @Override
