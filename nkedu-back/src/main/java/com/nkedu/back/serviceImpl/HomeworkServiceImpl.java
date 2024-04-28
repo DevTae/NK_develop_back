@@ -5,16 +5,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import com.nkedu.back.api.HomeworkService;
 import com.nkedu.back.dto.ClassroomDTO;
 import com.nkedu.back.dto.HomeworkDTO;
+import com.nkedu.back.dto.PageDTO;
+import com.nkedu.back.dto.ParentDTO;
 import com.nkedu.back.dto.TeacherDTO;
 import com.nkedu.back.entity.Classroom;
 import com.nkedu.back.entity.Homework;
 import com.nkedu.back.entity.HomeworkOfStudent;
+import com.nkedu.back.entity.Parent;
 import com.nkedu.back.entity.HomeworkOfStudent.Status;
 import com.nkedu.back.entity.Teacher;
 import com.nkedu.back.repository.ClassroomRepository;
@@ -35,11 +42,12 @@ public class HomeworkServiceImpl implements HomeworkService {
 	private final ClassroomRepository classroomRepository;
 	private final TeacherRepository teacherRepository;
 	
+	// 현재 사용X
 	@Override
 	public List<HomeworkDTO> getHomeworks(Long classId) {
 		
 		try {
-			List<Homework> homeworks = homeworkRepository.findAll();
+			List<Homework> homeworks = homeworkRepository.findAllByClassroomId(classId);
 			List<HomeworkDTO> homeworkDTOs = new ArrayList<HomeworkDTO>();
 			
 			for(Homework homework : homeworks) {
@@ -68,7 +76,7 @@ public class HomeworkServiceImpl implements HomeworkService {
 	public List<HomeworkDTO> getHomeworks(Long classId, String username) {
 		
 		try {
-			List<Homework> homeworks = homeworkRepository.findAll();
+			List<Homework> homeworks = homeworkRepository.findAllByClassroomId(classId);
 			List<HomeworkDTO> homeworkDTOs = new ArrayList<HomeworkDTO>();
 			
 			for(Homework homework : homeworks) {
@@ -100,6 +108,63 @@ public class HomeworkServiceImpl implements HomeworkService {
 			}
 			
 			return homeworkDTOs;
+		} catch (Exception e) {
+			log.info("Failed e : " + e.getMessage());
+		}
+		return null;
+	}
+	
+	@Override
+	public PageDTO<HomeworkDTO> getHomeworks(Long classId, String username, Integer page) {
+		
+		try {
+			
+			PageDTO<HomeworkDTO> pageDTO = new PageDTO<>();
+			List<HomeworkDTO> homeworkDTOs = new ArrayList<>();
+
+			// 정렬 기준
+			List<Sort.Order> sorts = new ArrayList<>();
+			sorts.add(Sort.Order.desc("created"));
+			Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+
+			// Page 조회
+			Page<Homework> pageOfHomework = homeworkRepository.findAllByClassroomId(classId, pageable);
+			
+			pageDTO.setCurrentPage(pageOfHomework.getNumber());
+			pageDTO.setTotalPage(pageOfHomework.getTotalPages());
+			
+			for(Homework homework : pageOfHomework.getContent()) {
+				
+				// 학생에 대한 숙제 status 불러오기
+				List<HomeworkOfStudent> homeworkOfStudents = homeworkOfStudentRepository.findAllByHomeworkIdAndUsername(homework.getId(), username);
+				
+				Status status;
+				
+				if (homeworkOfStudents.size() == 0) {
+					status = Status.TODO;
+				} else {
+					status = homeworkOfStudents.get(0).getStatus();
+				}
+				
+				homeworkDTOs.add(HomeworkDTO.builder()
+										    .id(homework.getId())
+										    .title(homework.getTitle())
+										    .teacherDTO(TeacherDTO.builder()
+										 			   .id(homework.getTeacher().getId())
+										 			   .nickname(homework.getTeacher().getNickname())
+										 		       .build())
+										    //.teacherId(homework.getTeacher().getId())
+										    .created(homework.getCreated())
+										    .updated(homework.getUpdated())
+										    .deadline(homework.getDeadline())
+										    .status(status)
+										    .build());
+			}
+			
+			pageDTO.setResults(homeworkDTOs);
+			
+			return pageDTO;
+			
 		} catch (Exception e) {
 			log.info("Failed e : " + e.getMessage());
 		}
