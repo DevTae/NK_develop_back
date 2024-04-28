@@ -2,6 +2,8 @@ package com.nkedu.back.repository;
 
 
 import com.nkedu.back.entity.Admin;
+
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,4 +25,7 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
 	@Override
 	@Query("SELECT a FROM Admin a WHERE a.activated = true")
     List<Admin> findAll();
+	
+	@Query("SELECT a FROM Admin a WHERE a.activated = true")
+    Page<Admin> findAllPage();
 }

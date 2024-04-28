@@ -2,6 +2,8 @@ package com.nkedu.back.repository;
 
 import com.nkedu.back.entity.Admin;
 import com.nkedu.back.entity.AdminNotice;
+
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,4 +25,7 @@ public interface AdminNoticeRepository extends JpaRepository<AdminNotice,Long> {
     @Override
 	@Query("SELECT not FROM AdminNotice not WHERE not.admin.activated = true")
     List<AdminNotice> findAll();
+    
+    @Query("SELECT not FROM AdminNotice not WHERE not.admin.activated = true")
+    Page<AdminNotice> findAllPage();
 }

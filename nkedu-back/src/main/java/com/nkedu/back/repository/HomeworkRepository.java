@@ -2,6 +2,7 @@ package com.nkedu.back.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -15,4 +16,7 @@ public interface HomeworkRepository extends JpaRepository<Homework, Long> {
 	@Override
 	@Query("SELECT hw FROM Homework hw WHERE hw.classroom.activated = true")
 	List<Homework> findAll();
+	
+	@Query("SELECT hw FROM Homework hw WHERE hw.classroom.activated = true")
+	Page<Homework> findAllPage();
 }
