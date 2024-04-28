@@ -58,6 +58,10 @@ public class HomeworkServiceImpl implements HomeworkService {
 										 			   .id(homework.getTeacher().getId())
 										 			   .nickname(homework.getTeacher().getNickname())
 										 		       .build())
+										    .classroomDTO(ClassroomDTO.builder()
+									    			 .id(homework.getClassroom().getId())
+									    			 .classname(homework.getClassroom().getClassname())
+									    			 .build())
 										    //.teacherId(homework.getTeacher().getId())
 										    .created(homework.getCreated())
 										    .updated(homework.getUpdated())
@@ -99,6 +103,10 @@ public class HomeworkServiceImpl implements HomeworkService {
 										 			   .id(homework.getTeacher().getId())
 										 			   .nickname(homework.getTeacher().getNickname())
 										 		       .build())
+										    .classroomDTO(ClassroomDTO.builder()
+										    			 .id(homework.getClassroom().getId())
+										    			 .classname(homework.getClassroom().getClassname())
+										    			 .build())
 										    //.teacherId(homework.getTeacher().getId())
 										    .created(homework.getCreated())
 										    .updated(homework.getUpdated())
@@ -131,9 +139,9 @@ public class HomeworkServiceImpl implements HomeworkService {
 			Page<Homework> pageOfHomework = null;
 			
 			if(status != null) {
-				pageOfHomework = homeworkRepository.findAllByClassroomIdAndUsername(classId, username, pageable);
-			} else {
 				pageOfHomework = homeworkRepository.findAllByClassroomIdAndUsernameAndStatus(classId, username, status, pageable);
+			} else {
+				pageOfHomework = homeworkRepository.findAllByClassroomIdAndUsername(classId, username, pageable);
 			}
 			
 			// Page 전체 정보 저장
@@ -160,6 +168,10 @@ public class HomeworkServiceImpl implements HomeworkService {
 										 			   .id(homework.getTeacher().getId())
 										 			   .nickname(homework.getTeacher().getNickname())
 										 		       .build())
+										    .classroomDTO(ClassroomDTO.builder()
+									    			 .id(homework.getClassroom().getId())
+									    			 .classname(homework.getClassroom().getClassname())
+									    			 .build())
 										    //.teacherId(homework.getTeacher().getId())
 										    .created(homework.getCreated())
 										    .updated(homework.getUpdated())
@@ -195,9 +207,9 @@ public class HomeworkServiceImpl implements HomeworkService {
 			Page<Homework> pageOfHomework = null;
 			
 			if(status != null) {
-				pageOfHomework = homeworkRepository.findAllByUsername(username, pageable);
-			} else {
 				pageOfHomework = homeworkRepository.findAllByUsernameAndStatus(username, status, pageable);
+			} else {
+				pageOfHomework = homeworkRepository.findAllByUsername(username, pageable);
 			}
 			
 			// Page 전체 정보 저장
@@ -224,6 +236,10 @@ public class HomeworkServiceImpl implements HomeworkService {
 										 			   .id(homework.getTeacher().getId())
 										 			   .nickname(homework.getTeacher().getNickname())
 										 		       .build())
+										    .classroomDTO(ClassroomDTO.builder()
+									    			 .id(homework.getClassroom().getId())
+									    			 .classname(homework.getClassroom().getClassname())
+									    			 .build())
 										    //.teacherId(homework.getTeacher().getId())
 										    .created(homework.getCreated())
 										    .updated(homework.getUpdated())
@@ -256,6 +272,10 @@ public class HomeworkServiceImpl implements HomeworkService {
 														 			   .id(homework.getTeacher().getId())
 														 			   .nickname(homework.getTeacher().getNickname())
 														 		       .build())
+												 .classroomDTO(ClassroomDTO.builder()
+										    			 .id(homework.getClassroom().getId())
+										    			 .classname(homework.getClassroom().getClassname())
+										    			 .build())
 												 //.teacherId(homework.getTeacher().getId())
 												 .created(homework.getCreated())
 												 .updated(homework.getUpdated())
@@ -294,6 +314,10 @@ public class HomeworkServiceImpl implements HomeworkService {
 														 			   .id(homework.getTeacher().getId())
 														 			   .nickname(homework.getTeacher().getNickname())
 														 		       .build())
+												 .classroomDTO(ClassroomDTO.builder()
+										    			 .id(homework.getClassroom().getId())
+										    			 .classname(homework.getClassroom().getClassname())
+										    			 .build())
 												 //.teacherId(homework.getTeacher().getId())
 												 .created(homework.getCreated())
 												 .updated(homework.getUpdated())
