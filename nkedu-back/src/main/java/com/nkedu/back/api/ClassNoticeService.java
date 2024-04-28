@@ -1,6 +1,7 @@
 package com.nkedu.back.api;
 
 import com.nkedu.back.dto.ClassNoticeDTO;
+import com.nkedu.back.dto.PageDTO;
 
 import java.util.List;
 
@@ -36,6 +37,14 @@ public interface ClassNoticeService {
      * @author beom-i
      */
     public List<ClassNoticeDTO> getClassNoticesByClassroomId(Long classroom_id);
+    
+    /**
+     * 수업 공지 페이지 별 조회
+     * @param classroom_id
+     * @param page
+     * @author devtae
+     */
+    public PageDTO<ClassNoticeDTO> getClassNoticesByClassroomId(Long classroom_id, Integer page);
 
     /**
      * 특정 수업 공지 조회

@@ -2,9 +2,11 @@ package com.nkedu.back.serviceImpl;
 
 import com.nkedu.back.api.ClassNoticeService;
 import com.nkedu.back.dto.ClassroomDTO;
+import com.nkedu.back.dto.PageDTO;
 import com.nkedu.back.dto.ClassNoticeDTO;
 import com.nkedu.back.dto.TeacherDTO;
 import com.nkedu.back.entity.ClassNotice;
+import com.nkedu.back.entity.Classroom;
 import com.nkedu.back.entity.ClassNotice.ClassNoticeType;
 import com.nkedu.back.entity.Teacher;
 import com.nkedu.back.repository.ClassroomRepository;
@@ -12,6 +14,11 @@ import com.nkedu.back.repository.ClassNoticeRepository;
 import com.nkedu.back.repository.TeacherRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -156,6 +163,74 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
                 classNoticeDTOs.add(classNoticeDTO);
             }
             return classNoticeDTOs;
+        } catch(Exception e) {
+            log.info("[Failed] e : " + e.getMessage());
+        }
+        return null;
+    }
+    
+    @Override
+    public PageDTO<ClassNoticeDTO> getClassNoticesByClassroomId(Long id, Integer page) {
+        try {
+        	
+        	PageDTO<ClassNoticeDTO> pageDTO = new PageDTO<>();
+			List<ClassNoticeDTO> classNoticeDTOs = new ArrayList<>();
+
+			// 정렬 기준
+			List<Sort.Order> sorts = new ArrayList<>();
+			sorts.add(Sort.Order.asc("created"));
+			Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+
+			// Page 조회
+            Page<ClassNotice> pageOfClassroom = null;
+
+            // 토큰에서 ROLE을 가져와서 ROLE에 따라 공지 타입 필터링 조회
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+
+            for (GrantedAuthority authority : authorities) {
+                String authorityName = authority.getAuthority();
+
+                if (authorityName.equals("ROLE_ADMIN") || authorityName.equals("ROLE_TEACHER")) {
+                	pageOfClassroom = classNoticeRepository.findAllByClassroomId(id, pageable);
+                }
+                else if (authorityName.equals("ROLE_STUDENT")) {
+                    List<ClassNoticeType> types = Arrays.asList(ClassNoticeType.STUDENT, ClassNoticeType.ENTIRE);
+                    pageOfClassroom = classNoticeRepository.findByClassroomIdAndClassNoticeTypes(id, types, pageable);
+                }
+                else if (authorityName.equals("ROLE_PARENT")) {
+                    List<ClassNoticeType> types = Arrays.asList(ClassNoticeType.PARENT, ClassNoticeType.ENTIRE);
+                    pageOfClassroom = classNoticeRepository.findByClassroomIdAndClassNoticeTypes(id, types, pageable);
+                }
+            }
+            
+            pageDTO.setCurrentPage(pageOfClassroom.getNumber());
+			pageDTO.setTotalPage(pageOfClassroom.getTotalPages());
+
+            for(ClassNotice classNotice : pageOfClassroom.getContent()) {
+                Teacher teacher = teacherRepository.findOneById(classNotice.getTeacher().getId()).get();
+
+                if(ObjectUtils.isEmpty(teacher)) {
+                    throw new RuntimeException("공지를 작성한 사용자가 존재하지 않습니다.");
+                }
+
+                ClassNoticeDTO classNoticeDTO = ClassNoticeDTO.builder()
+                        .id(classNotice.getId())
+                        .classroomDTO(ClassroomDTO.builder().id(classNotice.getClassroom().getId()).build())
+                        .teacherDTO(TeacherDTO.builder().id(teacher.getId()).build())
+                        .title(classNotice.getTitle())
+                        .content(classNotice.getContent())
+                        .created(classNotice.getCreated())
+                        .updated(classNotice.getUpdated())
+                        .classNoticeType(classNotice.getClassNoticeType())
+                        .build();
+                classNoticeDTOs.add(classNoticeDTO);
+            }
+            
+            pageDTO.setResults(classNoticeDTOs);
+            
+            return pageDTO;
+            
         } catch(Exception e) {
             log.info("[Failed] e : " + e.getMessage());
         }
