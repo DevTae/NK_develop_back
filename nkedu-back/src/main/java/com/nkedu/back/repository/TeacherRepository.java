@@ -28,7 +28,8 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
 	@Override
 	@Query("SELECT t FROM Teacher t WHERE t.activated = true")
 	List<Teacher> findAll();
-	
+
+	@Override
 	@Query("SELECT t FROM Teacher t WHERE t.activated = true")
-	Page<Teacher> findAllPage();
+	Page<Teacher> findAll(Pageable pageable);
 }

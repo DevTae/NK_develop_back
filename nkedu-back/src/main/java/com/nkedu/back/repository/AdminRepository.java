@@ -26,6 +26,7 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
 	@Query("SELECT a FROM Admin a WHERE a.activated = true")
     List<Admin> findAll();
 	
+	@Override
 	@Query("SELECT a FROM Admin a WHERE a.activated = true")
-    Page<Admin> findAllPage();
+    Page<Admin> findAll(Pageable pageable);
 }

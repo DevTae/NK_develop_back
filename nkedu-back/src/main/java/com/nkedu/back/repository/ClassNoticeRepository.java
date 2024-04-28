@@ -5,6 +5,7 @@ import com.nkedu.back.entity.ClassNotice;
 import com.nkedu.back.entity.ClassNotice.ClassNoticeType;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -32,8 +33,9 @@ public interface ClassNoticeRepository extends JpaRepository<ClassNotice,Long> {
 	@Query("SELECT not FROM ClassNotice not WHERE not.teacher.activated = true")
     List<ClassNotice> findAll();
     
+    @Override
     @Query("SELECT not FROM ClassNotice not WHERE not.teacher.activated = true")
-    Page<ClassNotice> findAllPage();
+    Page<ClassNotice> findAll(Pageable pageable);
 
     @Query("DELETE FROM ClassNotice not WHERE not.classroom.id = :classroom_id AND not.id = :classNotice_id")
     void deleteByClassroomIdAndClassNoticeId(@Param("classroom_id") Long classroom_id, @Param("classNotice_id") Long classNotice_id);
