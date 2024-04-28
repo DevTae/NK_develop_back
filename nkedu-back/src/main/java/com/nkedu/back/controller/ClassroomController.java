@@ -29,7 +29,7 @@ public class ClassroomController {
      * @return List<ClassroomDTO>
      * @author beom-i
      */
-    @GetMapping("/classroom")
+    @GetMapping("/classroom/list")
     public ResponseEntity<List<ClassroomDTO>> getClassrooms() {
         List<ClassroomDTO> classroomDTOs = classroomService.getClassrooms();
 
@@ -39,7 +39,25 @@ public class ClassroomController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
-
+    
+    /**
+     * 페이지 별 수업 목록 조회
+     * @param page
+     * @return
+     * @author devtae
+     */
+    @GetMapping("/classroom")
+    public ResponseEntity<PageDTO<ClassroomDTO>> getClassrooms(@RequestParam(value="page", defaultValue="0") Integer page) {
+    	
+    	PageDTO<ClassroomDTO> pageDTO = classroomService.getClassrooms(page);
+    	
+    	if(pageDTO != null) {
+    		return new ResponseEntity<>(pageDTO, HttpStatus.OK);
+    	} else {
+    		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    	}
+    }
+    
     /**
      * 특정 id의 수업을 조회하는 controller 입니다.
      * @param id

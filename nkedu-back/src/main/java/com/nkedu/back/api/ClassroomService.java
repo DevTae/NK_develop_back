@@ -1,6 +1,7 @@
 package com.nkedu.back.api;
 
 import com.nkedu.back.dto.ClassroomDTO;
+import com.nkedu.back.dto.PageDTO;
 import com.nkedu.back.dto.StudentOfClassroomDTO;
 import com.nkedu.back.dto.TeacherOfClassroomDTO;
 
@@ -41,6 +42,14 @@ public interface ClassroomService {
      * @author beom-i
      */
     public List<ClassroomDTO> getClassrooms();
+    
+    /**
+     * 수업 리스트 페이지 별 조회
+     * @param page
+     * @author devtae
+     * @return
+     */
+    public PageDTO<ClassroomDTO> getClassrooms(Integer page);
 
     /**
      * 특정 수업 조회

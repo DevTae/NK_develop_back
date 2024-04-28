@@ -2,7 +2,6 @@ package com.nkedu.back.serviceImpl;
 
 import com.nkedu.back.api.ClassroomService;
 import com.nkedu.back.dto.*;
-import com.nkedu.back.dto.TeacherDTO;
 import com.nkedu.back.entity.*;
 
 
@@ -10,6 +9,11 @@ import com.nkedu.back.repository.*;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -257,6 +261,75 @@ public class ClassroomServiceImpl implements ClassroomService {
 
         return null;
     }
+    
+    @Override
+    public PageDTO<ClassroomDTO> getClassrooms(Integer page) {
+    	try {
+    		PageDTO<ClassroomDTO> pageDTO = new PageDTO<>();
+			List<ClassroomDTO> classroomDTOs = new ArrayList<>();
+
+			// 정렬 기준
+			List<Sort.Order> sorts = new ArrayList<>();
+			sorts.add(Sort.Order.asc("classname"));
+			Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+
+			// Page 조회
+			Page<Classroom> pageOfClassroom = classroomRepository.findAll(pageable);
+			
+			pageDTO.setCurrentPage(pageOfClassroom.getNumber());
+			pageDTO.setTotalPage(pageOfClassroom.getTotalPages());
+
+            for(Classroom classroom : pageOfClassroom.getContent()) {
+                ClassroomDTO classroomDTO = new ClassroomDTO();
+                classroomDTO.setId(classroom.getId());
+                classroomDTO.setClassname(classroom.getClassname());
+                classroomDTO.setDays(classroom.getDays());
+
+                // 1. classroom_id에 해당하는 관계테이블을 가져옴
+                List<TeacherOfClassroom> teacherofclassrooms = teacherOfClassroomRepository.findAllByClassroomId(classroom.getId());
+
+                // 2. AssistantTeacher는 리스트로 저장되어 있으므로 추가할 리스트 생성
+                List<TeacherDTO> assistantTeacherDTOs = new ArrayList<>();
+
+                for(TeacherOfClassroom teacherofclassroom : teacherofclassrooms){
+                    Long teacher_id = teacherofclassroom.getTeacher().getId();
+                    // true이면 TeachingTeacher에 추가
+                    if(teacherofclassroom.isType()){
+                        TeacherDTO teachingTeacherDTO = TeacherDTO.builder()
+                                .id(teacher_id)
+                                .nickname(teacherRepository.findOneById(teacher_id).get().getNickname())
+                                .build();
+
+                        classroomDTO.setTeachingTeacher(teachingTeacherDTO);
+                    }
+                    // false이면 assisTeachers에 추가하여 한번에 저장
+                    else if(!teacherofclassroom.isType()){
+                        TeacherDTO assistantTeacherDTO = TeacherDTO.builder()
+                                .id(teacher_id)
+                                .nickname(teacherRepository.findOneById(teacher_id).get().getNickname())
+                                .build();
+
+                        assistantTeacherDTOs.add(assistantTeacherDTO);
+                    }
+                }
+                classroomDTO.setAssistantTeachers(assistantTeacherDTOs);
+
+                classroomDTOs.add(classroomDTO);
+            }
+            
+            pageDTO.setResults(classroomDTOs);
+            
+            return pageDTO;
+            
+        } catch(Exception e) {
+            log.info("[Failed] e : " + e.getMessage());
+        }
+
+        return null;
+    }
+    
+    
+    
 
     @Override
     public ClassroomDTO getClassroomById(Long id) {
