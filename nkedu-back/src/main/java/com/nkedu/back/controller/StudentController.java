@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,8 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nkedu.back.dto.PageDTO;
 import com.nkedu.back.dto.StudentDTO;
 import com.nkedu.back.api.StudentService;
 
@@ -30,15 +33,29 @@ public class StudentController  {
 	private final StudentService studentService;
 	
 	// 전체 학생 계정 리스트 조회 
-	@GetMapping("/student")
+	@GetMapping("/student/list")
 	public ResponseEntity<List<StudentDTO>> getStudents() {
+		
 		List<StudentDTO> studentDTOs = studentService.getStudents();
 		
 		if (studentDTOs != null) {
 			return new ResponseEntity<>(studentDTOs, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}	
+		}
+	}
+	
+	// 페이지 별 조회
+	@GetMapping("/student")
+	public ResponseEntity<PageDTO<StudentDTO>> getStudents(@RequestParam(value="page", defaultValue="0") Integer page) {
+		
+		PageDTO<StudentDTO> pageDTO = studentService.getStudents(page);
+		
+		if(pageDTO != null) {
+			return new ResponseEntity<>(pageDTO, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
 	}
 	
 	// 학생 계정 생성 - body에 값 넣어서 Post
