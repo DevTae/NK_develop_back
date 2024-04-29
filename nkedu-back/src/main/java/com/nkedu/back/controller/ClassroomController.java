@@ -29,7 +29,7 @@ public class ClassroomController {
      * @return List<ClassroomDTO>
      * @author beom-i
      */
-    @GetMapping("/classroom")
+    @GetMapping("/classroom/list")
     public ResponseEntity<List<ClassroomDTO>> getClassrooms() {
         List<ClassroomDTO> classroomDTOs = classroomService.getClassrooms();
 
@@ -39,7 +39,25 @@ public class ClassroomController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
-
+    
+    /**
+     * 페이지 별 수업 목록 조회
+     * @param page
+     * @return
+     * @author devtae
+     */
+    @GetMapping("/classroom")
+    public ResponseEntity<PageDTO<ClassroomDTO>> getClassrooms(@RequestParam(value="page", defaultValue="0") Integer page) {
+    	
+    	PageDTO<ClassroomDTO> pageDTO = classroomService.getClassrooms(page);
+    	
+    	if(pageDTO != null) {
+    		return new ResponseEntity<>(pageDTO, HttpStatus.OK);
+    	} else {
+    		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    	}
+    }
+    
     /**
      * 특정 id의 수업을 조회하는 controller 입니다.
      * @param id
@@ -183,7 +201,7 @@ public class ClassroomController {
      * @return List<ClassNoticeDTO>
      * @author beom-i
      */
-    @GetMapping("/classroom/{classroom_id}/class-notice")
+    @GetMapping("/classroom/{classroom_id}/class-notice/list")
     public ResponseEntity<List<ClassNoticeDTO>> getClassNoticesByClassroom(@PathVariable("classroom_id") Long classroom_id) {
 
         List<ClassNoticeDTO> classNoticeDTOs = classNoticeService.getClassNoticesByClassroomId(classroom_id);
@@ -194,7 +212,26 @@ public class ClassroomController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
-
+    
+    /**
+     * 수업 공지 페이지 별 조회 컨트롤러 코드
+     * @param classroom_id
+     * @param page
+     * @author DevTae
+     */
+    @GetMapping("/classroom/{classroom_id}/class-notice")
+    public ResponseEntity<PageDTO<ClassNoticeDTO>> getClassNoticesByClassroom(@PathVariable("classroom_id") Long classroom_id, @RequestParam(name="page", defaultValue="0") Integer page) {
+    	
+    	PageDTO<ClassNoticeDTO> pageDTO = classNoticeService.getClassNoticesByClassroomId(classroom_id, page);
+    	
+    	if(pageDTO != null) {
+    		return new ResponseEntity<>(pageDTO, HttpStatus.OK);
+    	} else {
+    		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    	}
+    }
+    
+    
     /**
      * 특정 수업 공지를 조회하는 Controller입니다.
      * @param classroom_id classNotice_id

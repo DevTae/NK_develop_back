@@ -2,6 +2,7 @@ package com.nkedu.back.api;
 
 import java.util.List;
 
+import com.nkedu.back.dto.PageDTO;
 import com.nkedu.back.dto.ParentDTO;
 import com.nkedu.back.dto.ParentOfStudentDTO;
 
@@ -32,6 +33,13 @@ public interface ParentService {
 	 * @return List<Parent>
 	 */
 	public List<ParentDTO> getParents();
+	
+	/**
+	 * 부모님 계정 페이지 별 조회
+	 * @param page
+	 * @return
+	 */
+	public PageDTO<ParentDTO> getParents(Integer page);
 
 	/**
 	 * 부모님 계정 정보 조회

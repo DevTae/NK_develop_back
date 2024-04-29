@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nkedu.back.api.HomeworkService;
 import com.nkedu.back.dto.HomeworkDTO;
+import com.nkedu.back.dto.PageDTO;
 import com.nkedu.back.dto.StudentDTO;
 
 import lombok.RequiredArgsConstructor;
@@ -40,7 +42,7 @@ public class HomeworkController {
 	 * 해당 class 에 대한 모든 homework 리스트 조회
 	 * @param classId
 	 */
-	@GetMapping("/classroom/{class_id}/homework")
+	@GetMapping("/classroom/{class_id}/homework/list")
 	public ResponseEntity<List<HomeworkDTO>> getHomeworks(@PathVariable("class_id") Long classId) {
 		
 		// 유저에 따라 정보를 가져오도록 함.
@@ -51,6 +53,25 @@ public class HomeworkController {
 		
 		if (homeworkDTOs != null) {
 			return new ResponseEntity<>(homeworkDTOs, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	/**
+	 * 해당 class 에 대한 페이지 별 homework 리스트 조회
+	 * @return
+	 */
+	@GetMapping("/classroom/{class_id}/homework")
+	public ResponseEntity<PageDTO<HomeworkDTO>> getHomeworks(@PathVariable("class_id") Long classId, @RequestParam(name="page", defaultValue="0") Integer page) {
+		// 유저에 따라 정보를 가져오도록 함.
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+				
+		PageDTO<HomeworkDTO> pageDTO = homeworkService.getHomeworks(classId, username, page); 
+				
+		if (pageDTO != null) {
+			return new ResponseEntity<>(pageDTO, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}

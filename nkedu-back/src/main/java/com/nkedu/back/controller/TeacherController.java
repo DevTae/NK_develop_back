@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nkedu.back.api.TeacherService;
+import com.nkedu.back.dto.PageDTO;
+import com.nkedu.back.dto.StudentDTO;
 import com.nkedu.back.dto.TeacherDTO;
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class TeacherController {
     private final TeacherService teacherService;
 
-    @GetMapping("/teacher")
+    @GetMapping("/teacher/list")
     public ResponseEntity<List<TeacherDTO>> getTeachers() {
         List<TeacherDTO> teacherDTOs = teacherService.getTeachers();
 
@@ -38,6 +41,19 @@ public class TeacherController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    // 페이지 별 조회
+ 	@GetMapping("/teacher")
+ 	public ResponseEntity<PageDTO<TeacherDTO>> getTeachers(@RequestParam(value="page", defaultValue="0") Integer page) {
+ 		
+ 		PageDTO<TeacherDTO> pageDTO = teacherService.getTeachers(page);
+ 		
+ 		if(pageDTO != null) {
+ 			return new ResponseEntity<>(pageDTO, HttpStatus.OK);
+ 		} else {
+ 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+ 		}
+ 	}
 
     @GetMapping("/teacher/{username}")
     public ResponseEntity<TeacherDTO> getTeacher(@PathVariable("username") String username) {

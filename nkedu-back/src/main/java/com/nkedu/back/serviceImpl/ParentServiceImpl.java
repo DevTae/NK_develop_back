@@ -8,6 +8,10 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -19,6 +23,7 @@ import com.nkedu.back.entity.Parent;
 import com.nkedu.back.entity.ParentOfStudent;
 import com.nkedu.back.entity.ParentOfStudent.Relationship;
 import com.nkedu.back.entity.Student;
+import com.nkedu.back.dto.PageDTO;
 import com.nkedu.back.dto.ParentDTO;
 import com.nkedu.back.dto.ParentOfStudentDTO;
 import com.nkedu.back.dto.StudentDTO;
@@ -209,6 +214,62 @@ public class ParentServiceImpl implements ParentService {
 			}
 			
 			return parentDTOs;
+		} catch(Exception e) {
+			log.info("[Failed] e : " + e.getMessage());
+		}
+
+		return null;
+	}
+	
+	@Override
+	public PageDTO<ParentDTO> getParents(Integer page) {
+		try {
+			
+			PageDTO<ParentDTO> pageDTO = new PageDTO<>();
+			List<ParentDTO> parentDTOs = new ArrayList<>();
+
+			// 정렬 기준
+			List<Sort.Order> sorts = new ArrayList<>();
+			sorts.add(Sort.Order.asc("nickname"));
+			Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
+
+			// Page 조회
+			Page<Parent> pageOfParent = parentRepository.findAll(pageable);
+			
+			pageDTO.setCurrentPage(pageOfParent.getNumber());
+			pageDTO.setTotalPage(pageOfParent.getTotalPages());
+			
+			for(Parent parent : pageOfParent.getContent()) {
+				ParentDTO parentDTO = new ParentDTO();
+				parentDTO.setId(parent.getId());
+				parentDTO.setUsername(parent.getUsername());
+				parentDTO.setNickname(parent.getNickname());
+				parentDTO.setPhoneNumber(parent.getPhoneNumber());
+				parentDTO.setBirth(parent.getBirth());
+				
+				// 부모님에 대한 학생 정보 추가
+				List<StudentDTO> studentDTOs = new ArrayList<StudentDTO>();
+				List<ParentOfStudent> parentOfStudents = parentOfStudentRepository.findAllByParentname(parent.getUsername()).get();
+				for(int i = 0; i < parentOfStudents.size(); i++) {
+					Student student = parentOfStudents.get(i).getStudent();
+					
+					StudentDTO studentDTO = StudentDTO.builder()
+												      .id(student.getId())
+												      .nickname(student.getNickname())
+											    	  .build();
+								
+					studentDTOs.add(studentDTO);
+				}
+				parentDTO.setStudentDTOs(studentDTOs);
+				if(parentOfStudents.size() > 0)
+					parentDTO.setRelationship(parentOfStudents.get(0).getRelationship()); // 최상단의 relationship 바탕으로 반환
+							
+				parentDTOs.add(parentDTO);
+			}
+			
+			pageDTO.setResults(parentDTOs);			
+			
+			return pageDTO;
 		} catch(Exception e) {
 			log.info("[Failed] e : " + e.getMessage());
 		}

@@ -3,6 +3,8 @@ package com.nkedu.back.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,4 +27,8 @@ public interface HomeworkOfStudentRepository extends JpaRepository<HomeworkOfStu
 	@Override
 	@Query("SELECT hos FROM HomeworkOfStudent hos WHERE hos.student.activated = true")
 	List<HomeworkOfStudent> findAll();
+	
+	@Override
+	@Query("SELECT hos FROM HomeworkOfStudent hos WHERE hos.student.activated = true")
+	Page<HomeworkOfStudent> findAll(Pageable pageable);
 }

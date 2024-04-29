@@ -3,13 +3,21 @@ package com.nkedu.back.serviceImpl;
 import com.nkedu.back.api.AdminNoticeService;
 import com.nkedu.back.dto.AdminDTO;
 import com.nkedu.back.dto.AdminNoticeDTO;
+import com.nkedu.back.dto.ClassNoticeDTO;
+import com.nkedu.back.dto.PageDTO;
 import com.nkedu.back.entity.Admin;
 import com.nkedu.back.entity.AdminNotice;
+import com.nkedu.back.entity.ClassNotice;
 import com.nkedu.back.entity.AdminNotice.AdminNoticeType;
 import com.nkedu.back.repository.AdminNoticeRepository;
 import com.nkedu.back.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -147,6 +155,79 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
                 adminNoticeDTOs.add(adminNoticeDTO);
             }
             return adminNoticeDTOs;
+        }catch (Exception e){
+            log.info("Failed : "+e.getMessage());
+        }
+        return null;
+    }
+    
+    @Override
+    public PageDTO<AdminNoticeDTO> getAdminNotices(Integer page) {
+        try{
+        	
+        	PageDTO<AdminNoticeDTO> pageDTO = new PageDTO<>();
+			List<AdminNoticeDTO> adminNoticeDTOs = new ArrayList<>();
+
+			// 정렬 기준
+			List<Sort.Order> sorts = new ArrayList<>();
+			sorts.add(Sort.Order.desc("created"));
+			Pageable pageable = PageRequest.of(page, 8, Sort.by(sorts));
+
+			// Page 조회
+            Page<AdminNotice> pageOfAdminNotice = null;
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+
+            for (GrantedAuthority authority : authorities) {
+                String authorityName = authority.getAuthority();
+
+                // ROLE 에 따른 로직
+                if (authorityName.equals("ROLE_ADMIN")) {
+                	pageOfAdminNotice = adminNoticeRepository.findAll(pageable);
+                }
+                else if (authorityName.equals("ROLE_STUDENT")) {
+                    List<AdminNoticeType> types = Arrays.asList(AdminNoticeType.STUDENT, AdminNoticeType.STUDENT_PARENT, AdminNoticeType.STUDENT_TEACHER,AdminNoticeType.ENTIRE);
+                    pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(types, pageable);
+                }
+                else if (authorityName.equals("ROLE_TEACHER")) {
+                    List<AdminNoticeType> types = Arrays.asList(AdminNoticeType.TEACHER, AdminNoticeType.STUDENT_TEACHER, AdminNoticeType.PARENT_TEACHER,AdminNoticeType.ENTIRE);
+                    pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(types, pageable);
+                }
+                else if (authorityName.equals("ROLE_PARENT")) {
+                    List<AdminNoticeType> types = Arrays.asList(AdminNoticeType.PARENT, AdminNoticeType.PARENT_TEACHER, AdminNoticeType.STUDENT_PARENT,AdminNoticeType.ENTIRE);
+                    pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(types, pageable);
+                }
+            }
+            
+            // 페이지 정보 저장
+            pageDTO.setCurrentPage(pageOfAdminNotice.getNumber());
+			pageDTO.setTotalPage(pageOfAdminNotice.getTotalPages());
+
+            for(AdminNotice adminNotice : pageOfAdminNotice.getContent()){
+
+                Admin admin = adminRepository.findOneById(adminNotice.getAdmin().getId()).get();
+                if(ObjectUtils.isEmpty(admin)){
+                    throw new RuntimeException("공지를 작성한 admin이 존재하지 않음");
+                }
+
+                AdminNoticeDTO adminNoticeDTO = AdminNoticeDTO.builder()
+                        .id(adminNotice.getId())
+                        .adminDTO(AdminDTO.builder().id(adminNotice.getAdmin().getId()).build())
+                        .title(adminNotice.getTitle())
+                        .content(adminNotice.getContent())
+                        .created(adminNotice.getCreated())
+                        .updated(adminNotice.getUpdated())
+                        .adminNoticeType(adminNotice.getAdminNoticeType())
+                        .build();
+                adminNoticeDTOs.add(adminNoticeDTO);
+            }
+            
+            // 페이지 검색 결과 저장
+            pageDTO.setResults(adminNoticeDTOs);;
+            
+            return pageDTO;
+            
         }catch (Exception e){
             log.info("Failed : "+e.getMessage());
         }

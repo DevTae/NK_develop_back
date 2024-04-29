@@ -2,7 +2,7 @@ package com.nkedu.back.controller;
 
 import com.nkedu.back.api.AdminNoticeService;
 import com.nkedu.back.dto.AdminNoticeDTO;
-import com.nkedu.back.entity.AdminNotice;
+import com.nkedu.back.dto.PageDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,7 +79,7 @@ public class AdminNoticeController {
      * @return List<AdminNoticeDTO>
      * @author beom-i
      */
-    @GetMapping("/admin-notice")
+    @GetMapping("/admin-notice/list")
     public ResponseEntity<List<AdminNoticeDTO>> getAdminNotices(){
 
         List<AdminNoticeDTO> adminNoticeDTOs = adminNoticeService.getAdminNotices();
@@ -90,6 +90,17 @@ public class AdminNoticeController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
+    
+    @GetMapping("/admin-notice")
+    public ResponseEntity<PageDTO<AdminNoticeDTO>> getAdminNotices(@RequestParam(name="page", defaultValue="0") Integer page) {
+    	PageDTO<AdminNoticeDTO> pageDTO = adminNoticeService.getAdminNotices(page);
+    	
+    	if (pageDTO != null) {
+    		return new ResponseEntity<>(pageDTO, HttpStatus.OK);
+    	} else {
+    		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    	}
+    }
 
     /**
      * 특정 관리자 공지를 조회하는 Controller입니다.
@@ -98,7 +109,7 @@ public class AdminNoticeController {
      * @author beom-i
      */
     @GetMapping("/admin-notice/{id}")
-    public ResponseEntity<AdminNoticeDTO> getAdminNotices(@PathVariable("id") Long id){
+    public ResponseEntity<AdminNoticeDTO> getAdminNotice(@PathVariable("id") Long id){
         AdminNoticeDTO adminNoticeDTO = adminNoticeService.getAdminNotice(id);
 
         if (adminNoticeDTO != null) {

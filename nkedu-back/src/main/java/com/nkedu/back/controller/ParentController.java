@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nkedu.back.api.ParentService;
+import com.nkedu.back.dto.PageDTO;
 import com.nkedu.back.dto.ParentDTO;
 import com.nkedu.back.dto.ParentOfStudentDTO;
 import com.nkedu.back.dto.RelationshipDTO;
@@ -37,7 +39,7 @@ import lombok.RequiredArgsConstructor;
 public class ParentController {
 	private final ParentService parentService;
 	
-	@GetMapping("/parent")
+	@GetMapping("/parent/list")
 	public ResponseEntity<List<ParentDTO>> getParents() {
 		List<ParentDTO> parentDTOs = parentService.getParents();
 		
@@ -45,6 +47,19 @@ public class ParentController {
 			return new ResponseEntity<>(parentDTOs, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); 
+		}
+	}
+	
+	// 페이지 별 부모님 조회
+	@GetMapping("/parent")
+	public ResponseEntity<PageDTO<ParentDTO>> getParents(@RequestParam(value="page", defaultValue="0") Integer page) {
+		
+		PageDTO<ParentDTO> pageDTO = parentService.getParents(page);
+		
+		if(pageDTO != null) {
+			return new ResponseEntity<>(pageDTO, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
 	

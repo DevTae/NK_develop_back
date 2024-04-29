@@ -1,7 +1,9 @@
 package com.nkedu.back.repository;
 
-import com.nkedu.back.entity.Parent;
 import com.nkedu.back.entity.Teacher;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,4 +28,8 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
 	@Override
 	@Query("SELECT t FROM Teacher t WHERE t.activated = true")
 	List<Teacher> findAll();
+
+	@Override
+	@Query("SELECT t FROM Teacher t WHERE t.activated = true")
+	Page<Teacher> findAll(Pageable pageable);
 }

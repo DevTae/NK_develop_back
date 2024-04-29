@@ -3,6 +3,7 @@ package com.nkedu.back.api;
 import java.util.List;
 
 import com.nkedu.back.dto.TeacherWithClassroomDTO;
+import com.nkedu.back.dto.PageDTO;
 import com.nkedu.back.dto.TeacherDTO;
 
 public interface TeacherService {
@@ -32,6 +33,13 @@ public interface TeacherService {
 	 * @return List<Teacher>
 	 */
 	public List<TeacherDTO> getTeachers();
+	
+	/**
+	 * 선생님 계정 페이지 별 조회
+	 * @param page
+	 * @return
+	 */
+	public PageDTO<TeacherDTO> getTeachers(Integer page);
 
 	/**
 	 * 선생님 계정 정보 조회

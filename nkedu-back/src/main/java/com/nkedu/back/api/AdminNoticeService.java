@@ -1,6 +1,7 @@
 package com.nkedu.back.api;
 
 import com.nkedu.back.dto.AdminNoticeDTO;
+import com.nkedu.back.dto.PageDTO;
 
 import java.util.List;
 
@@ -36,6 +37,14 @@ public interface AdminNoticeService {
      * @author beom-i
      */
     public List<AdminNoticeDTO> getAdminNotices();
+    
+    /**
+     * 수업 공지 페이지 별 조회
+     * @param page
+     * @return
+     * @author DevTae
+     */
+    public PageDTO<AdminNoticeDTO> getAdminNotices(Integer page);
 
     /**
      * 특정 수업 공지 조회
