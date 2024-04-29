@@ -44,7 +44,7 @@ public class HomeworkOfStudentController {
 	private final HomeworkOfStudentService homeworkOfStudentService;
 	
 	/**
-	 * 숙제 제출 리스트 조회
+	 * 숙제 제출 리스트 조회 (선생님 채점 전용 API)
 	 * @param classroomId
 	 * @param homeworkId
 	 * @return

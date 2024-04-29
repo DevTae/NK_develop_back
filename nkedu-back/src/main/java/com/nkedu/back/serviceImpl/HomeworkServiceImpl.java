@@ -58,6 +58,10 @@ public class HomeworkServiceImpl implements HomeworkService {
 										 			   .id(homework.getTeacher().getId())
 										 			   .nickname(homework.getTeacher().getNickname())
 										 		       .build())
+										    .classroomDTO(ClassroomDTO.builder()
+									    			 .id(homework.getClassroom().getId())
+									    			 .classname(homework.getClassroom().getClassname())
+									    			 .build())
 										    //.teacherId(homework.getTeacher().getId())
 										    .created(homework.getCreated())
 										    .updated(homework.getUpdated())
@@ -99,6 +103,10 @@ public class HomeworkServiceImpl implements HomeworkService {
 										 			   .id(homework.getTeacher().getId())
 										 			   .nickname(homework.getTeacher().getNickname())
 										 		       .build())
+										    .classroomDTO(ClassroomDTO.builder()
+										    			 .id(homework.getClassroom().getId())
+										    			 .classname(homework.getClassroom().getClassname())
+										    			 .build())
 										    //.teacherId(homework.getTeacher().getId())
 										    .created(homework.getCreated())
 										    .updated(homework.getUpdated())
@@ -115,7 +123,7 @@ public class HomeworkServiceImpl implements HomeworkService {
 	}
 	
 	@Override
-	public PageDTO<HomeworkDTO> getHomeworks(Long classId, String username, Integer page) {
+	public PageDTO<HomeworkDTO> getHomeworks(Long classId, String username, Integer page, Status status) {
 		
 		try {
 			
@@ -128,8 +136,15 @@ public class HomeworkServiceImpl implements HomeworkService {
 			Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
 
 			// Page 조회
-			Page<Homework> pageOfHomework = homeworkRepository.findAllByClassroomId(classId, pageable);
+			Page<Homework> pageOfHomework = null;
 			
+			if(status != null) {
+				pageOfHomework = homeworkRepository.findAllByClassroomIdAndUsernameAndStatus(classId, username, status, pageable);
+			} else {
+				pageOfHomework = homeworkRepository.findAllByClassroomIdAndUsername(classId, username, pageable);
+			}
+			
+			// Page 전체 정보 저장
 			pageDTO.setCurrentPage(pageOfHomework.getNumber());
 			pageDTO.setTotalPage(pageOfHomework.getTotalPages());
 			
@@ -138,12 +153,12 @@ public class HomeworkServiceImpl implements HomeworkService {
 				// 학생에 대한 숙제 status 불러오기
 				List<HomeworkOfStudent> homeworkOfStudents = homeworkOfStudentRepository.findAllByHomeworkIdAndUsername(homework.getId(), username);
 				
-				Status status;
+				Status status_;
 				
 				if (homeworkOfStudents.size() == 0) {
-					status = Status.TODO;
+					status_ = Status.TODO;
 				} else {
-					status = homeworkOfStudents.get(0).getStatus();
+					status_ = homeworkOfStudents.get(0).getStatus();
 				}
 				
 				homeworkDTOs.add(HomeworkDTO.builder()
@@ -153,11 +168,15 @@ public class HomeworkServiceImpl implements HomeworkService {
 										 			   .id(homework.getTeacher().getId())
 										 			   .nickname(homework.getTeacher().getNickname())
 										 		       .build())
+										    .classroomDTO(ClassroomDTO.builder()
+									    			 .id(homework.getClassroom().getId())
+									    			 .classname(homework.getClassroom().getClassname())
+									    			 .build())
 										    //.teacherId(homework.getTeacher().getId())
 										    .created(homework.getCreated())
 										    .updated(homework.getUpdated())
 										    .deadline(homework.getDeadline())
-										    .status(status)
+										    .status(status_)
 										    .build());
 			}
 			
@@ -170,6 +189,75 @@ public class HomeworkServiceImpl implements HomeworkService {
 		}
 		return null;
 	}
+	
+	@Override
+	public PageDTO<HomeworkDTO> getHomeworks(String username, Integer page, Status status) {
+
+		try {
+			
+			PageDTO<HomeworkDTO> pageDTO = new PageDTO<>();
+			List<HomeworkDTO> homeworkDTOs = new ArrayList<>();
+
+			// 정렬 기준
+			List<Sort.Order> sorts = new ArrayList<>();
+			sorts.add(Sort.Order.desc("created"));
+			Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+
+			// Page 조회
+			Page<Homework> pageOfHomework = null;
+			
+			if(status != null) {
+				pageOfHomework = homeworkRepository.findAllByUsernameAndStatus(username, status, pageable);
+			} else {
+				pageOfHomework = homeworkRepository.findAllByUsername(username, pageable);
+			}
+			
+			// Page 전체 정보 저장
+			pageDTO.setCurrentPage(pageOfHomework.getNumber());
+			pageDTO.setTotalPage(pageOfHomework.getTotalPages());
+			
+			for(Homework homework : pageOfHomework.getContent()) {
+				
+				// 학생에 대한 숙제 status 불러오기
+				List<HomeworkOfStudent> homeworkOfStudents = homeworkOfStudentRepository.findAllByHomeworkIdAndUsername(homework.getId(), username);
+				
+				Status status_;
+				
+				if (homeworkOfStudents.size() == 0) {
+					status_ = Status.TODO;
+				} else {
+					status_ = homeworkOfStudents.get(0).getStatus();
+				}
+				
+				homeworkDTOs.add(HomeworkDTO.builder()
+										    .id(homework.getId())
+										    .title(homework.getTitle())
+										    .teacherDTO(TeacherDTO.builder()
+										 			   .id(homework.getTeacher().getId())
+										 			   .nickname(homework.getTeacher().getNickname())
+										 		       .build())
+										    .classroomDTO(ClassroomDTO.builder()
+									    			 .id(homework.getClassroom().getId())
+									    			 .classname(homework.getClassroom().getClassname())
+									    			 .build())
+										    //.teacherId(homework.getTeacher().getId())
+										    .created(homework.getCreated())
+										    .updated(homework.getUpdated())
+										    .deadline(homework.getDeadline())
+										    .status(status_)
+										    .build());
+			}
+			
+			pageDTO.setResults(homeworkDTOs);
+			
+			return pageDTO;
+			
+		} catch (Exception e) {
+			log.info("Failed e : " + e.getMessage());
+		}
+		return null;
+	}
+	
 
 	@Override
 	public HomeworkDTO getHomework(Long classId, Long homeworkId) {
@@ -184,6 +272,10 @@ public class HomeworkServiceImpl implements HomeworkService {
 														 			   .id(homework.getTeacher().getId())
 														 			   .nickname(homework.getTeacher().getNickname())
 														 		       .build())
+												 .classroomDTO(ClassroomDTO.builder()
+										    			 .id(homework.getClassroom().getId())
+										    			 .classname(homework.getClassroom().getClassname())
+										    			 .build())
 												 //.teacherId(homework.getTeacher().getId())
 												 .created(homework.getCreated())
 												 .updated(homework.getUpdated())
@@ -222,6 +314,10 @@ public class HomeworkServiceImpl implements HomeworkService {
 														 			   .id(homework.getTeacher().getId())
 														 			   .nickname(homework.getTeacher().getNickname())
 														 		       .build())
+												 .classroomDTO(ClassroomDTO.builder()
+										    			 .id(homework.getClassroom().getId())
+										    			 .classname(homework.getClassroom().getClassname())
+										    			 .build())
 												 //.teacherId(homework.getTeacher().getId())
 												 .created(homework.getCreated())
 												 .updated(homework.getUpdated())
