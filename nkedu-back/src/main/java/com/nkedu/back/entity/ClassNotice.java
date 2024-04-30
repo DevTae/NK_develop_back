@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.sql.Timestamp;
+import java.util.Set;
 
 @Entity
 @Table(name="class_notice")
@@ -49,16 +50,17 @@ public class ClassNotice {
     private Timestamp updated;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="classNotice_type",nullable = false)
-    private ClassNoticeType classNoticeType;
+    @ElementCollection(targetClass= ClassNoticeType.class)
+    @CollectionTable(name="class_notice_types", joinColumns=@JoinColumn(name="notice_id"))
+    @Column(name = "type")
+    private Set<ClassNoticeType> classNoticeType;
 
 
     /**
-     * 선생님 공지 선택지 - STUDENT PARENT ENTIRE
+     * 수업 공지 선택지 - STUDENT PARENT
      * */
     public enum ClassNoticeType {
         STUDENT,
-        PARENT,
-        ENTIRE
+        PARENT
     }
 }

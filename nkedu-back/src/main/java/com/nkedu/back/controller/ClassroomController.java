@@ -3,12 +3,10 @@ package com.nkedu.back.controller;
 import com.nkedu.back.api.ClassroomService;
 import com.nkedu.back.api.ClassNoticeService;
 import com.nkedu.back.dto.*;
-import jakarta.validation.Valid;
+import com.nkedu.back.entity.ClassNotice.ClassNoticeType;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -224,15 +222,18 @@ public class ClassroomController {
     }
     
     /**
-     * 수업 공지 페이지 별 조회 컨트롤러 코드
+     * 수업 공지 페이지 별 + type 별 조회 컨트롤러 코드
      * @param classroom_id
      * @param page
+     * @param types
      * @author DevTae
      */
     @GetMapping("/classroom/{classroom_id}/class-notice")
-    public ResponseEntity<PageDTO<ClassNoticeDTO>> getClassNoticesByClassroom(@PathVariable("classroom_id") Long classroom_id, @RequestParam(name="page", defaultValue="0") Integer page) {
+    public ResponseEntity<PageDTO<ClassNoticeDTO>> getClassNoticesByClassroom(@PathVariable("classroom_id") Long classroom_id,
+                                                                              @RequestParam(name="page", defaultValue="0") Integer page,
+                                                                              @RequestParam(name="type", required=false) List<ClassNoticeType> types) {
     	
-    	PageDTO<ClassNoticeDTO> pageDTO = classNoticeService.getClassNoticesByClassroomId(classroom_id, page);
+    	PageDTO<ClassNoticeDTO> pageDTO = classNoticeService.getClassNoticesByClassroomId(classroom_id, page, types);
     	
     	if(pageDTO != null) {
     		return new ResponseEntity<>(pageDTO, HttpStatus.OK);

@@ -2,6 +2,8 @@ package com.nkedu.back.api;
 
 import com.nkedu.back.dto.ClassNoticeDTO;
 import com.nkedu.back.dto.PageDTO;
+import com.nkedu.back.entity.ClassNotice.ClassNoticeType;
+
 
 import java.util.List;
 
@@ -42,9 +44,11 @@ public interface ClassNoticeService {
      * 수업 공지 페이지 별 조회
      * @param classroom_id
      * @param page
+     * @param types
      * @author devtae
      */
-    public PageDTO<ClassNoticeDTO> getClassNoticesByClassroomId(Long classroom_id, Integer page);
+    public PageDTO<ClassNoticeDTO> getClassNoticesByClassroomId(Long classroom_id, Integer page, List<ClassNoticeType> types);
+
 
     /**
      * 특정 수업 공지 조회

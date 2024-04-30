@@ -52,6 +52,9 @@ public class AdminNotice {
     @Column(name = "type")
     private Set<AdminNoticeType> adminNoticeType;
 
+    /**
+     * 관리자 공지 선택지 - STUDENT PARENT TEACHER
+     * */
     public enum AdminNoticeType {
         STUDENT,
         PARENT,

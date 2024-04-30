@@ -6,6 +6,7 @@ import com.nkedu.back.entity.ClassNotice.ClassNoticeType;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -31,5 +32,5 @@ public class ClassNoticeDTO {
 
     private Timestamp updated;
 
-    private ClassNoticeType classNoticeType;
+    private Set<ClassNoticeType> classNoticeType;
 }
