@@ -2,6 +2,7 @@ package com.nkedu.back.api;
 
 import java.util.List;
 
+import com.nkedu.back.dto.ClassroomDTO;
 import com.nkedu.back.dto.PageDTO;
 import com.nkedu.back.dto.StudentDTO;
 
@@ -17,7 +18,10 @@ public interface StudentService {
     public List<StudentDTO> getStudents();
     
     public PageDTO<StudentDTO> getStudents(Integer page);
-    
-	public StudentDTO findByUsername(String username);
+
+    public PageDTO<StudentDTO> getStudentsByKeyword(Integer page, String keyword);
+
+    public StudentDTO findByUsername(String username);
+
 
 }

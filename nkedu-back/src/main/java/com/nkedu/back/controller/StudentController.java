@@ -31,8 +31,12 @@ import lombok.RequiredArgsConstructor;
 public class StudentController  {
 	
 	private final StudentService studentService;
-	
-	// 전체 학생 계정 리스트 조회 
+
+	/**
+	 * 모든 수업을 조회하는 controller 입니다.
+	 * @return List<StudentDTO>
+	 * @author beom-i
+	 */
 	@GetMapping("/student/list")
 	public ResponseEntity<List<StudentDTO>> getStudents() {
 		
@@ -44,13 +48,29 @@ public class StudentController  {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
-	// 페이지 별 조회
+
+	/**
+	 * 페이지 별 학생 목록 조회
+	 * @param page
+	 * @param keyword 검색 키워드 (선택)
+	 * @return
+	 * @author devtae
+	 */
 	@GetMapping("/student")
-	public ResponseEntity<PageDTO<StudentDTO>> getStudents(@RequestParam(value="page", defaultValue="0") Integer page) {
-		
-		PageDTO<StudentDTO> pageDTO = studentService.getStudents(page);
-		
+	public ResponseEntity<PageDTO<StudentDTO>> getStudents(@RequestParam(value="page", defaultValue="0") Integer page,
+														   @RequestParam(value="keyword", required=false) String keyword) {
+		PageDTO<StudentDTO> pageDTO;
+
+		// 키워드가 존재하는 경우
+		if (keyword != null && !keyword.isEmpty()) {
+			pageDTO = studentService.getStudentsByKeyword(page, keyword);
+		}
+		// 키워드가 존재하지 않거나 빈 문자열인 경우
+		else {
+			pageDTO = studentService.getStudents(page);
+		}
+
+
 		if(pageDTO != null) {
 			return new ResponseEntity<>(pageDTO, HttpStatus.OK);
 		} else {
