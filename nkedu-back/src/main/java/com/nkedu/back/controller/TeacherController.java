@@ -93,6 +93,7 @@ public class TeacherController {
     }
 
     @PutMapping("/teacher/{username}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> updateTeacher(@PathVariable("username") String username, @RequestBody TeacherDTO teacherDTO) {
         // 토큰 필요
 

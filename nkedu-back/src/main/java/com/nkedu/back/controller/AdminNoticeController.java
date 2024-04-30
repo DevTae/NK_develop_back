@@ -7,6 +7,7 @@ import com.nkedu.back.entity.AdminNotice.AdminNoticeType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,7 @@ public class AdminNoticeController {
      * @author beom-i
      */
     @PostMapping("/admin-notice")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> createAdminNotice(@Validated @RequestBody AdminNoticeDTO adminNoticeDTO) {
 
         boolean result = adminNoticeService.createAdminNotice(adminNoticeDTO);
@@ -45,6 +46,7 @@ public class AdminNoticeController {
      * @author beom-i
      */
     @PutMapping("/admin-notice/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> updateAdminNotice(@PathVariable("id") Long id, @RequestBody AdminNoticeDTO adminNoticeDTO) {
 
         boolean result = adminNoticeService.updateAdminNotice(id, adminNoticeDTO);
@@ -64,7 +66,7 @@ public class AdminNoticeController {
      */
 
     @DeleteMapping("/admin-notice/{id}")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteAdminNotice(@PathVariable("id") Long id){
         boolean result = adminNoticeService.deleteAdminNoticeById(id);
 

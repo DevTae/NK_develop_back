@@ -99,6 +99,7 @@ public class StudentController  {
 	
 	// 학생 계정 설정 
 	@PutMapping("/student/{username}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Void> updateStudent (@PathVariable("username") String username, @RequestBody StudentDTO studentDTO){
 		return studentService.updateStudent(username,studentDTO) ?
 			       new ResponseEntity<>(null, HttpStatus.OK) :

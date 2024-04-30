@@ -5,6 +5,7 @@ import com.nkedu.back.dto.ClassNoticeDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ public class ClassNoticeController {
      * @author beom-i
      */
     @PostMapping("/classroom/{classroom_id}/class-notice")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER')")
     public ResponseEntity<Void> createClassNotice(@PathVariable("classroom_id") Long classroom_id,@Validated @RequestBody ClassNoticeDTO classNoticeDTO) {
 
         boolean result = classNoticeService.createClassNotice(classroom_id,classNoticeDTO);
@@ -43,6 +44,7 @@ public class ClassNoticeController {
      * @author beom-i
      */
     @PutMapping("/classroom/{classroom_id}/class-notice/{notice_id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER')")
     public ResponseEntity<Void> updateClassNotice(@PathVariable("classroom_id") Long classroom_id,@PathVariable("notice_id") Long notice_id, @RequestBody ClassNoticeDTO classNoticeDTO) {
 
         boolean result = classNoticeService.updateClassNotice(classroom_id,notice_id, classNoticeDTO);
@@ -60,7 +62,7 @@ public class ClassNoticeController {
      * @author beom-i
      */
     @DeleteMapping("/classroom/{classroom_id}/class-notice/{notice_id}")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER')")
     public ResponseEntity<Void> deleteClassNotice(@PathVariable("classroom_id") Long classroom_id,@PathVariable("notice_id") Long notice_id) {
 
         boolean result = classNoticeService.deleteClassNoticeById(classroom_id,notice_id);

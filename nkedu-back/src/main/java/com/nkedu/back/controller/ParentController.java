@@ -77,6 +77,7 @@ public class ParentController {
 	}
 	
 	@PutMapping("/parent/{username}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Void> updateParent(@PathVariable("username") String username, @RequestBody ParentDTO parentDTO) {
 
 		boolean result = parentService.updateParent(username, parentDTO);

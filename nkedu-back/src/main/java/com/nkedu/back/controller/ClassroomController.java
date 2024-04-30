@@ -7,6 +7,7 @@ import com.nkedu.back.entity.ClassNotice.ClassNoticeType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -91,6 +92,7 @@ public class ClassroomController {
      * @author beom-i
      */
     @PutMapping("/classroom/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> updateClassroom(@PathVariable("id") Long id, @RequestBody ClassroomDTO classroomDTO) {
 
         boolean result = classroomService.updateClassroom(id, classroomDTO);
@@ -109,7 +111,7 @@ public class ClassroomController {
      * @author beom-i
      */
     @PostMapping("/classroom")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> createClassroom(@Validated @RequestBody ClassroomDTO classroomDTO) {
 
         boolean result = classroomService.createClassroom(classroomDTO);
@@ -128,7 +130,7 @@ public class ClassroomController {
      * @author beom-i
      */
     @DeleteMapping("/classroom/{id}")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteClassroom(@PathVariable("id") Long id) {
 
         boolean result = classroomService.deleteClassroomById(id);
@@ -149,7 +151,7 @@ public class ClassroomController {
      * @author beom-i
      */
     @PostMapping("/classroom/{classroom_id}/student")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> createStudentOfClassroom(@PathVariable("classroom_id") Long classroom_id,
                                                                           @Validated @RequestBody ClassroomDTO classroomDTO) {
 
@@ -170,7 +172,7 @@ public class ClassroomController {
      * @author beom-i
      */
     @DeleteMapping("/classroom/{classroom_id}/student")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteStudentOfClassroom(@PathVariable("classroom_id") Long classroom_id,
                                                          @Validated @RequestBody ClassroomDTO classroomDTO) {
         boolean result = classroomService.deleteStudentOfClassroom(classroom_id,classroomDTO);
@@ -190,7 +192,6 @@ public class ClassroomController {
      * @author beom-i
      */
     @GetMapping ("/classroom/{classroom_id}/student")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ClassroomDTO> getStudentOfClassroomsByClassroomId(@PathVariable("classroom_id") Long classroom_id) {
         ClassroomDTO classroomDTO = classroomService.getStudentOfClassroomsByClassroomId(classroom_id);
 
