@@ -16,8 +16,6 @@ public interface StudentService {
 	public boolean updateStudent(String username, StudentDTO studentDTO);
 	
     public List<StudentDTO> getStudents();
-    
-    public PageDTO<StudentDTO> getStudents(Integer page);
 
     public PageDTO<StudentDTO> getStudentsByKeyword(Integer page, String keyword);
 

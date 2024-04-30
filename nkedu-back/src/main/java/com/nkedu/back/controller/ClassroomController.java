@@ -7,6 +7,7 @@ import com.nkedu.back.entity.ClassNotice.ClassNoticeType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,17 +48,8 @@ public class ClassroomController {
      */
     @GetMapping("/classroom")
     public ResponseEntity<PageDTO<ClassroomDTO>> getClassrooms(@RequestParam(value="page", defaultValue="0") Integer page,
-                                                               @RequestParam(value="keyword", required=false) String keyword) {
-
-        PageDTO<ClassroomDTO> pageDTO;
-        // 키워드가 존재하는 경우
-        if (keyword != null && !keyword.isEmpty()) {
-            pageDTO = classroomService.getClassroomsByKeyword(page, keyword);
-        }
-        // 키워드가 존재하지 않거나 빈 문자열인 경우
-        else {
-            pageDTO = classroomService.getClassrooms(page);
-        }
+                                                               @RequestParam(value="keyword", defaultValue="", required=false) String keyword) {
+        PageDTO<ClassroomDTO> pageDTO = classroomService.getClassroomsByKeyword(page, keyword);
 
     	if(pageDTO != null) {
     		return new ResponseEntity<>(pageDTO, HttpStatus.OK);
@@ -91,6 +83,7 @@ public class ClassroomController {
      * @author beom-i
      */
     @PutMapping("/classroom/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> updateClassroom(@PathVariable("id") Long id, @RequestBody ClassroomDTO classroomDTO) {
 
         boolean result = classroomService.updateClassroom(id, classroomDTO);
@@ -109,7 +102,7 @@ public class ClassroomController {
      * @author beom-i
      */
     @PostMapping("/classroom")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> createClassroom(@Validated @RequestBody ClassroomDTO classroomDTO) {
 
         boolean result = classroomService.createClassroom(classroomDTO);
@@ -128,7 +121,7 @@ public class ClassroomController {
      * @author beom-i
      */
     @DeleteMapping("/classroom/{id}")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteClassroom(@PathVariable("id") Long id) {
 
         boolean result = classroomService.deleteClassroomById(id);
@@ -149,7 +142,7 @@ public class ClassroomController {
      * @author beom-i
      */
     @PostMapping("/classroom/{classroom_id}/student")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> createStudentOfClassroom(@PathVariable("classroom_id") Long classroom_id,
                                                                           @Validated @RequestBody ClassroomDTO classroomDTO) {
 
@@ -170,7 +163,7 @@ public class ClassroomController {
      * @author beom-i
      */
     @DeleteMapping("/classroom/{classroom_id}/student")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteStudentOfClassroom(@PathVariable("classroom_id") Long classroom_id,
                                                          @Validated @RequestBody ClassroomDTO classroomDTO) {
         boolean result = classroomService.deleteStudentOfClassroom(classroom_id,classroomDTO);
@@ -190,7 +183,6 @@ public class ClassroomController {
      * @author beom-i
      */
     @GetMapping ("/classroom/{classroom_id}/student")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ClassroomDTO> getStudentOfClassroomsByClassroomId(@PathVariable("classroom_id") Long classroom_id) {
         ClassroomDTO classroomDTO = classroomService.getStudentOfClassroomsByClassroomId(classroom_id);
 
@@ -231,9 +223,10 @@ public class ClassroomController {
     @GetMapping("/classroom/{classroom_id}/class-notice")
     public ResponseEntity<PageDTO<ClassNoticeDTO>> getClassNoticesByClassroom(@PathVariable("classroom_id") Long classroom_id,
                                                                               @RequestParam(name="page", defaultValue="0") Integer page,
-                                                                              @RequestParam(name="type", required=false) List<ClassNoticeType> types) {
+                                                                              @RequestParam(name="type", required=false) List<ClassNoticeType> types,
+                                                                              @RequestParam(value="keyword", defaultValue="", required=false) String keyword) {
     	
-    	PageDTO<ClassNoticeDTO> pageDTO = classNoticeService.getClassNoticesByClassroomId(classroom_id, page, types);
+    	PageDTO<ClassNoticeDTO> pageDTO = classNoticeService.getClassNoticesByClassroomId(classroom_id, page, types, keyword);
     	
     	if(pageDTO != null) {
     		return new ResponseEntity<>(pageDTO, HttpStatus.OK);

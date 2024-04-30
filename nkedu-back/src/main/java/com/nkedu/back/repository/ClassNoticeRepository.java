@@ -29,8 +29,8 @@ public interface ClassNoticeRepository extends JpaRepository<ClassNotice,Long> {
     Optional<List<ClassNotice>> findByClassroomIdAndClassNoticeTypes(@Param("classroom_id") Long classroom_id, @Param("types")  List<ClassNoticeType> types);
     
     // ClassroomId 및 ClassNoticeTypes 를 바탕으로 페이지 별 조회
-    @Query("SELECT not FROM ClassNotice not JOIN not.classNoticeType cnt WHERE not.classroom.activated = true AND not.teacher.activated = true AND not.classroom.id = :classroom_id AND cnt In :types ")
-    Page<ClassNotice> findByClassroomIdAndClassNoticeTypes(@Param("classroom_id") Long classroom_id, Pageable pageable, @Param("types")  List<ClassNoticeType> types);
+    @Query("SELECT not FROM ClassNotice not JOIN not.classNoticeType cnt WHERE not.classroom.activated = true AND not.teacher.activated = true AND not.classroom.id = :classroom_id AND cnt In :types AND not.title LIKE CONCAT('%', :notice_title, '%') ")
+    Page<ClassNotice> findByClassroomIdAndClassNoticeTypes(@Param("classroom_id") Long classroom_id, Pageable pageable, @Param("types")  List<ClassNoticeType> types, @Param("notice_title") String keyword);
 
     @Query("SELECT not FROM ClassNotice not WHERE not.classroom.id = :classroom_id AND not.id = :classNotice_id AND not.classroom.activated = true AND not.teacher.activated = true")
     Optional<ClassNotice> findOneByClassroomIdAndClassNoticeId(@Param("classroom_id") Long classroom_id, @Param("classNotice_id") Long classNotice_id);

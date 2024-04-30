@@ -45,9 +45,10 @@ public interface ClassNoticeService {
      * @param classroom_id
      * @param page
      * @param types
+     * @param keyword
      * @author devtae
      */
-    public PageDTO<ClassNoticeDTO> getClassNoticesByClassroomId(Long classroom_id, Integer page, List<ClassNoticeType> types);
+    public PageDTO<ClassNoticeDTO> getClassNoticesByClassroomId(Long classroom_id, Integer page, List<ClassNoticeType> types, String keyword);
 
 
     /**

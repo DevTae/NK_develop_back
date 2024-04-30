@@ -42,20 +42,12 @@ public interface ClassroomService {
      * @author beom-i
      */
     public List<ClassroomDTO> getClassrooms();
-    
-    /**
-     * 수업 리스트 페이지 별 조회
-     * @param page
-     * @author devtae
-     * @return
-     */
-    public PageDTO<ClassroomDTO> getClassrooms(Integer page);
 
     /**
      * 수업 리스트 페이지 별 조회 + 키워드 검색 기능
      * @param page
      * @param keyword
-     * @author beom-i
+     * @author devtae
      * @return
      */
     public PageDTO<ClassroomDTO> getClassroomsByKeyword(Integer page, String keyword);
