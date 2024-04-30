@@ -166,7 +166,7 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
     }
     
     @Override
-    public PageDTO<ClassNoticeDTO> getClassNoticesByClassroomId(Long id, Integer page, List<ClassNoticeType> types) {
+    public PageDTO<ClassNoticeDTO> getClassNoticesByClassroomId(Long id, Integer page, List<ClassNoticeType> types, String keyword) {
         try {
         	
         	PageDTO<ClassNoticeDTO> pageDTO = new PageDTO<>();
@@ -190,19 +190,19 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
                 if (authorityName.equals("ROLE_ADMIN") || authorityName.equals("ROLE_TEACHER")) {
                     if(types == null || types.isEmpty()){
                         List<ClassNoticeType> type = Arrays.asList(ClassNoticeType.STUDENT, ClassNoticeType.PARENT);
-                        pageOfClassNotice = classNoticeRepository.findByClassroomIdAndClassNoticeTypes(id, pageable, type);
+                        pageOfClassNotice = classNoticeRepository.findByClassroomIdAndClassNoticeTypes(id, pageable, type,keyword);
                     }
                     else{
-                        pageOfClassNotice = classNoticeRepository.findByClassroomIdAndClassNoticeTypes(id, pageable, types);
+                        pageOfClassNotice = classNoticeRepository.findByClassroomIdAndClassNoticeTypes(id, pageable, types,keyword);
                     }
                 }
                 else if (authorityName.equals("ROLE_STUDENT")) {
                     List<ClassNoticeType> type = Arrays.asList(ClassNoticeType.STUDENT);
-                    pageOfClassNotice = classNoticeRepository.findByClassroomIdAndClassNoticeTypes(id, pageable, type);
+                    pageOfClassNotice = classNoticeRepository.findByClassroomIdAndClassNoticeTypes(id, pageable, type,keyword);
                 }
                 else if (authorityName.equals("ROLE_PARENT")) {
                     List<ClassNoticeType> type = Arrays.asList(ClassNoticeType.PARENT);
-                    pageOfClassNotice = classNoticeRepository.findByClassroomIdAndClassNoticeTypes(id, pageable, type);
+                    pageOfClassNotice = classNoticeRepository.findByClassroomIdAndClassNoticeTypes(id, pageable, type,keyword);
                 }
             }
             

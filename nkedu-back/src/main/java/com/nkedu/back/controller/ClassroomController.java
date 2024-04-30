@@ -231,9 +231,10 @@ public class ClassroomController {
     @GetMapping("/classroom/{classroom_id}/class-notice")
     public ResponseEntity<PageDTO<ClassNoticeDTO>> getClassNoticesByClassroom(@PathVariable("classroom_id") Long classroom_id,
                                                                               @RequestParam(name="page", defaultValue="0") Integer page,
-                                                                              @RequestParam(name="type", required=false) List<ClassNoticeType> types) {
+                                                                              @RequestParam(name="type", required=false) List<ClassNoticeType> types,
+                                                                              @RequestParam(value="keyword", defaultValue="", required=false) String keyword) {
     	
-    	PageDTO<ClassNoticeDTO> pageDTO = classNoticeService.getClassNoticesByClassroomId(classroom_id, page, types);
+    	PageDTO<ClassNoticeDTO> pageDTO = classNoticeService.getClassNoticesByClassroomId(classroom_id, page, types, keyword);
     	
     	if(pageDTO != null) {
     		return new ResponseEntity<>(pageDTO, HttpStatus.OK);
