@@ -158,7 +158,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
     }
 
     @Override
-    public PageDTO<AdminNoticeDTO> getAdminNotices(Integer page, List<AdminNoticeType> types) {
+    public PageDTO<AdminNoticeDTO> getAdminNotices(Integer page, List<AdminNoticeType> types, String keyword) {
         try{
             
             PageDTO<AdminNoticeDTO> pageDTO = new PageDTO<>();
@@ -182,24 +182,24 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
                     // type값이 없을 경우 전체 type 조회
                     if(types == null || types.isEmpty()){
                         List<AdminNoticeType> type = Arrays.asList(AdminNoticeType.STUDENT,AdminNoticeType.TEACHER,AdminNoticeType.PARENT);
-                        pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(type,pageable);
+                        pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(type,pageable,keyword);
                     }
                     // type값이 존재하면 해당하는 type에 따라 조회
                     else {
-                        pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(types,pageable);
+                        pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(types,pageable,keyword);
                     }
                 }
                 else if (authorityName.equals("ROLE_STUDENT")) {
                     List<AdminNoticeType> type = Arrays.asList(AdminNoticeType.STUDENT);
-                    pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(type, pageable);
+                    pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(type, pageable,keyword);
                 }
                 else if (authorityName.equals("ROLE_TEACHER")) {
                     List<AdminNoticeType> type = Arrays.asList(AdminNoticeType.TEACHER);
-                    pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(type, pageable);
+                    pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(type, pageable,keyword);
                 }
                 else if (authorityName.equals("ROLE_PARENT")) {
                     List<AdminNoticeType> type = Arrays.asList(AdminNoticeType.PARENT);
-                    pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(type, pageable);
+                    pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(type, pageable,keyword);
                 }
             }
             

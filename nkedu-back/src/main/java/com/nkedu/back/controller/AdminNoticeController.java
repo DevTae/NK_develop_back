@@ -100,10 +100,11 @@ public class AdminNoticeController {
      */
     @GetMapping("/admin-notice")
     public ResponseEntity<PageDTO<AdminNoticeDTO>> getAdminNotices(@RequestParam(name="page", defaultValue="0") Integer page,
-                                                                   @RequestParam(name="type", required=false) List<AdminNoticeType> types) {
+                                                                   @RequestParam(name="type", required=false) List<AdminNoticeType> types,
+                                                                   @RequestParam(value="keyword", defaultValue="", required=false) String keyword) {
 
 
-    	PageDTO<AdminNoticeDTO> pageDTO = adminNoticeService.getAdminNotices(page,types);
+    	PageDTO<AdminNoticeDTO> pageDTO = adminNoticeService.getAdminNotices(page,types,keyword);
     	
     	if (pageDTO != null) {
     		return new ResponseEntity<>(pageDTO, HttpStatus.OK);

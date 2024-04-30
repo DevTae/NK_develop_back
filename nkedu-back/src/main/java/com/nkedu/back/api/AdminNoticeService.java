@@ -43,10 +43,11 @@ public interface AdminNoticeService {
      * 수업 공지 페이지 별 조회
      * @param page
      * @param types
+     * @param keyword
      * @return
      * @author DevTae
      */
-    public PageDTO<AdminNoticeDTO> getAdminNotices(Integer page, List<AdminNoticeType> types);
+    public PageDTO<AdminNoticeDTO> getAdminNotices(Integer page, List<AdminNoticeType> types,String keyword);
 
     /**
      * 특정 수업 공지 조회
