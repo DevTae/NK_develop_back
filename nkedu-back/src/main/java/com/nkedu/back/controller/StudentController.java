@@ -58,18 +58,9 @@ public class StudentController  {
 	 */
 	@GetMapping("/student")
 	public ResponseEntity<PageDTO<StudentDTO>> getStudents(@RequestParam(value="page", defaultValue="0") Integer page,
-														   @RequestParam(value="keyword", required=false) String keyword) {
-		PageDTO<StudentDTO> pageDTO;
+														   @RequestParam(value="keyword", defaultValue="",required=false) String keyword) {
 
-		// 키워드가 존재하는 경우
-		if (keyword != null && !keyword.isEmpty()) {
-			pageDTO = studentService.getStudentsByKeyword(page, keyword);
-		}
-		// 키워드가 존재하지 않거나 빈 문자열인 경우
-		else {
-			pageDTO = studentService.getStudents(page);
-		}
-
+		PageDTO<StudentDTO> pageDTO = studentService.getStudentsByKeyword(page, keyword);
 
 		if(pageDTO != null) {
 			return new ResponseEntity<>(pageDTO, HttpStatus.OK);

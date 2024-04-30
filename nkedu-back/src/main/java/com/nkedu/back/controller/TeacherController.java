@@ -45,18 +45,9 @@ public class TeacherController {
     // 페이지 별 조회
  	@GetMapping("/teacher")
  	public ResponseEntity<PageDTO<TeacherDTO>> getTeachers(@RequestParam(value="page", defaultValue="0") Integer page,
-                                                            @RequestParam(value="keyword", required=false) String keyword) {
+                                                            @RequestParam(value="keyword", defaultValue="",required=false) String keyword) {
 
-        PageDTO<TeacherDTO> pageDTO;
-
-        // 키워드가 존재하는 경우
-        if (keyword != null && !keyword.isEmpty()) {
-            pageDTO = teacherService.getTeachersByKeyword(page, keyword);
-        }
-        // 키워드가 존재하지 않거나 빈 문자열인 경우
-        else {
-            pageDTO = teacherService.getTeachers(page);
-        }
+        PageDTO<TeacherDTO> pageDTO = teacherService.getTeachersByKeyword(page, keyword);
 
  		if(pageDTO != null) {
  			return new ResponseEntity<>(pageDTO, HttpStatus.OK);
