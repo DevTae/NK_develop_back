@@ -6,6 +6,7 @@ import com.nkedu.back.entity.AdminNotice.AdminNoticeType;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -27,5 +28,5 @@ public class AdminNoticeDTO {
 
     private Timestamp updated;
 
-    private AdminNoticeType adminNoticeType;
+    private Set<AdminNoticeType> adminNoticeType;
 }

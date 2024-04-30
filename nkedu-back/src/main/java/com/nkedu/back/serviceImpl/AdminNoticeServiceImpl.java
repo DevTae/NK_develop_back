@@ -25,10 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -46,7 +43,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
     public boolean createAdminNotice(AdminNoticeDTO adminNoticeDTO) {
         try{
             Long admin_id = adminNoticeDTO.getAdminDTO().getId();
-            AdminNoticeType adminNoticeType = adminNoticeDTO.getAdminNoticeType();
+            Set<AdminNoticeType> adminNoticeType = adminNoticeDTO.getAdminNoticeType();
 
             Timestamp current_time = new Timestamp(System.currentTimeMillis());
             // Q. noticeDTO로 ID를 받지 않는데 어떻게 중복 검증을 할 수 있는가?
@@ -108,7 +105,6 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
     @Override
     public List<AdminNoticeDTO> getAdminNotices() {
         try{
-
             List<AdminNoticeDTO> adminNoticeDTOs = new ArrayList<>();
             List<AdminNotice> adminNotices = null;
 
@@ -123,15 +119,15 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
                     adminNotices = adminNoticeRepository.findAll();
                 }
                 else if (authorityName.equals("ROLE_STUDENT")) {
-                    List<AdminNoticeType> types = Arrays.asList(AdminNoticeType.STUDENT, AdminNoticeType.STUDENT_PARENT, AdminNoticeType.STUDENT_TEACHER,AdminNoticeType.ENTIRE);
+                    List<AdminNoticeType> types = Arrays.asList(AdminNoticeType.STUDENT);
                     adminNotices = adminNoticeRepository.findByAdminNoticeTypes(types).get();
                 }
                 else if (authorityName.equals("ROLE_TEACHER")) {
-                    List<AdminNoticeType> types = Arrays.asList(AdminNoticeType.TEACHER, AdminNoticeType.STUDENT_TEACHER, AdminNoticeType.PARENT_TEACHER,AdminNoticeType.ENTIRE);
+                    List<AdminNoticeType> types = Arrays.asList(AdminNoticeType.TEACHER);
                     adminNotices = adminNoticeRepository.findByAdminNoticeTypes(types).get();
                 }
                 else if (authorityName.equals("ROLE_PARENT")) {
-                    List<AdminNoticeType> types = Arrays.asList(AdminNoticeType.PARENT, AdminNoticeType.PARENT_TEACHER, AdminNoticeType.STUDENT_PARENT,AdminNoticeType.ENTIRE);
+                    List<AdminNoticeType> types = Arrays.asList(AdminNoticeType.PARENT);
                     adminNotices = adminNoticeRepository.findByAdminNoticeTypes(types).get();
                 }
             }
@@ -160,12 +156,12 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
         }
         return null;
     }
-    
+
     @Override
-    public PageDTO<AdminNoticeDTO> getAdminNotices(Integer page) {
+    public PageDTO<AdminNoticeDTO> getAdminNotices(Integer page, List<AdminNoticeType> types) {
         try{
-        	
-        	PageDTO<AdminNoticeDTO> pageDTO = new PageDTO<>();
+            
+            PageDTO<AdminNoticeDTO> pageDTO = new PageDTO<>();
 			List<AdminNoticeDTO> adminNoticeDTOs = new ArrayList<>();
 
 			// 정렬 기준
@@ -181,22 +177,29 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 
             for (GrantedAuthority authority : authorities) {
                 String authorityName = authority.getAuthority();
-
                 // ROLE 에 따른 로직
                 if (authorityName.equals("ROLE_ADMIN")) {
-                	pageOfAdminNotice = adminNoticeRepository.findAll(pageable);
+                    // type값이 없을 경우 전체 type 조회
+                    if(types == null || types.isEmpty()){
+                        List<AdminNoticeType> type = Arrays.asList(AdminNoticeType.STUDENT,AdminNoticeType.TEACHER,AdminNoticeType.PARENT);
+                        pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(type,pageable);
+                    }
+                    // type값이 존재하면 해당하는 type에 따라 조회
+                    else {
+                        pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(types,pageable);
+                    }
                 }
                 else if (authorityName.equals("ROLE_STUDENT")) {
-                    List<AdminNoticeType> types = Arrays.asList(AdminNoticeType.STUDENT, AdminNoticeType.STUDENT_PARENT, AdminNoticeType.STUDENT_TEACHER,AdminNoticeType.ENTIRE);
-                    pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(types, pageable);
+                    List<AdminNoticeType> type = Arrays.asList(AdminNoticeType.STUDENT);
+                    pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(type, pageable);
                 }
                 else if (authorityName.equals("ROLE_TEACHER")) {
-                    List<AdminNoticeType> types = Arrays.asList(AdminNoticeType.TEACHER, AdminNoticeType.STUDENT_TEACHER, AdminNoticeType.PARENT_TEACHER,AdminNoticeType.ENTIRE);
-                    pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(types, pageable);
+                    List<AdminNoticeType> type = Arrays.asList(AdminNoticeType.TEACHER);
+                    pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(type, pageable);
                 }
                 else if (authorityName.equals("ROLE_PARENT")) {
-                    List<AdminNoticeType> types = Arrays.asList(AdminNoticeType.PARENT, AdminNoticeType.PARENT_TEACHER, AdminNoticeType.STUDENT_PARENT,AdminNoticeType.ENTIRE);
-                    pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(types, pageable);
+                    List<AdminNoticeType> type = Arrays.asList(AdminNoticeType.PARENT);
+                    pageOfAdminNotice = adminNoticeRepository.findByAdminNoticeTypes(type, pageable);
                 }
             }
             

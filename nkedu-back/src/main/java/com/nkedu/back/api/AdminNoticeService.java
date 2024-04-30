@@ -2,6 +2,7 @@ package com.nkedu.back.api;
 
 import com.nkedu.back.dto.AdminNoticeDTO;
 import com.nkedu.back.dto.PageDTO;
+import com.nkedu.back.entity.AdminNotice;
 
 import java.util.List;
 
@@ -44,7 +45,7 @@ public interface AdminNoticeService {
      * @return
      * @author DevTae
      */
-    public PageDTO<AdminNoticeDTO> getAdminNotices(Integer page);
+    public PageDTO<AdminNoticeDTO> getAdminNotices(Integer page, List<AdminNotice.AdminNoticeType> types);
 
     /**
      * 특정 수업 공지 조회

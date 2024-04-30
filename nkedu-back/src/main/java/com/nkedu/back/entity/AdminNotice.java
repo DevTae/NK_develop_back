@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.sql.Timestamp;
+import java.util.Set;
 
 @Entity
 @Table(name="admin_notice")
@@ -46,22 +47,14 @@ public class AdminNotice {
     private Timestamp updated;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="adminNotice_type",nullable = false)
-    private AdminNoticeType adminNoticeType;
+    @ElementCollection(targetClass=AdminNoticeType.class)
+    @CollectionTable(name="admin_notice_types", joinColumns=@JoinColumn(name="notice_id"))
+    @Column(name = "type")
+    private Set<AdminNoticeType> adminNoticeType;
 
-
-
-    /**
-     * 관리자 공지 선택지 - STUDENT PARENT TEACHER STUDENT_PARENT
-     *               - STUDENT_PARENT STUDENT_TEACHER PARENT_TEACHER ENTIRE
-     * */
     public enum AdminNoticeType {
         STUDENT,
         PARENT,
-        TEACHER,
-        STUDENT_PARENT,
-        STUDENT_TEACHER,
-        PARENT_TEACHER,
-        ENTIRE
+        TEACHER
     }
 }
