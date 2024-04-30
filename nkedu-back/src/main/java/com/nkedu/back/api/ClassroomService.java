@@ -52,6 +52,15 @@ public interface ClassroomService {
     public PageDTO<ClassroomDTO> getClassrooms(Integer page);
 
     /**
+     * 수업 리스트 페이지 별 조회 + 키워드 검색 기능
+     * @param page
+     * @param keyword
+     * @author beom-i
+     * @return
+     */
+    public PageDTO<ClassroomDTO> getClassroomsByKeyword(Integer page, String keyword);
+
+    /**
      * 특정 수업 조회
      *
      * @param id

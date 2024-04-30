@@ -34,4 +34,7 @@ public interface ClassroomRepository extends JpaRepository<Classroom, Long> {
     @Override
     @Query("SELECT c FROM Classroom c WHERE c.activated = true")
     Page<Classroom> findAll(Pageable pageable);
+
+    @Query("SELECT c FROM Classroom c WHERE c.activated = true AND c.classname LIKE CONCAT('%', :classname, '%')")
+    Page<Classroom> findAllByClassname(Pageable pageable, @Param("classname") String keyword);
 }

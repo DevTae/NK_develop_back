@@ -45,6 +45,6 @@ public class Classroom {
      * 수업이 진행되는 요일
      * */
     public enum Day {
-        MONDAY,THESDAY, WEDNESDAY, THURSDAY,FRIDAY, SATURDAY, SUNDAY
+        MONDAY,TUESDAY, WEDNESDAY, THURSDAY,FRIDAY, SATURDAY, SUNDAY
     }
 }
