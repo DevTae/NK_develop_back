@@ -1,5 +1,6 @@
 package com.nkedu.back.repository;
 
+import com.nkedu.back.entity.Student;
 import com.nkedu.back.entity.Teacher;
 
 import org.springframework.data.domain.Page;
@@ -32,4 +33,7 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
 	@Override
 	@Query("SELECT t FROM Teacher t WHERE t.activated = true")
 	Page<Teacher> findAll(Pageable pageable);
+
+	@Query("SELECT t FROM Teacher t WHERE t.activated = true AND t.nickname LIKE CONCAT('%', :teacher_name, '%')")
+	Page<Teacher> findAllByTeacherName(Pageable pageable, @Param("teacher_name") String keyword);
 }

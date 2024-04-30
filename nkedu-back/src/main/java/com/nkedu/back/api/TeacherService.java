@@ -37,9 +37,19 @@ public interface TeacherService {
 	/**
 	 * 선생님 계정 페이지 별 조회
 	 * @param page
+	 * @author devtae
 	 * @return
 	 */
 	public PageDTO<TeacherDTO> getTeachers(Integer page);
+
+	/**
+	 * 선생님 계정 페이지 별 조회 + 키워드 검색 기능
+	 * @param page
+	 * @param keyword
+	 * @author beom-i
+	 * @return
+	 */
+	public PageDTO<TeacherDTO> getTeachersByKeyword(Integer page,String keyword);
 
 	/**
 	 * 선생님 계정 정보 조회

@@ -192,6 +192,44 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
+    public PageDTO<TeacherDTO> getTeachersByKeyword(Integer page,String keyword) {
+        try {
+            PageDTO<TeacherDTO> pageDTO = new PageDTO<>();
+            List<TeacherDTO> teacherDTOs = new ArrayList<>();
+
+            // 정렬 기준
+            List<Sort.Order> sorts = new ArrayList<>();
+            sorts.add(Sort.Order.asc("nickname"));
+            Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
+
+            // Page 조회
+            Page<Teacher> pageOfTeacher = teacherRepository.findAllByTeacherName(pageable,keyword);
+
+            pageDTO.setCurrentPage(pageOfTeacher.getNumber());
+            pageDTO.setTotalPage(pageOfTeacher.getTotalPages());
+
+            for(Teacher teacher : pageOfTeacher.getContent()) {
+                TeacherDTO teacherDTO = new TeacherDTO();
+                teacherDTO.setId(teacher.getId());
+                teacherDTO.setUsername(teacher.getUsername());
+                teacherDTO.setNickname(teacher.getNickname());
+                teacherDTO.setPhoneNumber(teacher.getPhoneNumber());
+                teacherDTO.setBirth(teacher.getBirth());
+
+                teacherDTOs.add(teacherDTO);
+            }
+
+            pageDTO.setResults(teacherDTOs);
+
+            return pageDTO;
+
+        } catch(Exception e) {
+            log.info("[Failed] e : " + e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
     public TeacherDTO findByUsername(String username) {
 
         try {
