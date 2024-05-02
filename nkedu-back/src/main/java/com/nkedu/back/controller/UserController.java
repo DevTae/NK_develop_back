@@ -19,7 +19,7 @@ public class UserController {
     /*
     @PostMapping("/signup")
     public ResponseEntity<User> signup(@Valid @RequestBody UserDTO userDTO) {
-    	return userService.signup(userDTO) ? new ResponseEntity<>(null, HttpStatus.OK): new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    	return userService.signup(userDTO) ? new ResponseEntity<>(null, HttpStatus.OK): new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     }
     */
 

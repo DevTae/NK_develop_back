@@ -38,7 +38,7 @@ public class TeacherController {
         if (teacherDTOs != null) {
             return new ResponseEntity<>(teacherDTOs, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
     
@@ -65,7 +65,7 @@ public class TeacherController {
         if (teacherDTO != null) {
             return new ResponseEntity<>(teacherDTO, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -79,7 +79,7 @@ public class TeacherController {
         if (result == true) {
             return new ResponseEntity<>(null, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -93,7 +93,7 @@ public class TeacherController {
         if (result == true) {
             return new ResponseEntity<>(null, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -107,7 +107,7 @@ public class TeacherController {
         if (result == true) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -124,7 +124,7 @@ public class TeacherController {
         if (teacherWithClassroomDTOs != null) {
             return new ResponseEntity<>(teacherWithClassroomDTOs, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -141,7 +141,7 @@ public class TeacherController {
         if (teacherWithClassroomDTO != null) {
             return new ResponseEntity<>(teacherWithClassroomDTO, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 }
