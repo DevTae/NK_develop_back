@@ -13,11 +13,6 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 public class School {
 
-//	@Id
-//	@Column(name="id")
-//	@GeneratedValue(strategy = GenerationType.IDENTITY) // auto increment
-//	private Long id;
-
     // @Pattern(regexp = ".*고등학교$",message = "***고등학교 형태의 입력 가능합니다.")
 	@Id
 	@Column(name="school_name",unique = true)

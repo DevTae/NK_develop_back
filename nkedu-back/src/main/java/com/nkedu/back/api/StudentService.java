@@ -19,7 +19,7 @@ public interface StudentService {
 
     public PageDTO<StudentDTO> getStudentsByKeyword(Integer page, String keyword);
 
-    public StudentDTO findByUsername(String username);
+    public StudentDTO getStudentByUsername(String username);
 
 
 }

@@ -34,7 +34,7 @@ public class StudentDTO {
 	
 	private String phoneNumber;
 	
-	private School school;
+	private String schoolName;
 	
 	private Long grade;
 

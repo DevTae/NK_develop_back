@@ -39,7 +39,7 @@ public class SchoolServiceImpl implements SchoolService{
 	// 등록된 학교 삭제
 	public boolean deleteBySchoolname(String schoolName) {
 		try{
-			schoolRepository.delete(schoolRepository.findOneBySchoolName(schoolName).get());
+			schoolRepository.delete(schoolRepository.findBySchoolName(schoolName).get());
 
 			return true;
 		} catch (Exception e) {

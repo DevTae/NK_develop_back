@@ -51,10 +51,13 @@ public class StudentServiceImpl implements StudentService  {
 			}
 
 			//1. 요청온 학교가 기존 학교 DB에 존재하지 않으면 오류 발생
-			School postedSchool = studentDTO.getSchool();
-			if(ObjectUtils.isEmpty(schoolRepository.findOneBySchoolName(postedSchool.getSchoolName()))){
+			String schoolName = studentDTO.getSchoolName();
+			Optional<School> searchedSchoolOpt = schoolRepository.findBySchoolName(schoolName);
+			if(!searchedSchoolOpt.isPresent()){
 				throw new RuntimeException("존재하지 않는 학교 이름입니다.");
 			}
+			School searchedSchool = searchedSchoolOpt.get();
+
 
 			Set<Authority> authorities = new HashSet<>();
 
@@ -78,7 +81,7 @@ public class StudentServiceImpl implements StudentService  {
 					.created(new Timestamp(System.currentTimeMillis()))
 					.activated(true)
 					.grade(studentDTO.getGrade()) // grade 추가
-					.school(studentDTO.getSchool()) // school 추가
+					.school(searchedSchool) // school 추가
 					.build();
 
 			studentRepository.save(student);
@@ -108,10 +111,19 @@ public class StudentServiceImpl implements StudentService  {
 	// grade 도 매년 자동으로 올릴지.. 어떻게 해야할지 고민
 	public boolean updateStudent(String username, StudentDTO studentDTO) {
 		try {
+			// 1. 학생의 username으로 존재 여부 판단
 			Student searchedStudent = studentRepository.findOneByUsername(username).get();
-
 			if(ObjectUtils.isEmpty(searchedStudent))
 				return false;
+
+			// 2. 요청온 학교가 기존 학교 DB에 존재하지 않으면 오류 발생
+			String schoolName = studentDTO.getSchoolName();
+			Optional<School> searchedSchoolOpt = schoolRepository.findBySchoolName(schoolName);
+			if(!searchedSchoolOpt.isPresent()){
+				throw new RuntimeException("존재하지 않는 학교 이름입니다.");
+			}
+			School searchedSchool = searchedSchoolOpt.get();
+
 
 			// 요청 받은 학생 이름으로 업데이트
 			if(!ObjectUtils.isEmpty(studentDTO.getUsername()))
@@ -126,8 +138,8 @@ public class StudentServiceImpl implements StudentService  {
 				searchedStudent.setBirth(studentDTO.getBirth());
 			if(!ObjectUtils.isEmpty(studentDTO.getGrade()))
 				searchedStudent.setGrade(studentDTO.getGrade());
-			if(!ObjectUtils.isEmpty(studentDTO.getSchool()))
-				searchedStudent.setSchool(studentDTO.getSchool());
+			if(!ObjectUtils.isEmpty(searchedSchool))
+				searchedStudent.setSchool(searchedSchool);
 
 			studentRepository.save(searchedStudent);
 			return true;
@@ -153,7 +165,7 @@ public class StudentServiceImpl implements StudentService  {
 				studentDTO.setBirth(student.getBirth());
 				studentDTO.setPhoneNumber(student.getPhoneNumber());
 
-				studentDTO.setSchool(student.getSchool());
+				studentDTO.setSchoolName(student.getSchool().getSchoolName());
 				studentDTO.setGrade(student.getGrade());
 				
 				// 학생에 대한 부모님 정보 추가
@@ -205,7 +217,7 @@ public class StudentServiceImpl implements StudentService  {
 				studentDTO.setBirth(student.getBirth());
 				studentDTO.setPhoneNumber(student.getPhoneNumber());
 
-				studentDTO.setSchool(student.getSchool());
+				studentDTO.setSchoolName(student.getSchool().getSchoolName());
 				studentDTO.setGrade(student.getGrade());
 				
 				// 학생에 대한 부모님 정보 추가
@@ -239,7 +251,7 @@ public class StudentServiceImpl implements StudentService  {
 
 	// 특정 학생 계정 정보 조회
 	// 어떤 정보만을 넘길지는 추후 피드백을 통해 API 추가로 만들면 됨
-	public StudentDTO findByUsername(String username) {
+	public StudentDTO getStudentByUsername(String username) {
 		try {
 			Student student = studentRepository.findOneByUsername(username).get();
 
@@ -251,8 +263,7 @@ public class StudentServiceImpl implements StudentService  {
 			studentDTO.setNickname(student.getNickname());
 			studentDTO.setPhoneNumber(student.getPhoneNumber());
 			studentDTO.setBirth(student.getBirth());
-
-			studentDTO.setSchool(student.getSchool());
+			studentDTO.setSchoolName(student.getSchool().getSchoolName());
 			studentDTO.setGrade(student.getGrade());
 
 			// 학생에 대한 부모님 정보 추가

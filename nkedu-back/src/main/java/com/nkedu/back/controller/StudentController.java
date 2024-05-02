@@ -101,7 +101,7 @@ public class StudentController  {
 	@GetMapping("/student/{username}")
 	public ResponseEntity<StudentDTO> getStudent(@PathVariable("username") String username) {
 		
-		StudentDTO studentDTO = studentService.findByUsername(username);
+		StudentDTO studentDTO = studentService.getStudentByUsername(username);
 		
 		if (studentDTO != null) {
 			return new ResponseEntity<>(studentDTO, HttpStatus.OK);
