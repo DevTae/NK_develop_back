@@ -1,9 +1,6 @@
 package com.nkedu.back.api;
 
-import com.nkedu.back.dto.ClassroomDTO;
-import com.nkedu.back.dto.PageDTO;
-import com.nkedu.back.dto.StudentOfClassroomDTO;
-import com.nkedu.back.dto.TeacherOfClassroomDTO;
+import com.nkedu.back.dto.*;
 
 import java.util.List;
 
@@ -80,7 +77,7 @@ public interface ClassroomService {
      * @return List<StudentOfClassroomDTO>
      * @author beom-i
      */
-    public ClassroomDTO getStudentOfClassroomsByClassroomId(Long classroom_id);
+    public List<StudentDTO> getStudentOfClassroomsByClassroomId(Long classroom_id);
 
     /**
      * 수업에 속한 학생 삭제
