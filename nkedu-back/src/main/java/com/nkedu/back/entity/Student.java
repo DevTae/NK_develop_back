@@ -1,5 +1,6 @@
 package com.nkedu.back.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -8,6 +9,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
+import java.time.LocalDate;
 
 @Entity
 @Setter
@@ -24,4 +27,10 @@ public class Student extends User {
 
 	@Column(name="grade")
 	private Long grade;
+
+	@Column(name="registrationDate", nullable=false)
+	private LocalDate registrationDate;
+
+
 }
+

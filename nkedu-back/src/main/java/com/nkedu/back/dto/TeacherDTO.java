@@ -1,10 +1,13 @@
 package com.nkedu.back.dto;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.nkedu.back.entity.Teacher.Day;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,4 +35,7 @@ public class TeacherDTO {
 
     private String phoneNumber;
 
+    private LocalDate registrationDate;
+
+    private Set<Day> workingDays;
 }

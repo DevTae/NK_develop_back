@@ -74,6 +74,8 @@ public class TeacherServiceImpl implements TeacherService {
                     .authorities(authorities)
                     .created(new Timestamp(System.currentTimeMillis()))
                     .activated(true)
+                    .registrationDate(teacherDTO.getRegistrationDate())
+                    .workingDays(teacherDTO.getWorkingDays())
                     .build();
 
             teacherRepository.save(teacher);
@@ -116,6 +118,10 @@ public class TeacherServiceImpl implements TeacherService {
                 searchedTeacher.setPhoneNumber(teacherDTO.getPhoneNumber());
             if (!ObjectUtils.isEmpty(teacherDTO.getBirth()))
                 searchedTeacher.setBirth(teacherDTO.getBirth());
+            if (!ObjectUtils.isEmpty(teacherDTO.getRegistrationDate()))
+                searchedTeacher.setRegistrationDate(teacherDTO.getRegistrationDate());
+            if (!ObjectUtils.isEmpty(teacherDTO.getWorkingDays()))
+                searchedTeacher.setWorkingDays(teacherDTO.getWorkingDays());
 
             teacherRepository.save(searchedTeacher);
 
@@ -141,6 +147,8 @@ public class TeacherServiceImpl implements TeacherService {
                 teacherDTO.setNickname(teacher.getNickname());
                 teacherDTO.setPhoneNumber(teacher.getPhoneNumber());
                 teacherDTO.setBirth(teacher.getBirth());
+                teacherDTO.setRegistrationDate(teacher.getRegistrationDate());
+                teacherDTO.setWorkingDays(teacher.getWorkingDays());
 
                 teacherDTOs.add(teacherDTO);
             }
@@ -177,6 +185,8 @@ public class TeacherServiceImpl implements TeacherService {
                 teacherDTO.setNickname(teacher.getNickname());
                 teacherDTO.setPhoneNumber(teacher.getPhoneNumber());
                 teacherDTO.setBirth(teacher.getBirth());
+                teacherDTO.setRegistrationDate(teacher.getRegistrationDate());
+                teacherDTO.setWorkingDays(teacher.getWorkingDays());
 
                 teacherDTOs.add(teacherDTO);
 			}
@@ -191,7 +201,7 @@ public class TeacherServiceImpl implements TeacherService {
 		return null;
     }
     @Override
-    public TeacherDTO findByUsername(String username) {
+    public TeacherDTO getTeacherByUsername(String username) {
 
         try {
             Teacher teacher = teacherRepository.findOneByUsername(username).get();
@@ -202,6 +212,8 @@ public class TeacherServiceImpl implements TeacherService {
             teacherDTO.setNickname(teacher.getNickname());
             teacherDTO.setPhoneNumber(teacher.getPhoneNumber());
             teacherDTO.setBirth(teacher.getBirth());
+            teacherDTO.setRegistrationDate(teacher.getRegistrationDate());
+            teacherDTO.setWorkingDays(teacher.getWorkingDays());
 
             return teacherDTO;
 
@@ -229,6 +241,8 @@ public class TeacherServiceImpl implements TeacherService {
                 teacherWithClassroomDTO.setNickname(teacher.getNickname());
                 teacherWithClassroomDTO.setPhoneNumber(teacher.getPhoneNumber());
                 teacherWithClassroomDTO.setBirth(teacher.getBirth());
+                teacherWithClassroomDTO.setRegistrationDate(teacher.getRegistrationDate());
+                teacherWithClassroomDTO.setWorkingDays(teacher.getWorkingDays());
 
                 // 1. 선생님이 담당하고 있는 반의 리스트를 생성
                 List<TeacherOfClassroomDTO> teacherOfClassroomDTOs = new ArrayList<>();
@@ -271,6 +285,8 @@ public class TeacherServiceImpl implements TeacherService {
             teacherWithClassroomDTO.setNickname(teacher.getNickname());
             teacherWithClassroomDTO.setPhoneNumber(teacher.getPhoneNumber());
             teacherWithClassroomDTO.setBirth(teacher.getBirth());
+            teacherWithClassroomDTO.setRegistrationDate(teacher.getRegistrationDate());
+            teacherWithClassroomDTO.setWorkingDays(teacher.getWorkingDays());
 
             // 1. 선생님이 담당하고 있는 반의 리스트를 생성
             List<TeacherOfClassroomDTO> teacherOfClassroomDTOs = new ArrayList<>();

@@ -50,7 +50,7 @@ public interface TeacherService {
 	 * @param username
 	 * @return Teacher
 	 */
-	public TeacherDTO findByUsername(String username);
+	public TeacherDTO getTeacherByUsername(String username);
 
 
 	/**

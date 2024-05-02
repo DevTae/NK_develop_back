@@ -82,6 +82,7 @@ public class StudentServiceImpl implements StudentService  {
 					.activated(true)
 					.grade(studentDTO.getGrade()) // grade 추가
 					.school(searchedSchool) // school 추가
+					.registrationDate(studentDTO.getRegistrationDate())
 					.build();
 
 			studentRepository.save(student);
@@ -140,6 +141,8 @@ public class StudentServiceImpl implements StudentService  {
 				searchedStudent.setGrade(studentDTO.getGrade());
 			if(!ObjectUtils.isEmpty(searchedSchool))
 				searchedStudent.setSchool(searchedSchool);
+			if(!ObjectUtils.isEmpty(studentDTO.getRegistrationDate()))
+				searchedStudent.setRegistrationDate(studentDTO.getRegistrationDate());
 
 			studentRepository.save(searchedStudent);
 			return true;
@@ -167,6 +170,8 @@ public class StudentServiceImpl implements StudentService  {
 
 				studentDTO.setSchoolName(student.getSchool().getSchoolName());
 				studentDTO.setGrade(student.getGrade());
+
+				studentDTO.setRegistrationDate(student.getRegistrationDate());
 				
 				// 학생에 대한 부모님 정보 추가
 				List<ParentDTO> parentDTOs = new ArrayList<ParentDTO>();
@@ -219,6 +224,8 @@ public class StudentServiceImpl implements StudentService  {
 
 				studentDTO.setSchoolName(student.getSchool().getSchoolName());
 				studentDTO.setGrade(student.getGrade());
+
+				studentDTO.setRegistrationDate(student.getRegistrationDate());
 				
 				// 학생에 대한 부모님 정보 추가
 				List<ParentDTO> parentDTOs = new ArrayList<ParentDTO>();
@@ -265,6 +272,7 @@ public class StudentServiceImpl implements StudentService  {
 			studentDTO.setBirth(student.getBirth());
 			studentDTO.setSchoolName(student.getSchool().getSchoolName());
 			studentDTO.setGrade(student.getGrade());
+			studentDTO.setRegistrationDate(student.getRegistrationDate());
 
 			// 학생에 대한 부모님 정보 추가
 			List<ParentDTO> parentDTOs = new ArrayList<ParentDTO>();

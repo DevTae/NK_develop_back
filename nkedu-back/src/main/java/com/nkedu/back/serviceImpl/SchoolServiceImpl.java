@@ -48,28 +48,6 @@ public class SchoolServiceImpl implements SchoolService{
 		return false;
 	}
 
-	// 등록된 학교 수정
-	// schoolName : 본체
-	// schoolDTO  : 바꿀 이름
-//	public boolean updateSchool(String schoolName, SchoolDTO schoolDTO) {
-//		try {
-//			School searchedSchool = schoolRepository.findOneBySchoolName(schoolName).get();
-//
-//			if(ObjectUtils.isEmpty(searchedSchool))
-//				return false;
-//
-//			// 요청 받은 학교 이름으로 업데이트
-//			if(!ObjectUtils.isEmpty(schoolDTO.getSchoolName()))
-//				searchedSchool.setSchoolName(schoolDTO.getSchoolName());
-//
-//			schoolRepository.save(searchedSchool);
-//			return true;
-//		} catch (Exception e) {
-//			log.info("[Failed] e : " + e.getMessage());
-//		}
-//		return false;
-//	}
-
 
 	// 등록된 모든 학교 리스트 조회
 	public List<SchoolDTO> getSchools() {
@@ -80,7 +58,6 @@ public class SchoolServiceImpl implements SchoolService{
 
 			for(School school : schools) {
 				SchoolDTO schoolDTO = new SchoolDTO();
-				//schoolDTO.setId(school.getId());
 				schoolDTO.setSchoolName(school.getSchoolName());
 
 				schoolDTOs.add(schoolDTO);
