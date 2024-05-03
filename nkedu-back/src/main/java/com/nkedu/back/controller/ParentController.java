@@ -50,7 +50,7 @@ public class ParentController {
 		}
 	}
 	
-	// 페이지 별 부모님 조회 + 검색기ㅡ
+	// 페이지 별 부모님 조회 + 검색기능
 	@GetMapping("/parent")
 	public ResponseEntity<PageDTO<ParentDTO>> getParents(@RequestParam(value="page", defaultValue="0") Integer page,
 														 @RequestParam(value="keyword", defaultValue="",required=false) String keyword) {

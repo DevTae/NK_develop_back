@@ -188,25 +188,22 @@ public class TeacherServiceImpl implements TeacherService {
                 teacherDTO.setRegistrationDate(teacher.getRegistrationDate());
                 teacherDTO.setWorkingDays(teacher.getWorkingDays());
 
+                List<TeacherOfClassroomDTO> teacherOfClassroomDTOs = new ArrayList<>();
+                List<TeacherOfClassroom> teacherOfClassrooms = teacherOfclassroomRepository.findAllByTeacherId(teacher.getId());
+                for(TeacherOfClassroom teacherOfClassroom : teacherOfClassrooms){
+                    TeacherOfClassroomDTO TC = TeacherOfClassroomDTO.builder()
+                            .classroomDTO(ClassroomDTO.builder()
+                                    .id(teacherOfClassroom.getClassroom().getId())
+                                    .classname(teacherOfClassroom.getClassroom().getClassname())
+                                    .build())
+                            .type(teacherOfClassroom.isType()).build();
+                    teacherOfClassroomDTOs.add(TC);
+                }
+                teacherDTO.setTeacherOfClassroomDTO(teacherOfClassroomDTOs);
+
                 teacherDTOs.add(teacherDTO);
 			}
 
-            // 1. 선생님이 담당하고 있는 반의 리스트를 생성
-            List<TeacherOfClassroomDTO> teacherOfClassroomDTOs = new ArrayList<>();
-            // 2. 선생님이 담당하고 있는 선생-반 모든 관계테이블을 가져옴
-            List<TeacherOfClassroom> teacherOfClassrooms = teacherOfclassroomRepository.findAllByTeacherId(teacher.getId());
-            // 3. 모든 관계테이블을 돌면서 선생님이 담당하고 있는 반의 리스트에 추가시킴
-            for(TeacherOfClassroom teacherOfClassroom : teacherOfClassrooms){
-                TeacherOfClassroomDTO TC = TeacherOfClassroomDTO.builder()
-                        .classroomDTO(ClassroomDTO.builder()
-                                .id(teacherOfClassroom.getClassroom().getId())
-                                .classname(teacherOfClassroom.getClassroom().getClassname())
-                                .build())
-                        .type(teacherOfClassroom.isType()).build();
-                teacherOfClassroomDTOs.add(TC);
-            }
-            // 4. 선생님의 DTO에 선생님이 담당하고 있는 반의 리스트를 넣음.
-            teacherWithClassroomDTO.setTeacherOfClassroomDTO(teacherOfClassroomDTOs);
 			
 			pageDTO.setResults(teacherDTOs);
 			
@@ -256,10 +253,6 @@ public class TeacherServiceImpl implements TeacherService {
                 teacherWithClassroomDTO.setId(teacher.getId());
                 teacherWithClassroomDTO.setUsername(teacher.getUsername());
                 teacherWithClassroomDTO.setNickname(teacher.getNickname());
-                teacherWithClassroomDTO.setPhoneNumber(teacher.getPhoneNumber());
-                teacherWithClassroomDTO.setBirth(teacher.getBirth());
-                teacherWithClassroomDTO.setRegistrationDate(teacher.getRegistrationDate());
-                teacherWithClassroomDTO.setWorkingDays(teacher.getWorkingDays());
 
                 // 1. 선생님이 담당하고 있는 반의 리스트를 생성
                 List<TeacherOfClassroomDTO> teacherOfClassroomDTOs = new ArrayList<>();

@@ -109,7 +109,4 @@ public class StudentController  {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
-
-	// 학생 계정 세부정보 조회 
 }

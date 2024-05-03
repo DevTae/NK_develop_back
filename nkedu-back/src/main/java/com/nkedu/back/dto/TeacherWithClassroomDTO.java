@@ -1,7 +1,7 @@
 package com.nkedu.back.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.nkedu.back.dto.TeacherOfClassroomDTO;
 import com.nkedu.back.entity.Teacher;
 import lombok.*;
 
@@ -18,6 +18,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TeacherWithClassroomDTO {
 
     private Long id;
