@@ -24,7 +24,7 @@ public class Teacher extends User {
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.REMOVE)
     private Set<TeacherOfClassroom> teacherOfClassrooms;
 
-    @Column(name="registrationDate", nullable=false)
+    @Column(name="registrationDate")
     private LocalDate registrationDate;
 
     @ElementCollection

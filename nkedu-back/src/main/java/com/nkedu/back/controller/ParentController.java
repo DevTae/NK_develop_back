@@ -50,11 +50,12 @@ public class ParentController {
 		}
 	}
 	
-	// 페이지 별 부모님 조회
+	// 페이지 별 부모님 조회 + 검색기ㅡ
 	@GetMapping("/parent")
-	public ResponseEntity<PageDTO<ParentDTO>> getParents(@RequestParam(value="page", defaultValue="0") Integer page) {
+	public ResponseEntity<PageDTO<ParentDTO>> getParents(@RequestParam(value="page", defaultValue="0") Integer page,
+														 @RequestParam(value="keyword", defaultValue="",required=false) String keyword) {
 		
-		PageDTO<ParentDTO> pageDTO = parentService.getParents(page);
+		PageDTO<ParentDTO> pageDTO = parentService.getParentsByKeyword(page,keyword);
 		
 		if(pageDTO != null) {
 			return new ResponseEntity<>(pageDTO, HttpStatus.OK);
@@ -67,7 +68,7 @@ public class ParentController {
 	public ResponseEntity<ParentDTO> getParent(@PathVariable("username") String username) {
 		// 본인 혹은 관리자만 열람 가능하도록 토큰 필요
 
-		ParentDTO parentDTO = parentService.findByUsername(username);
+		ParentDTO parentDTO = parentService.getParentByUsername(username);
 		
 		if (parentDTO != null) {
 			return new ResponseEntity<>(parentDTO, HttpStatus.OK);

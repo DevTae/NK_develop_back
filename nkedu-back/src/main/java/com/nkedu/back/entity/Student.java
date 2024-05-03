@@ -28,7 +28,7 @@ public class Student extends User {
 	@Column(name="grade")
 	private Long grade;
 
-	@Column(name="registrationDate", nullable=false)
+	@Column(name="registrationDate")
 	private LocalDate registrationDate;
 
 

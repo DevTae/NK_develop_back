@@ -222,7 +222,7 @@ public class ParentServiceImpl implements ParentService {
 	}
 	
 	@Override
-	public PageDTO<ParentDTO> getParents(Integer page) {
+	public PageDTO<ParentDTO> getParentsByKeyword(Integer page, String keyword) {
 		try {
 			
 			PageDTO<ParentDTO> pageDTO = new PageDTO<>();
@@ -234,7 +234,7 @@ public class ParentServiceImpl implements ParentService {
 			Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
 
 			// Page 조회
-			Page<Parent> pageOfParent = parentRepository.findAll(pageable);
+			Page<Parent> pageOfParent = parentRepository.findAllByParentName(pageable,keyword);
 			
 			pageDTO.setCurrentPage(pageOfParent.getNumber());
 			pageDTO.setTotalPage(pageOfParent.getTotalPages());
@@ -278,7 +278,7 @@ public class ParentServiceImpl implements ParentService {
 	}
 
 	@Override
-	public ParentDTO findByUsername(String username) {
+	public ParentDTO getParentByUsername(String username) {
 		
 		try {
 			Parent parent = parentRepository.findOneByUsername(username).get();

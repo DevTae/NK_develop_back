@@ -2,6 +2,7 @@ package com.nkedu.back.dto;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -38,4 +39,7 @@ public class TeacherDTO {
     private LocalDate registrationDate;
 
     private Set<Day> workingDays;
+
+    @JsonProperty(value="Classroom")
+    private List<TeacherOfClassroomDTO> teacherOfClassroomDTO;
 }
