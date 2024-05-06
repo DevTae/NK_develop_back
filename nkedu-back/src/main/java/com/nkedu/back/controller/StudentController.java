@@ -101,7 +101,7 @@ public class StudentController  {
 	@GetMapping("/student/{username}")
 	public ResponseEntity<StudentDTO> getStudent(@PathVariable("username") String username) {
 		
-		StudentDTO studentDTO = studentService.findByUsername(username);
+		StudentDTO studentDTO = studentService.getStudentByUsername(username);
 		
 		if (studentDTO != null) {
 			return new ResponseEntity<>(studentDTO, HttpStatus.OK);
@@ -109,7 +109,4 @@ public class StudentController  {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
-
-	// 학생 계정 세부정보 조회 
 }

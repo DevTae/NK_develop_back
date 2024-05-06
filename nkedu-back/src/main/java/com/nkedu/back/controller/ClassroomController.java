@@ -183,11 +183,11 @@ public class ClassroomController {
      * @author beom-i
      */
     @GetMapping ("/classroom/{classroom_id}/student")
-    public ResponseEntity<ClassroomDTO> getStudentOfClassroomsByClassroomId(@PathVariable("classroom_id") Long classroom_id) {
-        ClassroomDTO classroomDTO = classroomService.getStudentOfClassroomsByClassroomId(classroom_id);
+    public ResponseEntity<List<StudentDTO>> getStudentOfClassroomsByClassroomId(@PathVariable("classroom_id") Long classroom_id) {
+        List<StudentDTO> StudentDTOs = classroomService.getStudentOfClassroomsByClassroomId(classroom_id);
 
-        if (classroomDTO != null) {
-            return new ResponseEntity<>(classroomDTO, HttpStatus.OK);
+        if (StudentDTOs != null) {
+            return new ResponseEntity<>(StudentDTOs, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }

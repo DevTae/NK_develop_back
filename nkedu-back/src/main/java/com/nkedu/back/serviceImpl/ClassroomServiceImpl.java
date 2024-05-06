@@ -432,21 +432,32 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public ClassroomDTO getStudentOfClassroomsByClassroomId(Long classroom_id) {
+    public List<StudentDTO> getStudentOfClassroomsByClassroomId(Long classroom_id) {
         try{
             List<StudentOfClassroom> studentOfClassrooms = studentOfClassroomRepository.findAllByClassroomId(classroom_id);
 
-            List<Long> studentIds = new ArrayList<>();
+            List<StudentDTO> studentDTOs = new ArrayList<>();
 
             for(StudentOfClassroom studentOfClassroom : studentOfClassrooms){
 
                 // activated 가 활성화 되어있는 매핑 테이블만 가져옴
                 if(studentOfClassroom.isActivated()) {
-                    studentIds.add(studentOfClassroom.getStudent().getId());
+                    StudentDTO studentDTO = StudentDTO.builder()
+                            .id(studentOfClassroom.getStudent().getId())
+                            .nickname(studentOfClassroom.getStudent().getNickname())
+                            .birth(studentOfClassroom.getStudent().getBirth())
+                            .phoneNumber(studentOfClassroom.getStudent().getPhoneNumber())
+                            .schoolName(studentOfClassroom.getStudent().getSchool().getSchoolName())
+//                            .grade(studentOfClassroom.getStudent().getGrade())
+//                            .registrationDate(studentOfClassroom.getStudent().getRegistrationDate())
+                            .build();
+
+                    studentDTOs.add(studentDTO);
                 }
             }
-            return ClassroomDTO.builder()
-                    .studentIds(studentIds).build();
+
+            return studentDTOs;
+
         } catch (Exception e){
             log.info("Failed e : " + e.getMessage());
         } return null;

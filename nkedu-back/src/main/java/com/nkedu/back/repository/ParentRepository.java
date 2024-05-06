@@ -3,6 +3,7 @@ package com.nkedu.back.repository;
 import java.util.List;
 import java.util.Optional;
 
+import com.nkedu.back.entity.Student;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,4 +31,7 @@ public interface ParentRepository extends JpaRepository<Parent, Long> {
 	@Override
 	@Query("SELECT p FROM Parent p WHERE p.activated = true")
 	Page<Parent> findAll(Pageable pageable);
+
+	@Query("SELECT p FROM Parent p WHERE p.activated = true AND p.nickname LIKE CONCAT('%', :parent_name, '%')")
+	Page<Parent> findAllByParentName(Pageable pageable, @Param("parent_name") String keyword);
 }

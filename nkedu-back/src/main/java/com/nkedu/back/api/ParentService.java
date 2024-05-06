@@ -35,22 +35,23 @@ public interface ParentService {
 	public List<ParentDTO> getParents();
 	
 	/**
-	 * 부모님 계정 페이지 별 조회
+	 * 부모님 계정 페이지 별 조회 + 검색기능
 	 * @param page
+	 * @param keyword
 	 * @return
 	 */
-	public PageDTO<ParentDTO> getParents(Integer page);
+	public PageDTO<ParentDTO> getParentsByKeyword(Integer page,String keyword);
 
 	/**
 	 * 부모님 계정 정보 조회
 	 * @param username
 	 * @return ParentDTO
 	 */
-	public ParentDTO findByUsername(String username);
+	public ParentDTO getParentByUsername(String username);
 
 	/**
 	 * 부모님 계정에 속한 학생 추가
-	 * @param parentname, student-name
+	 * @param parentOfStudentDTO
 	 * @return ParentOfStudent
 	 */
 	public ParentOfStudentDTO createParentOfStudent(ParentOfStudentDTO parentOfStudentDTO);
@@ -64,7 +65,7 @@ public interface ParentService {
 	
 	/**
 	 * 부모님 계정에 속한 학생 삭제
-	 * @param ParentOfStudentDTO
+	 * @param parentOfStudentDTO
 	 * @return boolean
 	 */
 	public boolean deleteParentOfStudent(ParentOfStudentDTO parentOfStudentDTO);

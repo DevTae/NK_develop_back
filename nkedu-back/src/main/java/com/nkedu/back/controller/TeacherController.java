@@ -60,7 +60,7 @@ public class TeacherController {
     public ResponseEntity<TeacherDTO> getTeacher(@PathVariable("username") String username) {
         // 토큰 필요
 
-        TeacherDTO teacherDTO = teacherService.findByUsername(username);
+        TeacherDTO teacherDTO = teacherService.getTeacherByUsername(username);
 
         if (teacherDTO != null) {
             return new ResponseEntity<>(teacherDTO, HttpStatus.OK);
