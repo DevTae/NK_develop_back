@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.CorsFilter;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,6 +36,8 @@ public class SecurityConfig {
 	SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity
 				.cors(Customizer.withDefaults())
+				.addFilterBefore(new CORSFilter(), CorsFilter.class) // CORS Filter 반영
+				
 				.csrf(CsrfConfigurer::disable)
 				
 				.exceptionHandling(authenticationManager -> authenticationManager
