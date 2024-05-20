@@ -3,12 +3,10 @@ package com.nkedu.back.serviceImpl;
 import java.sql.Timestamp;
 import java.util.*;
 
-import com.nkedu.back.dto.ClassroomDTO;
-import com.nkedu.back.dto.PageDTO;
+import com.nkedu.back.dto.*;
 
-import com.nkedu.back.dto.TeacherOfClassroomDTO;
-import com.nkedu.back.dto.TeacherWithClassroomDTO;
 import com.nkedu.back.entity.Authority;
+import com.nkedu.back.entity.Parent;
 import com.nkedu.back.entity.TeacherOfClassroom;
 import com.nkedu.back.repository.TeacherOfClassroomRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +23,6 @@ import org.springframework.util.ObjectUtils;
 import com.nkedu.back.api.TeacherService;
 import com.nkedu.back.entity.Teacher;
 import com.nkedu.back.entity.Teacher.Day;
-import com.nkedu.back.dto.TeacherDTO;
 import com.nkedu.back.repository.TeacherRepository;
 
 @Slf4j
@@ -93,6 +90,30 @@ public class TeacherServiceImpl implements TeacherService {
         }
         return false;
     }
+
+    @Override
+    public boolean deletesById(TeacherDTO teacherDTO) {
+        try{
+
+            for(Long teacher_id : teacherDTO.getTeacherIds()){
+
+                Optional<Teacher> optionalTeahcer = teacherRepository.findById(teacher_id);
+                if (optionalTeahcer.isEmpty()) {
+                    continue;
+                }
+
+                Teacher teacher = optionalTeahcer.get();
+
+                teacher.setActivated(false);
+                teacherRepository.save(teacher);
+            }
+            return true;
+        } catch (Exception e){
+            log.info("Failed e : " + e.getMessage());
+        }
+        return false;
+    }
+
 
     @Override
     public boolean updateTeacher(String username, TeacherDTO teacherDTO) {

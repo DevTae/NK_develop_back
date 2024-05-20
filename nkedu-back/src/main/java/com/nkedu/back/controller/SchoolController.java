@@ -54,8 +54,17 @@ public class SchoolController {
 	@DeleteMapping("/school/{schoolName}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Void> deleteSchool (@PathVariable("schoolName") String schoolName){
-		return schoolService.deleteBySchoolname(schoolName) ?
+		return schoolService.deleteBySchoolName(schoolName) ?
 			       new ResponseEntity<>(null, HttpStatus.OK) :
 			       new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
+
+	// 학교 계정 다중 삭제
+	@DeleteMapping("/school")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Void> deletesSchool (@RequestBody SchoolDTO schoolDTO){
+		return schoolService.deletesBySchoolName(schoolDTO) ?
+				new ResponseEntity<>(null, HttpStatus.OK) :
+				new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
 }

@@ -77,14 +77,30 @@ public class StudentController  {
 			       new ResponseEntity<>(null, HttpStatus.OK) :
 			       new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);	
 	}
-	
-	// 학생 계정 삭제 
-	@DeleteMapping("/student/{username}")
+
+	/**
+	 * 학생 계정 삭제 (비활성화)
+	 * @param username
+	 * @author beom-i
+	 */    		@DeleteMapping("/student/{username}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Void> deleteStudent(@PathVariable("username") String username){
 		return studentService.deleteByUsername(username) ?
 			       new ResponseEntity<>(null, HttpStatus.OK) :
 			       new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
+
+	/**
+	 * 학생 계정 다중 삭제 (비활성화)
+	 * @param studentDTO
+	 * @author beom-i
+	 */
+	@DeleteMapping("/student")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Void> deleteStudents(@Validated @RequestBody StudentDTO studentDTO){
+		return studentService.deletesById(studentDTO) ?
+				new ResponseEntity<>(null, HttpStatus.OK) :
+				new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
 	
 	

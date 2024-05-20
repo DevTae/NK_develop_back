@@ -35,6 +35,10 @@ public class ParentDTO {
 	private Date birth;
 	
 	private String phoneNumber;
+
+	// 다중 삭제를 위한 부모님 id
+	@JsonProperty("parentIds")
+	private List<Long> parentIds;
 	
 	// 부모님 계정에 속한 학생 리스트
 	@JsonProperty("students")

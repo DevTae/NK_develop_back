@@ -2,6 +2,7 @@ package com.nkedu.back.controller;
 
 import java.util.List;
 
+import com.nkedu.back.dto.*;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nkedu.back.api.ParentService;
-import com.nkedu.back.dto.PageDTO;
-import com.nkedu.back.dto.ParentDTO;
-import com.nkedu.back.dto.ParentOfStudentDTO;
-import com.nkedu.back.dto.RelationshipDTO;
-import com.nkedu.back.dto.StudentDTO;
 import com.nkedu.back.entity.Parent;
 import com.nkedu.back.entity.ParentOfStudent;
 import com.nkedu.back.entity.Student;
@@ -89,20 +85,25 @@ public class ParentController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+
 	@PostMapping("/parent")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Void> createParent(@Validated @RequestBody ParentDTO parentDTO) {
-		
+
 		boolean result = parentService.createParent(parentDTO);
-		
+
 		if (result == true) {
 			return new ResponseEntity<>(null, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+
+	/**
+	 * 부모님 계정 삭제 (비활성화)
+	 * @param username
+	 * @author DevTae
+	 */
 	@DeleteMapping("/parent/{username}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Void> deleteParent(@PathVariable("username") String username) {
@@ -114,6 +115,19 @@ public class ParentController {
 		} else {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
+	}
+
+	/**
+	 * 부모님 계정 다중 삭제 (비활성화)
+	 * @param parentDTO
+	 * @author beom-i
+	 */
+	@DeleteMapping("/parent")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Void> deleteTeachers(@Validated @RequestBody ParentDTO parentDTO){
+		return parentService.deletesById(parentDTO) ?
+				new ResponseEntity<>(null, HttpStatus.OK) :
+				new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
 	
 	@GetMapping("/parent/{parentname}/student")

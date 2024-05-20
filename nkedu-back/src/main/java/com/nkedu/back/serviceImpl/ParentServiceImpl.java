@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.nkedu.back.entity.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,11 +19,7 @@ import org.springframework.util.ObjectUtils;
 
 
 import com.nkedu.back.api.ParentService;
-import com.nkedu.back.entity.Authority;
-import com.nkedu.back.entity.Parent;
-import com.nkedu.back.entity.ParentOfStudent;
 import com.nkedu.back.entity.ParentOfStudent.Relationship;
-import com.nkedu.back.entity.Student;
 import com.nkedu.back.dto.PageDTO;
 import com.nkedu.back.dto.ParentDTO;
 import com.nkedu.back.dto.ParentOfStudentDTO;
@@ -130,6 +127,30 @@ public class ParentServiceImpl implements ParentService {
 		}
 		return false;
 	}
+
+	@Override
+	public boolean deletesById(ParentDTO parentDTO) {
+		try{
+
+			for(Long parent_id : parentDTO.getParentIds()){
+
+				Optional<Parent> optionalParent = parentRepository.findById(parent_id);
+				if (optionalParent.isEmpty()) {
+					continue;
+				}
+
+				Parent parent = optionalParent.get();
+
+				parent.setActivated(false);
+				parentRepository.save(parent);
+			}
+			return true;
+		} catch (Exception e){
+			log.info("Failed e : " + e.getMessage());
+		}
+		return false;
+	}
+
 
 	@Transactional
 	@Override

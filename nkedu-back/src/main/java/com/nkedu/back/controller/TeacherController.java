@@ -97,6 +97,11 @@ public class TeacherController {
         }
     }
 
+    /**
+     * 선생님 계정 삭제 (비활성화)
+     * @param username
+     * @author beom-i
+     */
     @DeleteMapping("/teacher/{username}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteTeacher(@PathVariable("username") String username) {
@@ -109,6 +114,19 @@ public class TeacherController {
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    /**
+     * 선생님 계정 다중 삭제
+     * @param teacherDTO
+     * @author beom-i
+     */
+    @DeleteMapping("/teacher")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> deleteTeachers(@Validated @RequestBody TeacherDTO teacherDTO){
+        return teacherService.deletesById(teacherDTO) ?
+                new ResponseEntity<>(null, HttpStatus.OK) :
+                new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     }
 
     /**

@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.nkedu.back.entity.Authority;
-import com.nkedu.back.entity.Parent;
-import com.nkedu.back.entity.ParentOfStudent;
+import com.nkedu.back.entity.*;
 
+import com.nkedu.back.exception.errorCode.UserErrorCode;
+import com.nkedu.back.exception.exception.CustomException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import com.nkedu.back.api.StudentService;
-import com.nkedu.back.entity.School;
-import com.nkedu.back.entity.Student;
 import com.nkedu.back.dto.PageDTO;
 import com.nkedu.back.dto.ParentDTO;
 import com.nkedu.back.dto.StudentDTO;
@@ -44,17 +42,16 @@ public class StudentServiceImpl implements StudentService  {
 
 	// 학생 계정 생성
 	public boolean createStudent(StudentDTO studentDTO) {
-		try {
 
 			if (!ObjectUtils.isEmpty(studentRepository.findOneByUsername(studentDTO.getUsername()))) {
-				throw new RuntimeException("이미 가입되어 있는 유저입니다.");
+				throw new CustomException((UserErrorCode.INACTIVE_USER));
 			}
 
 			//1. 요청온 학교가 기존 학교 DB에 존재하지 않으면 오류 발생
 			String schoolName = studentDTO.getSchoolName();
 			Optional<School> searchedSchoolOpt = schoolRepository.findBySchoolName(schoolName);
 			if(!searchedSchoolOpt.isPresent()){
-				throw new RuntimeException("존재하지 않는 학교 이름입니다.");
+				throw new CustomException((UserErrorCode.NO_SCHOOL));
 			}
 			School searchedSchool = searchedSchoolOpt.get();
 
@@ -87,10 +84,6 @@ public class StudentServiceImpl implements StudentService  {
 
 			studentRepository.save(student);
 			return true;
-		} catch (Exception e) {
-			log.error("Failed: " + e.getMessage(), e);
-		}
-		return false;
 	}
 
 	// 학생 계정 삭제
@@ -103,6 +96,29 @@ public class StudentServiceImpl implements StudentService  {
 			return true;
 		} catch (Exception e){
 			log.info("failed e : " + e.getMessage());
+		}
+		return false;
+	}
+
+	@Override
+	public boolean deletesById(StudentDTO studentDTO) {
+		try{
+
+			for(Long student_id : studentDTO.getStudentIds()){
+
+				Optional<Student> optionalStudent = studentRepository.findById(student_id);
+				if (optionalStudent.isEmpty()) {
+					continue;
+				}
+
+				Student student = optionalStudent.get();
+
+				student.setActivated(false);
+				studentRepository.save(student);
+			}
+			return true;
+		} catch (Exception e){
+			log.info("Failed e : " + e.getMessage());
 		}
 		return false;
 	}

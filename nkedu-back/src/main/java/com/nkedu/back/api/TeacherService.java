@@ -16,10 +16,16 @@ public interface TeacherService {
 	public boolean createTeacher(TeacherDTO teacherDTO);
 
 	/**
-	 * 선생님 계정 삭제 (토큰이 필요함)
+	 * 선생님 계정 삭제 (비활성화)
 	 * @param username
 	 */
 	public boolean deleteByUsername(String username);
+
+	/**
+	 * 선생님 계정 다중 삭제 (비활성화)
+	 * @param teacherDTO
+	 */
+	public boolean deletesById(TeacherDTO teacherDTO);
 
 	/**
 	 * 선생님 계정 설정 (토큰이 필요함)
