@@ -1,21 +1,14 @@
 package com.nkedu.back.serviceImpl;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import com.nkedu.back.dto.ClassroomDTO;
 import com.nkedu.back.dto.PageDTO;
-import com.nkedu.back.dto.ParentDTO;
-import com.nkedu.back.dto.StudentDTO;
+
 import com.nkedu.back.dto.TeacherOfClassroomDTO;
 import com.nkedu.back.dto.TeacherWithClassroomDTO;
 import com.nkedu.back.entity.Authority;
-import com.nkedu.back.entity.Parent;
-import com.nkedu.back.entity.ParentOfStudent;
-import com.nkedu.back.entity.Student;
 import com.nkedu.back.entity.TeacherOfClassroom;
 import com.nkedu.back.repository.TeacherOfClassroomRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +24,7 @@ import org.springframework.util.ObjectUtils;
 
 import com.nkedu.back.api.TeacherService;
 import com.nkedu.back.entity.Teacher;
+import com.nkedu.back.entity.Teacher.Day;
 import com.nkedu.back.dto.TeacherDTO;
 import com.nkedu.back.repository.TeacherRepository;
 
@@ -75,7 +69,7 @@ public class TeacherServiceImpl implements TeacherService {
                     .created(new Timestamp(System.currentTimeMillis()))
                     .activated(true)
                     .registrationDate(teacherDTO.getRegistrationDate())
-                    .workingDays(teacherDTO.getWorkingDays())
+                    .workingDays(EnumSet.copyOf(teacherDTO.getWorkingDays()))
                     .build();
 
             teacherRepository.save(teacher);
@@ -148,7 +142,7 @@ public class TeacherServiceImpl implements TeacherService {
                 teacherDTO.setPhoneNumber(teacher.getPhoneNumber());
                 teacherDTO.setBirth(teacher.getBirth());
                 teacherDTO.setRegistrationDate(teacher.getRegistrationDate());
-                teacherDTO.setWorkingDays(teacher.getWorkingDays());
+                teacherDTO.setWorkingDays(EnumSet.copyOf(teacher.getWorkingDays()));
 
                 teacherDTOs.add(teacherDTO);
             }
@@ -186,7 +180,8 @@ public class TeacherServiceImpl implements TeacherService {
                 teacherDTO.setPhoneNumber(teacher.getPhoneNumber());
                 teacherDTO.setBirth(teacher.getBirth());
                 teacherDTO.setRegistrationDate(teacher.getRegistrationDate());
-                teacherDTO.setWorkingDays(teacher.getWorkingDays());
+                teacherDTO.setWorkingDays(EnumSet.copyOf(teacher.getWorkingDays()));
+
 
                 List<TeacherOfClassroomDTO> teacherOfClassroomDTOs = new ArrayList<>();
                 List<TeacherOfClassroom> teacherOfClassrooms = teacherOfclassroomRepository.findAllByTeacherId(teacher.getId());
@@ -227,7 +222,7 @@ public class TeacherServiceImpl implements TeacherService {
             teacherDTO.setPhoneNumber(teacher.getPhoneNumber());
             teacherDTO.setBirth(teacher.getBirth());
             teacherDTO.setRegistrationDate(teacher.getRegistrationDate());
-            teacherDTO.setWorkingDays(teacher.getWorkingDays());
+            teacherDTO.setWorkingDays(EnumSet.copyOf(teacher.getWorkingDays())); // EnumSet으로 변환
 
             return teacherDTO;
 
@@ -296,7 +291,8 @@ public class TeacherServiceImpl implements TeacherService {
             teacherWithClassroomDTO.setPhoneNumber(teacher.getPhoneNumber());
             teacherWithClassroomDTO.setBirth(teacher.getBirth());
             teacherWithClassroomDTO.setRegistrationDate(teacher.getRegistrationDate());
-            teacherWithClassroomDTO.setWorkingDays(teacher.getWorkingDays());
+            teacherWithClassroomDTO.setWorkingDays(EnumSet.copyOf(teacher.getWorkingDays()));
+
 
             // 1. 선생님이 담당하고 있는 반의 리스트를 생성
             List<TeacherOfClassroomDTO> teacherOfClassroomDTOs = new ArrayList<>();

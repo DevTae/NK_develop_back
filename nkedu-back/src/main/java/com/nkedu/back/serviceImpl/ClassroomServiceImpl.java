@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,10 +44,10 @@ public class ClassroomServiceImpl implements ClassroomService {
     @Override
     @Transactional
     public boolean createClassroom(ClassroomDTO classroomDTO) {
-    	
-    	Classroom classroom = null;
-    	boolean isSaved = false;
-    	
+
+        Classroom classroom = null;
+        boolean isSaved = false;
+
         try{
             if (!ObjectUtils.isEmpty(classroomRepository.findOneClassroomById(classroomDTO.getId()))) {
                 throw new Exception("이미 등록된 수업입니다.");
@@ -57,7 +58,7 @@ public class ClassroomServiceImpl implements ClassroomService {
              * */
             classroom = (Classroom) Classroom.builder()
                     .classname(classroomDTO.getClassname())
-                    .days(classroomDTO.getDays())
+                    .days(EnumSet.copyOf(classroomDTO.getDays()))
                     .activated(true)
                     .build();
 
@@ -109,9 +110,9 @@ public class ClassroomServiceImpl implements ClassroomService {
 
             return true;
         } catch(Exception e) {
-        	if(isSaved && classroom != null)
-        		classroomRepository.delete(classroom);
-        	
+            if(isSaved && classroom != null)
+                classroomRepository.delete(classroom);
+
             log.error("Failed: " + e.getMessage(),e);
         }
         return false;
@@ -220,7 +221,7 @@ public class ClassroomServiceImpl implements ClassroomService {
                 ClassroomDTO classroomDTO = new ClassroomDTO();
                 classroomDTO.setId(classroom.getId());
                 classroomDTO.setClassname(classroom.getClassname());
-                classroomDTO.setDays(classroom.getDays());
+                classroomDTO.setDays(EnumSet.copyOf(classroom.getDays()));
 
                 // 1. classroom_id에 해당하는 관계테이블을 가져옴
                 List<TeacherOfClassroom> teacherofclassrooms = teacherOfClassroomRepository.findAllByClassroomId(classroom.getId());
@@ -263,27 +264,27 @@ public class ClassroomServiceImpl implements ClassroomService {
     
     @Override
     public PageDTO<ClassroomDTO> getClassroomsByKeyword(Integer page,String keyword) {
-    	try {
+        try {
 
             PageDTO<ClassroomDTO> pageDTO = new PageDTO<>();
-			List<ClassroomDTO> classroomDTOs = new ArrayList<>();
+            List<ClassroomDTO> classroomDTOs = new ArrayList<>();
 
-			// 정렬 기준
-			List<Sort.Order> sorts = new ArrayList<>();
-			sorts.add(Sort.Order.asc("classname"));
-			Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+            // 정렬 기준
+            List<Sort.Order> sorts = new ArrayList<>();
+            sorts.add(Sort.Order.asc("classname"));
+            Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
 
-			// Page 조회
+            // Page 조회
             Page<Classroom> pageOfClassroom = classroomRepository.findAllByClassname(pageable,keyword);
-			
-			pageDTO.setCurrentPage(pageOfClassroom.getNumber());
-			pageDTO.setTotalPage(pageOfClassroom.getTotalPages());
+
+            pageDTO.setCurrentPage(pageOfClassroom.getNumber());
+            pageDTO.setTotalPage(pageOfClassroom.getTotalPages());
 
             for(Classroom classroom : pageOfClassroom.getContent()) {
                 ClassroomDTO classroomDTO = new ClassroomDTO();
                 classroomDTO.setId(classroom.getId());
                 classroomDTO.setClassname(classroom.getClassname());
-                classroomDTO.setDays(classroom.getDays());
+                classroomDTO.setDays(EnumSet.copyOf(classroom.getDays()));
 
                 // 1. classroom_id에 해당하는 관계테이블을 가져옴
                 List<TeacherOfClassroom> teacherofclassrooms = teacherOfClassroomRepository.findAllByClassroomId(classroom.getId());
@@ -339,7 +340,7 @@ public class ClassroomServiceImpl implements ClassroomService {
             ClassroomDTO classroomDTO = new ClassroomDTO();
             classroomDTO.setId(classroom.getId());
             classroomDTO.setClassname(classroom.getClassname());
-            classroomDTO.setDays(classroom.getDays());
+            classroomDTO.setDays(EnumSet.copyOf(classroom.getDays()));
 
             // 1. classroom_id에 해당하는 관계테이블을 가져옴
             List<TeacherOfClassroom> teacherofclassrooms = teacherOfClassroomRepository.findAllByClassroomId(classroom.getId());
