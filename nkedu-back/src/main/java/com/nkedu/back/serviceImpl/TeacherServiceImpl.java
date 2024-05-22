@@ -8,6 +8,8 @@ import com.nkedu.back.dto.*;
 import com.nkedu.back.entity.Authority;
 import com.nkedu.back.entity.Parent;
 import com.nkedu.back.entity.TeacherOfClassroom;
+import com.nkedu.back.exception.errorCode.UserErrorCode;
+import com.nkedu.back.exception.exception.CustomException;
 import com.nkedu.back.repository.TeacherOfClassroomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +24,6 @@ import org.springframework.util.ObjectUtils;
 
 import com.nkedu.back.api.TeacherService;
 import com.nkedu.back.entity.Teacher;
-import com.nkedu.back.entity.Teacher.Day;
 import com.nkedu.back.repository.TeacherRepository;
 
 @Slf4j
@@ -39,7 +40,7 @@ public class TeacherServiceImpl implements TeacherService {
     public boolean createTeacher(TeacherDTO teacherDTO) {
         try {
             if (!ObjectUtils.isEmpty(teacherRepository.findOneByUsername(teacherDTO.getUsername()))) {
-                throw new RuntimeException("이미 가입되어 있는 유저입니다.");
+                throw new CustomException(UserErrorCode.DUPLICATE_USERNAME);
             }
 
             System.out.println("getUserName: " + teacherDTO.getUsername());
@@ -72,9 +73,8 @@ public class TeacherServiceImpl implements TeacherService {
             teacherRepository.save(teacher);
             return true;
         } catch (Exception e) {
-            log.error("Failed: " + e.getMessage(), e);
+            throw e;
         }
-        return false;
     }
 
     @Override
@@ -121,7 +121,7 @@ public class TeacherServiceImpl implements TeacherService {
             Teacher searchedTeacher = teacherRepository.findOneByUsername(username).get();
 
             if (ObjectUtils.isEmpty(searchedTeacher))
-                return false;
+                throw new CustomException(UserErrorCode.USER_NOT_FOUND);
 
             if (!ObjectUtils.isEmpty(teacherDTO.getUsername()))
                 searchedTeacher.setUsername(teacherDTO.getUsername());
@@ -139,13 +139,10 @@ public class TeacherServiceImpl implements TeacherService {
                 searchedTeacher.setWorkingDays(teacherDTO.getWorkingDays());
 
             teacherRepository.save(searchedTeacher);
-
             return true;
         } catch (Exception e) {
-            log.info("[Failed] e : " + e.getMessage());
+            throw e;
         }
-
-        return false;
     }
 
     @Override
@@ -232,7 +229,6 @@ public class TeacherServiceImpl implements TeacherService {
     }
     @Override
     public TeacherDTO getTeacherByUsername(String username) {
-
         try {
             Teacher teacher = teacherRepository.findOneByUsername(username).get();
 
@@ -250,7 +246,6 @@ public class TeacherServiceImpl implements TeacherService {
         } catch (Exception e) {
             log.info("[Failed] e : " + e.getMessage());
         }
-
         return null;
     }
 

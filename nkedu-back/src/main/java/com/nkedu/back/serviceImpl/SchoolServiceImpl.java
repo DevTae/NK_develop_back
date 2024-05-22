@@ -28,20 +28,23 @@ public class SchoolServiceImpl implements SchoolService{
 
 	// 학교 생성
 	public boolean createSchool(SchoolDTO schoolDTO) {
-		if (!ObjectUtils.isEmpty(schoolRepository.findBySchoolName(schoolDTO.getSchoolName()))) {
-			throw new CustomException((UserErrorCode.INACTIVE_SCHOOL));
+		try{
+			if (!ObjectUtils.isEmpty(schoolRepository.findBySchoolName(schoolDTO.getSchoolName()))) {
+				throw new CustomException(UserErrorCode.DUPLICATE_SCHOOL);
+			}
+			School school = new School();
+			school.setSchoolName(schoolDTO.getSchoolName());
+			schoolRepository.save(school);
+			return true;
+		} catch (Exception e){
+			throw e;
 		}
-		School school = new School();
-		school.setSchoolName(schoolDTO.getSchoolName());
-		schoolRepository.save(school);
-		return true;
 	}
 
 	// 등록된 학교 삭제
 	public boolean deleteBySchoolName(String schoolName) {
 		try{
 			schoolRepository.delete(schoolRepository.findBySchoolName(schoolName).get());
-
 			return true;
 		} catch (Exception e) {
 			log.info("failed e : " + e.getMessage());

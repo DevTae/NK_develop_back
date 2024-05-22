@@ -42,16 +42,17 @@ public class StudentServiceImpl implements StudentService  {
 
 	// 학생 계정 생성
 	public boolean createStudent(StudentDTO studentDTO) {
+		try {
 
 			if (!ObjectUtils.isEmpty(studentRepository.findOneByUsername(studentDTO.getUsername()))) {
-				throw new CustomException((UserErrorCode.INACTIVE_USER));
+				throw new CustomException(UserErrorCode.DUPLICATE_USERNAME);
 			}
 
 			//1. 요청온 학교가 기존 학교 DB에 존재하지 않으면 오류 발생
 			String schoolName = studentDTO.getSchoolName();
 			Optional<School> searchedSchoolOpt = schoolRepository.findBySchoolName(schoolName);
 			if(!searchedSchoolOpt.isPresent()){
-				throw new CustomException((UserErrorCode.NO_SCHOOL));
+				throw new CustomException(UserErrorCode.SCHOOL_NOT_FOUND);
 			}
 			School searchedSchool = searchedSchoolOpt.get();
 
@@ -84,6 +85,11 @@ public class StudentServiceImpl implements StudentService  {
 
 			studentRepository.save(student);
 			return true;
+		} catch (Exception e) {
+			throw e;
+//			log.info("Failed: " + e.getMessage(),e);
+//			throw new CustomException(CommonErrorCode.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	// 학생 계정 삭제
@@ -92,7 +98,6 @@ public class StudentServiceImpl implements StudentService  {
 			Student student = studentRepository.findOneByUsername(username).get();
 			student.setActivated(false);
 			studentRepository.save(student);
-
 			return true;
 		} catch (Exception e){
 			log.info("failed e : " + e.getMessage());
@@ -123,21 +128,20 @@ public class StudentServiceImpl implements StudentService  {
 		return false;
 	}
 
-	// 학생 계정 수정
-	// 학교 수정 API는 따로 만들어야 할 듯 (ex. 관리자)
-	// grade 도 매년 자동으로 올릴지.. 어떻게 해야할지 고민
+
 	public boolean updateStudent(String username, StudentDTO studentDTO) {
 		try {
 			// 1. 학생의 username으로 존재 여부 판단
 			Student searchedStudent = studentRepository.findOneByUsername(username).get();
-			if(ObjectUtils.isEmpty(searchedStudent))
-				return false;
+			if(ObjectUtils.isEmpty(searchedStudent)){
+				throw new CustomException(UserErrorCode.USER_NOT_FOUND);
+			}
 
 			// 2. 요청온 학교가 기존 학교 DB에 존재하지 않으면 오류 발생
 			String schoolName = studentDTO.getSchoolName();
 			Optional<School> searchedSchoolOpt = schoolRepository.findBySchoolName(schoolName);
 			if(!searchedSchoolOpt.isPresent()){
-				throw new RuntimeException("존재하지 않는 학교 이름입니다.");
+				throw new CustomException(UserErrorCode.SCHOOL_NOT_FOUND);
 			}
 			School searchedSchool = searchedSchoolOpt.get();
 
@@ -163,9 +167,8 @@ public class StudentServiceImpl implements StudentService  {
 			studentRepository.save(searchedStudent);
 			return true;
 		} catch (Exception e) {
-			log.info("[Failed] e : " + e.getMessage());
+			throw e;
 		}
-		return false;
 	}
 
 	// 모든 학생  계정 리스트 조회

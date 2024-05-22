@@ -59,9 +59,7 @@ public class TeacherController {
     @GetMapping("/teacher/{username}")
     public ResponseEntity<TeacherDTO> getTeacher(@PathVariable("username") String username) {
         // 토큰 필요
-
         TeacherDTO teacherDTO = teacherService.getTeacherByUsername(username);
-
         if (teacherDTO != null) {
             return new ResponseEntity<>(teacherDTO, HttpStatus.OK);
         } else {
@@ -72,28 +70,24 @@ public class TeacherController {
     @PostMapping("/teacher")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> createTeacher(@Validated @RequestBody TeacherDTO teacherDTO) {
-        // 토큰 필요
-
-        boolean result = teacherService.createTeacher(teacherDTO);
-
-        if (result == true) {
+        try {
+            teacherService.createTeacher(teacherDTO);
             return new ResponseEntity<>(null, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e) {
+            throw e;
         }
     }
 
     @PutMapping("/teacher/{username}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> updateTeacher(@PathVariable("username") String username, @RequestBody TeacherDTO teacherDTO) {
-        // 토큰 필요
-
-        boolean result = teacherService.updateTeacher(username, teacherDTO);
-
-        if (result == true) {
+        try {
+            teacherService.updateTeacher(username,teacherDTO);
             return new ResponseEntity<>(null, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e) {
+            throw e;
         }
     }
 

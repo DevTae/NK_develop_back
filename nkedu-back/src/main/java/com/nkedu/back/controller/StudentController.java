@@ -2,6 +2,8 @@ package com.nkedu.back.controller;
 
 import java.util.List;
 
+import com.nkedu.back.exception.exception.CustomException;
+import com.nkedu.back.exception.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping(value = "/api")
 @RequiredArgsConstructor
 public class StudentController  {
-	
+
 	private final StudentService studentService;
 
 	/**
@@ -39,9 +41,9 @@ public class StudentController  {
 	 */
 	@GetMapping("/student/list")
 	public ResponseEntity<List<StudentDTO>> getStudents() {
-		
+
 		List<StudentDTO> studentDTOs = studentService.getStudents();
-		
+
 		if (studentDTOs != null) {
 			return new ResponseEntity<>(studentDTOs, HttpStatus.OK);
 		} else {
@@ -68,26 +70,35 @@ public class StudentController  {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+
 	// 학생 계정 생성 - body에 값 넣어서 Post
 	@PostMapping("/student")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Void> createStudent (@Validated @RequestBody StudentDTO studentDTO){
-		return studentService.createStudent(studentDTO) ?
-			       new ResponseEntity<>(null, HttpStatus.OK) :
-			       new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);	
+		try {
+			studentService.createStudent(studentDTO);
+			return new ResponseEntity<>(null, HttpStatus.OK);
+		}
+//		catch (CustomException e) {
+//			throw e;
+//		}
+		catch (Exception e) {
+			throw e;
+//			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
 	 * 학생 계정 삭제 (비활성화)
 	 * @param username
 	 * @author beom-i
-	 */    		@DeleteMapping("/student/{username}")
+	 */
+	@DeleteMapping("/student/{username}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Void> deleteStudent(@PathVariable("username") String username){
 		return studentService.deleteByUsername(username) ?
-			       new ResponseEntity<>(null, HttpStatus.OK) :
-			       new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				new ResponseEntity<>(null, HttpStatus.OK) :
+				new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
 
 	/**
@@ -102,23 +113,27 @@ public class StudentController  {
 				new ResponseEntity<>(null, HttpStatus.OK) :
 				new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
-	
-	
-	// 학생 계정 설정 
+
+
+	// 학생 계정 설정
 	@PutMapping("/student/{username}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Void> updateStudent (@PathVariable("username") String username, @RequestBody StudentDTO studentDTO){
-		return studentService.updateStudent(username,studentDTO) ?
-			       new ResponseEntity<>(null, HttpStatus.OK) :
-			       new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		try {
+			studentService.updateStudent(username, studentDTO);
+			return new ResponseEntity<>(null, HttpStatus.OK);
+		}
+		catch (Exception e) {
+			throw e;
+		}
 	}
-	
-	// 특정 학생 계정 정보 조회 
+
+	// 특정 학생 계정 정보 조회
 	@GetMapping("/student/{username}")
 	public ResponseEntity<StudentDTO> getStudent(@PathVariable("username") String username) {
-		
+
 		StudentDTO studentDTO = studentService.getStudentByUsername(username);
-		
+
 		if (studentDTO != null) {
 			return new ResponseEntity<>(studentDTO, HttpStatus.OK);
 		} else {
