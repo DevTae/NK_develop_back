@@ -8,6 +8,8 @@ import com.nkedu.back.dto.TeacherDTO;
 import com.nkedu.back.entity.ClassNotice;
 import com.nkedu.back.entity.ClassNotice.ClassNoticeType;
 import com.nkedu.back.entity.Teacher;
+import com.nkedu.back.exception.errorCode.ClassErrorCode;
+import com.nkedu.back.exception.exception.CustomException;
 import com.nkedu.back.repository.ClassroomRepository;
 import com.nkedu.back.repository.ClassNoticeRepository;
 import com.nkedu.back.repository.TeacherRepository;
@@ -65,9 +67,8 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
             classNoticeRepository.save(classNotice);
             return true;
         } catch(Exception e) {
-            log.error("Failed: " + e.getMessage(),e);
+            throw e;
         }
-        return false;
     }
 
     @Override
@@ -87,11 +88,13 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
 
         try {
             // classroom_id, notice_id 가 동시에 같은 공지를 가져옴
-            ClassNotice searchedClassNotice = classNoticeRepository.findOneByClassroomIdAndClassNoticeId(classroom_id,notice_id).get();
+            Optional<ClassNotice> optionalClassNotice = classNoticeRepository.findOneByClassroomIdAndClassNoticeId(classroom_id,notice_id);
 
-            // 찾는 수업 공지가 없다면 중단
-            if(ObjectUtils.isEmpty(searchedClassNotice))
-                return false;
+            if (!optionalClassNotice.isPresent()) {
+                throw new CustomException(ClassErrorCode.CLASSROOM_NOTICE_NOT_FOUND);
+            }
+
+            ClassNotice searchedClassNotice = optionalClassNotice.get();
 
             if(!ObjectUtils.isEmpty(classNoticeDTO.getTitle()))
                 searchedClassNotice.setTitle(classNoticeDTO.getTitle());
@@ -106,9 +109,8 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
 
             return true;
         } catch (Exception e) {
-            log.info("[Failed] e : " + e.getMessage());
+            throw e;
         }
-        return false;
     }
 
 
@@ -142,9 +144,9 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
             for(ClassNotice classNotice : classNotices) {
                 Teacher teacher = teacherRepository.findOneById(classNotice.getTeacher().getId()).get();
 
-                if(ObjectUtils.isEmpty(teacher)) {
-                    throw new RuntimeException("공지를 작성한 사용자가 존재하지 않습니다.");
-                }
+//                if(ObjectUtils.isEmpty(teacher)) {
+//                    throw new RuntimeException("공지를 작성한 사용자가 존재하지 않습니다.");
+//                }
 
                 ClassNoticeDTO classNoticeDTO = ClassNoticeDTO.builder()
                         .id(classNotice.getId())
@@ -211,11 +213,12 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
 			pageDTO.setTotalPage(pageOfClassNotice.getTotalPages());
 
             for(ClassNotice classNotice : pageOfClassNotice.getContent()) {
+
                 Teacher teacher = teacherRepository.findOneById(classNotice.getTeacher().getId()).get();
 
-                if(ObjectUtils.isEmpty(teacher)) {
-                    throw new RuntimeException("공지를 작성한 사용자가 존재하지 않습니다.");
-                }
+//                if(ObjectUtils.isEmpty(teacher)) {
+//                    throw new RuntimeException("공지를 작성한 사용자가 존재하지 않습니다.");
+//                }
 
                 ClassNoticeDTO classNoticeDTO = ClassNoticeDTO.builder()
                         .id(classNotice.getId())

@@ -9,6 +9,8 @@ import com.nkedu.back.entity.Admin;
 import com.nkedu.back.entity.AdminNotice;
 import com.nkedu.back.entity.ClassNotice;
 import com.nkedu.back.entity.AdminNotice.AdminNoticeType;
+import com.nkedu.back.exception.errorCode.ClassErrorCode;
+import com.nkedu.back.exception.exception.CustomException;
 import com.nkedu.back.repository.AdminNoticeRepository;
 import com.nkedu.back.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,10 +48,10 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
             Set<AdminNoticeType> adminNoticeType = adminNoticeDTO.getAdminNoticeType();
 
             Timestamp current_time = new Timestamp(System.currentTimeMillis());
-            // Q. noticeDTO로 ID를 받지 않는데 어떻게 중복 검증을 할 수 있는가?
-            if (!ObjectUtils.isEmpty(adminNoticeRepository.findOneById(adminNoticeDTO.getId()))) {
-                throw new RuntimeException("이미 등록된 공지입니다.");
-            }
+            // Q. noticeDTO로 ID를 받지 않는데 어떻게 중복 검증을 할 수 있는가? A. 할 필요가 없어보임
+//            if (!ObjectUtils.isEmpty(adminNoticeRepository.findOneById(adminNoticeDTO.getId()))) {
+//                throw new RuntimeException("이미 등록된 공지입니다.");
+//            }
             AdminNotice adminNotice = AdminNotice.builder()
                     .admin(adminRepository.findOneById(admin_id).get())
                     .title(adminNoticeDTO.getTitle())
@@ -64,7 +66,8 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
         } catch(Exception e) {
             log.error("Failed: " + e.getMessage(),e);
         }
-        return false;    }
+        return false;
+    }
 
     @Override
     public boolean deleteAdminNoticeById(Long id) {
@@ -80,10 +83,13 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
     @Override
     public boolean updateAdminNotice(Long id, AdminNoticeDTO adminNoticeDTO) {
         try{
-            AdminNotice searchedAdminNotice = adminNoticeRepository.findOneById(id).get();
+            Optional<AdminNotice> optionalAdminNotice = adminNoticeRepository.findOneById(id);
 
-            if(ObjectUtils.isEmpty(searchedAdminNotice))
-                return false;
+            if (!optionalAdminNotice.isPresent()) {
+                throw new CustomException(ClassErrorCode.ADMIN_NOTICE_NOT_FOUND);
+            }
+
+            AdminNotice searchedAdminNotice = optionalAdminNotice.get();
 
             if(!ObjectUtils.isEmpty(adminNoticeDTO.getTitle()))
                 searchedAdminNotice.setTitle(adminNoticeDTO.getTitle());
@@ -97,9 +103,8 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
             adminNoticeRepository.save(searchedAdminNotice);
             return true;
         } catch(Exception e){
-            log.info("Failed e : " + e.getMessage());
+            throw e;
         }
-        return false;
     }
 
     @Override
@@ -134,10 +139,10 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 
             for(AdminNotice adminNotice : adminNotices){
 
-                Admin admin = adminRepository.findOneById(adminNotice.getAdmin().getId()).get();
-                if(ObjectUtils.isEmpty(admin)){
-                    throw new RuntimeException("공지를 작성한 admin이 존재하지 않음");
-                }
+//                Admin admin = adminRepository.findOneById(adminNotice.getAdmin().getId()).get();
+//                if(ObjectUtils.isEmpty(admin)){
+//                    throw new RuntimeException("공지를 작성한 admin이 존재하지 않음");
+//                }
 
                 AdminNoticeDTO adminNoticeDTO = AdminNoticeDTO.builder()
                         .id(adminNotice.getId())
@@ -209,10 +214,10 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 
             for(AdminNotice adminNotice : pageOfAdminNotice.getContent()){
 
-                Admin admin = adminRepository.findOneById(adminNotice.getAdmin().getId()).get();
-                if(ObjectUtils.isEmpty(admin)){
-                    throw new RuntimeException("공지를 작성한 admin이 존재하지 않음");
-                }
+//                Admin admin = adminRepository.findOneById(adminNotice.getAdmin().getId()).get();
+//                if(ObjectUtils.isEmpty(admin)){
+//                    throw new RuntimeException("공지를 작성한 admin이 존재하지 않음");
+//                }
 
                 AdminNoticeDTO adminNoticeDTO = AdminNoticeDTO.builder()
                         .id(adminNotice.getId())
