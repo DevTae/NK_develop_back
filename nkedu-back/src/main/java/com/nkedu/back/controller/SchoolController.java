@@ -45,17 +45,30 @@ public class SchoolController {
 	@PostMapping("/school")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Void> createSchool (@RequestBody SchoolDTO schoolDTO){
-		return schoolService.createSchool(schoolDTO) ?
-			       new ResponseEntity<>(null, HttpStatus.OK) :
-			       new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		try{
+			schoolService.createSchool(schoolDTO);
+			return new ResponseEntity<>(null, HttpStatus.OK);
+		}
+		catch (Exception e) {
+			throw e;
+		}
 	}
 	
 	// 학교 계정 삭제 
-	@DeleteMapping("/school/{schoolName}")
+//	@DeleteMapping("/school/{schoolName}")
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
+//	public ResponseEntity<Void> deleteSchool (@PathVariable("schoolName") String schoolName){
+//		return schoolService.deleteBySchoolName(schoolName) ?
+//			       new ResponseEntity<>(null, HttpStatus.OK) :
+//			       new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+//	}
+
+	// 학교 계정 다중 삭제
+	@DeleteMapping("/school")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<Void> deleteSchool (@PathVariable("schoolName") String schoolName){
-		return schoolService.deleteBySchoolname(schoolName) ?
-			       new ResponseEntity<>(null, HttpStatus.OK) :
-			       new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	public ResponseEntity<Void> deletesSchool (@RequestBody SchoolDTO schoolDTO){
+		return schoolService.deletesBySchoolName(schoolDTO) ?
+				new ResponseEntity<>(null, HttpStatus.OK) :
+				new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
 }

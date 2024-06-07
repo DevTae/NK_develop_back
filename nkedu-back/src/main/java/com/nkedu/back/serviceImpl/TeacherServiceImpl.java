@@ -1,22 +1,15 @@
 package com.nkedu.back.serviceImpl;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import com.nkedu.back.dto.ClassroomDTO;
-import com.nkedu.back.dto.PageDTO;
-import com.nkedu.back.dto.ParentDTO;
-import com.nkedu.back.dto.StudentDTO;
-import com.nkedu.back.dto.TeacherOfClassroomDTO;
-import com.nkedu.back.dto.TeacherWithClassroomDTO;
+import com.nkedu.back.dto.*;
+
 import com.nkedu.back.entity.Authority;
 import com.nkedu.back.entity.Parent;
-import com.nkedu.back.entity.ParentOfStudent;
-import com.nkedu.back.entity.Student;
 import com.nkedu.back.entity.TeacherOfClassroom;
+import com.nkedu.back.exception.errorCode.UserErrorCode;
+import com.nkedu.back.exception.exception.CustomException;
 import com.nkedu.back.repository.TeacherOfClassroomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +24,6 @@ import org.springframework.util.ObjectUtils;
 
 import com.nkedu.back.api.TeacherService;
 import com.nkedu.back.entity.Teacher;
-import com.nkedu.back.dto.TeacherDTO;
 import com.nkedu.back.repository.TeacherRepository;
 
 @Slf4j
@@ -48,7 +40,7 @@ public class TeacherServiceImpl implements TeacherService {
     public boolean createTeacher(TeacherDTO teacherDTO) {
         try {
             if (!ObjectUtils.isEmpty(teacherRepository.findOneByUsername(teacherDTO.getUsername()))) {
-                throw new RuntimeException("이미 가입되어 있는 유저입니다.");
+                throw new CustomException(UserErrorCode.DUPLICATE_USERNAME);
             }
 
             System.out.println("getUserName: " + teacherDTO.getUsername());
@@ -75,15 +67,14 @@ public class TeacherServiceImpl implements TeacherService {
                     .created(new Timestamp(System.currentTimeMillis()))
                     .activated(true)
                     .registrationDate(teacherDTO.getRegistrationDate())
-                    .workingDays(teacherDTO.getWorkingDays())
+                    .workingDays(EnumSet.copyOf(teacherDTO.getWorkingDays()))
                     .build();
 
             teacherRepository.save(teacher);
             return true;
         } catch (Exception e) {
-            log.error("Failed: " + e.getMessage(), e);
+            throw e;
         }
-        return false;
     }
 
     @Override
@@ -101,12 +92,36 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
+    public boolean deletesById(TeacherDTO teacherDTO) {
+        try{
+
+            for(Long teacher_id : teacherDTO.getTeacherIds()){
+
+                Optional<Teacher> optionalTeahcer = teacherRepository.findById(teacher_id);
+                if (optionalTeahcer.isEmpty()) {
+                    continue;
+                }
+
+                Teacher teacher = optionalTeahcer.get();
+
+                teacher.setActivated(false);
+                teacherRepository.save(teacher);
+            }
+            return true;
+        } catch (Exception e){
+            log.info("Failed e : " + e.getMessage());
+        }
+        return false;
+    }
+
+
+    @Override
     public boolean updateTeacher(String username, TeacherDTO teacherDTO) {
         try {
             Teacher searchedTeacher = teacherRepository.findOneByUsername(username).get();
 
             if (ObjectUtils.isEmpty(searchedTeacher))
-                return false;
+                throw new CustomException(UserErrorCode.USER_NOT_FOUND);
 
             if (!ObjectUtils.isEmpty(teacherDTO.getUsername()))
                 searchedTeacher.setUsername(teacherDTO.getUsername());
@@ -124,13 +139,10 @@ public class TeacherServiceImpl implements TeacherService {
                 searchedTeacher.setWorkingDays(teacherDTO.getWorkingDays());
 
             teacherRepository.save(searchedTeacher);
-
             return true;
         } catch (Exception e) {
-            log.info("[Failed] e : " + e.getMessage());
+            throw e;
         }
-
-        return false;
     }
 
     @Override
@@ -148,7 +160,7 @@ public class TeacherServiceImpl implements TeacherService {
                 teacherDTO.setPhoneNumber(teacher.getPhoneNumber());
                 teacherDTO.setBirth(teacher.getBirth());
                 teacherDTO.setRegistrationDate(teacher.getRegistrationDate());
-                teacherDTO.setWorkingDays(teacher.getWorkingDays());
+                teacherDTO.setWorkingDays(EnumSet.copyOf(teacher.getWorkingDays()));
 
                 teacherDTOs.add(teacherDTO);
             }
@@ -186,7 +198,8 @@ public class TeacherServiceImpl implements TeacherService {
                 teacherDTO.setPhoneNumber(teacher.getPhoneNumber());
                 teacherDTO.setBirth(teacher.getBirth());
                 teacherDTO.setRegistrationDate(teacher.getRegistrationDate());
-                teacherDTO.setWorkingDays(teacher.getWorkingDays());
+                teacherDTO.setWorkingDays(EnumSet.copyOf(teacher.getWorkingDays()));
+
 
                 List<TeacherOfClassroomDTO> teacherOfClassroomDTOs = new ArrayList<>();
                 List<TeacherOfClassroom> teacherOfClassrooms = teacherOfclassroomRepository.findAllByTeacherId(teacher.getId());
@@ -216,7 +229,6 @@ public class TeacherServiceImpl implements TeacherService {
     }
     @Override
     public TeacherDTO getTeacherByUsername(String username) {
-
         try {
             Teacher teacher = teacherRepository.findOneByUsername(username).get();
 
@@ -227,14 +239,13 @@ public class TeacherServiceImpl implements TeacherService {
             teacherDTO.setPhoneNumber(teacher.getPhoneNumber());
             teacherDTO.setBirth(teacher.getBirth());
             teacherDTO.setRegistrationDate(teacher.getRegistrationDate());
-            teacherDTO.setWorkingDays(teacher.getWorkingDays());
+            teacherDTO.setWorkingDays(EnumSet.copyOf(teacher.getWorkingDays())); // EnumSet으로 변환
 
             return teacherDTO;
 
         } catch (Exception e) {
             log.info("[Failed] e : " + e.getMessage());
         }
-
         return null;
     }
 
@@ -296,7 +307,8 @@ public class TeacherServiceImpl implements TeacherService {
             teacherWithClassroomDTO.setPhoneNumber(teacher.getPhoneNumber());
             teacherWithClassroomDTO.setBirth(teacher.getBirth());
             teacherWithClassroomDTO.setRegistrationDate(teacher.getRegistrationDate());
-            teacherWithClassroomDTO.setWorkingDays(teacher.getWorkingDays());
+            teacherWithClassroomDTO.setWorkingDays(EnumSet.copyOf(teacher.getWorkingDays()));
+
 
             // 1. 선생님이 담당하고 있는 반의 리스트를 생성
             List<TeacherOfClassroomDTO> teacherOfClassroomDTOs = new ArrayList<>();

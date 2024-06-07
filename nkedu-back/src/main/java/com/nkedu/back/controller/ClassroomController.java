@@ -86,12 +86,12 @@ public class ClassroomController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> updateClassroom(@PathVariable("id") Long id, @RequestBody ClassroomDTO classroomDTO) {
 
-        boolean result = classroomService.updateClassroom(id, classroomDTO);
-
-        if (result == true) {
+        try{
+            classroomService.updateClassroom(id, classroomDTO);
             return new ResponseEntity<>(null, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e) {
+            throw e;
         }
     }
 
@@ -104,13 +104,12 @@ public class ClassroomController {
     @PostMapping("/classroom")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> createClassroom(@Validated @RequestBody ClassroomDTO classroomDTO) {
-
-        boolean result = classroomService.createClassroom(classroomDTO);
-
-        if (result == true) {
+        try{
+            classroomService.createClassroom(classroomDTO);
             return new ResponseEntity<>(null, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e) {
+            throw e;
         }
     }
 
@@ -145,15 +144,14 @@ public class ClassroomController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> createStudentOfClassroom(@PathVariable("classroom_id") Long classroom_id,
                                                                           @Validated @RequestBody ClassroomDTO classroomDTO) {
-
-
-        boolean result = classroomService.createStudentOfClassroom(classroom_id,classroomDTO);
-
-        if (result == true) {
+        try{
+            classroomService.createStudentOfClassroom(classroom_id,classroomDTO);
             return new ResponseEntity<>(null, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
+        catch (Exception e) {
+            throw e;
+        }
+
     }
 
     /**

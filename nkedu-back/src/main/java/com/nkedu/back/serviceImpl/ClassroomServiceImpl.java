@@ -5,6 +5,8 @@ import com.nkedu.back.dto.*;
 import com.nkedu.back.entity.*;
 
 
+import com.nkedu.back.exception.errorCode.ClassErrorCode;
+import com.nkedu.back.exception.exception.CustomException;
 import com.nkedu.back.repository.*;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,26 +46,25 @@ public class ClassroomServiceImpl implements ClassroomService {
     @Override
     @Transactional
     public boolean createClassroom(ClassroomDTO classroomDTO) {
-    	
-    	Classroom classroom = null;
-    	boolean isSaved = false;
-    	
+
+        Classroom classroom = null;
+        boolean isSaved = false;
+
         try{
             if (!ObjectUtils.isEmpty(classroomRepository.findOneClassroomById(classroomDTO.getId()))) {
-                throw new Exception("이미 등록된 수업입니다.");
+                throw new CustomException(ClassErrorCode.DUPLICATE_CLASSROOM);
             }
 
             /**
              * 1. 요청받은 ClassroomDTO를 통해 새롭게 만든다. (Id는 새롭게 생성이므로 추가하지 않아도 내부적으로 생성됨)
              * */
-            classroom = (Classroom) Classroom.builder()
+                classroom = (Classroom) Classroom.builder()
                     .classname(classroomDTO.getClassname())
-                    .days(classroomDTO.getDays())
+                    .days(EnumSet.copyOf(classroomDTO.getDays()))
                     .activated(true)
                     .build();
 
             classroomRepository.save(classroom);
-            System.out.println("classroom id : " + classroom.getId());
             /**
              * 2. 요청받은 ClassroomDTO 내부에 TeachingTeacher를 연결 (TeachingTeacher의 type = true)
              * */
@@ -78,6 +80,13 @@ public class ClassroomServiceImpl implements ClassroomService {
 //            }
 
             Long classroom_id = classroom.getId();
+
+            // 선생님이 empty라면 오류 발생
+            if (ObjectUtils.isEmpty(teacherRepository.findOneById(classroomDTO.getTeachingTeacher().getId()))) {
+                classroomRepository.delete(classroom);
+                throw new CustomException(ClassErrorCode.TEACHING_TEACHER_NOT_FOUND);
+            }
+
             Long teaching_teacher_id = classroomDTO.getTeachingTeacher().getId();
 
             TeacherOfClassroom teachingTeacherOfClassroom = TeacherOfClassroom.builder()
@@ -87,6 +96,7 @@ public class ClassroomServiceImpl implements ClassroomService {
                     .build();
 
             teacherOfClassroomRepository.save(teachingTeacherOfClassroom);
+            System.out.println("!");
             isSaved = true;
 
             /**
@@ -97,6 +107,11 @@ public class ClassroomServiceImpl implements ClassroomService {
 
             for(TeacherDTO assistantTeacherDTO : assistantTeachers){
 
+                if (ObjectUtils.isEmpty(teacherRepository.findOneById(assistantTeacherDTO.getId()))) {
+                    classroomRepository.delete(classroom);
+                    throw new CustomException(ClassErrorCode.ASSISTANT_TEACHER_NOT_FOUND);
+                }
+
                 Long assistant_teacher_id = assistantTeacherDTO.getId();
 
                 TeacherOfClassroom assistantTeacherOfClassroom = TeacherOfClassroom.builder()
@@ -106,15 +121,12 @@ public class ClassroomServiceImpl implements ClassroomService {
                         .build();
                 teacherOfClassroomRepository.save(assistantTeacherOfClassroom);
             }
-
             return true;
-        } catch(Exception e) {
-        	if(isSaved && classroom != null)
-        		classroomRepository.delete(classroom);
-        	
-            log.error("Failed: " + e.getMessage(),e);
+        } catch (Exception e) {
+            if(isSaved && classroom != null)
+                classroomRepository.delete(classroom);
+            throw e;
         }
-        return false;
     }
 
     @Override
@@ -150,9 +162,25 @@ public class ClassroomServiceImpl implements ClassroomService {
             /**
              * 1. Classroom 테이블을 수정하는 과정
              * */
-            Classroom searchedClassroom = classroomRepository.findOneClassroomById(classroom_id).get();
+            Optional<Classroom> optionalClassroom = classroomRepository.findOneClassroomById(classroom_id);
 
-            if(ObjectUtils.isEmpty(searchedClassroom)) return false;
+            if (!optionalClassroom.isPresent()) {
+                throw new CustomException(ClassErrorCode.CLASSROOM_NOT_FOUND);
+            }
+
+            if (ObjectUtils.isEmpty(teacherRepository.findOneById(classroomDTO.getTeachingTeacher().getId()))) {
+                throw new CustomException(ClassErrorCode.TEACHING_TEACHER_NOT_FOUND);
+            }
+
+            for(TeacherDTO assistantTeacherDTO : classroomDTO.getAssistantTeachers()) {
+
+                if (ObjectUtils.isEmpty(teacherRepository.findOneById(assistantTeacherDTO.getId()))) {
+                    throw new CustomException(ClassErrorCode.ASSISTANT_TEACHER_NOT_FOUND);
+                }
+            }
+
+
+            Classroom searchedClassroom = optionalClassroom.get();
 
             if(!ObjectUtils.isEmpty(classroomDTO.getClassname()))
                 searchedClassroom.setClassname(classroomDTO.getClassname());
@@ -199,14 +227,10 @@ public class ClassroomServiceImpl implements ClassroomService {
                         .build();
                 teacherOfClassroomRepository.save(assistantTeacherOfClassroom);
             }
-
-
             return true;
         } catch (Exception e) {
-            log.info("[Failed] e : " + e.getMessage());
+            throw e;
         }
-
-        return false;
     }
 
     @Override
@@ -220,7 +244,7 @@ public class ClassroomServiceImpl implements ClassroomService {
                 ClassroomDTO classroomDTO = new ClassroomDTO();
                 classroomDTO.setId(classroom.getId());
                 classroomDTO.setClassname(classroom.getClassname());
-                classroomDTO.setDays(classroom.getDays());
+                classroomDTO.setDays(EnumSet.copyOf(classroom.getDays()));
 
                 // 1. classroom_id에 해당하는 관계테이블을 가져옴
                 List<TeacherOfClassroom> teacherofclassrooms = teacherOfClassroomRepository.findAllByClassroomId(classroom.getId());
@@ -263,27 +287,27 @@ public class ClassroomServiceImpl implements ClassroomService {
     
     @Override
     public PageDTO<ClassroomDTO> getClassroomsByKeyword(Integer page,String keyword) {
-    	try {
+        try {
 
             PageDTO<ClassroomDTO> pageDTO = new PageDTO<>();
-			List<ClassroomDTO> classroomDTOs = new ArrayList<>();
+            List<ClassroomDTO> classroomDTOs = new ArrayList<>();
 
-			// 정렬 기준
-			List<Sort.Order> sorts = new ArrayList<>();
-			sorts.add(Sort.Order.asc("classname"));
-			Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+            // 정렬 기준
+            List<Sort.Order> sorts = new ArrayList<>();
+            sorts.add(Sort.Order.asc("classname"));
+            Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
 
-			// Page 조회
+            // Page 조회
             Page<Classroom> pageOfClassroom = classroomRepository.findAllByClassname(pageable,keyword);
-			
-			pageDTO.setCurrentPage(pageOfClassroom.getNumber());
-			pageDTO.setTotalPage(pageOfClassroom.getTotalPages());
+
+            pageDTO.setCurrentPage(pageOfClassroom.getNumber());
+            pageDTO.setTotalPage(pageOfClassroom.getTotalPages());
 
             for(Classroom classroom : pageOfClassroom.getContent()) {
                 ClassroomDTO classroomDTO = new ClassroomDTO();
                 classroomDTO.setId(classroom.getId());
                 classroomDTO.setClassname(classroom.getClassname());
-                classroomDTO.setDays(classroom.getDays());
+                classroomDTO.setDays(EnumSet.copyOf(classroom.getDays()));
 
                 // 1. classroom_id에 해당하는 관계테이블을 가져옴
                 List<TeacherOfClassroom> teacherofclassrooms = teacherOfClassroomRepository.findAllByClassroomId(classroom.getId());
@@ -339,7 +363,7 @@ public class ClassroomServiceImpl implements ClassroomService {
             ClassroomDTO classroomDTO = new ClassroomDTO();
             classroomDTO.setId(classroom.getId());
             classroomDTO.setClassname(classroom.getClassname());
-            classroomDTO.setDays(classroom.getDays());
+            classroomDTO.setDays(EnumSet.copyOf(classroom.getDays()));
 
             // 1. classroom_id에 해당하는 관계테이블을 가져옴
             List<TeacherOfClassroom> teacherofclassrooms = teacherOfClassroomRepository.findAllByClassroomId(classroom.getId());
@@ -390,8 +414,7 @@ public class ClassroomServiceImpl implements ClassroomService {
             Classroom validateClassroom = classroomRepository.findOneClassroomById(classroom_id).get();
             // Classroom의 존재 여부 판단
             if (ObjectUtils.isEmpty(validateClassroom)) {
-                log.info("존재하지 않는 Classroom 입니다. ");
-                return false;
+                throw new CustomException(ClassErrorCode.CLASSROOM_NOT_FOUND);
             }
 
             // studentIds 없으면 Pass
@@ -399,6 +422,7 @@ public class ClassroomServiceImpl implements ClassroomService {
                 for(Long student_id : classroomDTO.getStudentIds()){
 
                     // 만약 넣은 student id가 없으면 Pass
+                    // 2024.05.22 에러 메시지 할 때, 이거 그냥 사실 애초에 없으면 get에 뜨지도 않을 거임.. 그래서 에러 패스
                     Optional<Student> optionalStudent = studentRepository.findOneById(student_id);
                     if (!optionalStudent.isPresent()) continue;
 
@@ -426,9 +450,8 @@ public class ClassroomServiceImpl implements ClassroomService {
             }
             return true;
         } catch (Exception e) {
-            log.info("[Failed] e : " + e.getMessage());
+            throw e;
         }
-        return false;
     }
 
     @Override

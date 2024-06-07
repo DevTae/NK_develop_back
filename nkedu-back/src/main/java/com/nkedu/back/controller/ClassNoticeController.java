@@ -27,13 +27,12 @@ public class ClassNoticeController {
     @PostMapping("/classroom/{classroom_id}/class-notice")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER')")
     public ResponseEntity<Void> createClassNotice(@PathVariable("classroom_id") Long classroom_id,@Validated @RequestBody ClassNoticeDTO classNoticeDTO) {
-
-        boolean result = classNoticeService.createClassNotice(classroom_id,classNoticeDTO);
-
-        if (result == true) {
+        try{
+            classNoticeService.createClassNotice(classroom_id,classNoticeDTO);
             return new ResponseEntity<>(null, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e) {
+            throw e;
         }
     }
 
@@ -46,13 +45,12 @@ public class ClassNoticeController {
     @PutMapping("/classroom/{classroom_id}/class-notice/{notice_id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER')")
     public ResponseEntity<Void> updateClassNotice(@PathVariable("classroom_id") Long classroom_id,@PathVariable("notice_id") Long notice_id, @RequestBody ClassNoticeDTO classNoticeDTO) {
-
-        boolean result = classNoticeService.updateClassNotice(classroom_id,notice_id, classNoticeDTO);
-
-        if (result == true) {
+        try{
+            classNoticeService.updateClassNotice(classroom_id,notice_id, classNoticeDTO);
             return new ResponseEntity<>(null, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e) {
+            throw e;
         }
     }
 

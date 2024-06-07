@@ -8,7 +8,9 @@ public interface SchoolService {
 
 	public boolean createSchool(SchoolDTO schoolDTO);
 	
-    public boolean deleteBySchoolname(String schoolName);
+    public boolean deleteBySchoolName(String schoolName);
+
+    public boolean deletesBySchoolName(SchoolDTO schoolDTO);
 
 //	public boolean updateSchool(String schoolName, SchoolDTO schoolDTO);
 	

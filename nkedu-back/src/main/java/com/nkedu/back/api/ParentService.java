@@ -5,6 +5,7 @@ import java.util.List;
 import com.nkedu.back.dto.PageDTO;
 import com.nkedu.back.dto.ParentDTO;
 import com.nkedu.back.dto.ParentOfStudentDTO;
+import com.nkedu.back.dto.StudentDTO;
 
 public interface ParentService {
 
@@ -20,6 +21,12 @@ public interface ParentService {
 	 * @param username
 	 */
 	public boolean deleteByUsername(String username);
+
+	/**
+	 * 부모님 계정 다중 삭제 (비활성화)
+	 * @param parentDTO
+	 */
+	public boolean deletesById(ParentDTO parentDTO);
 	
 	/**
 	 * 부모님 계정 설정

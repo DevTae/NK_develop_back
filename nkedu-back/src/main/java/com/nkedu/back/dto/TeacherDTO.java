@@ -40,6 +40,10 @@ public class TeacherDTO {
 
     private Set<Day> workingDays;
 
+    // 다중 삭제를 위한 선생님 id
+    @JsonProperty("teacherIds")
+    private List<Long> teacherIds;
+
     @JsonProperty(value="Classroom")
     private List<TeacherOfClassroomDTO> teacherOfClassroomDTO;
 }

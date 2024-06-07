@@ -29,13 +29,12 @@ public class AdminNoticeController {
     @PostMapping("/admin-notice")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> createAdminNotice(@Validated @RequestBody AdminNoticeDTO adminNoticeDTO) {
-
-        boolean result = adminNoticeService.createAdminNotice(adminNoticeDTO);
-
-        if (result == true) {
+        try{
+            adminNoticeService.createAdminNotice(adminNoticeDTO);
             return new ResponseEntity<>(null, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e) {
+            throw e;
         }
     }
 
@@ -48,13 +47,12 @@ public class AdminNoticeController {
     @PutMapping("/admin-notice/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> updateAdminNotice(@PathVariable("id") Long id, @RequestBody AdminNoticeDTO adminNoticeDTO) {
-
-        boolean result = adminNoticeService.updateAdminNotice(id, adminNoticeDTO);
-
-        if (result == true) {
+        try{
+            adminNoticeService.updateAdminNotice(id,adminNoticeDTO);
             return new ResponseEntity<>(null, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e) {
+            throw e;
         }
     }
 
