@@ -141,7 +141,7 @@ public class ClassroomController {
      * @author beom-i
      */
     @PostMapping("/classroom/{classroom_id}/student")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER')")
     public ResponseEntity<Void> createStudentOfClassroom(@PathVariable("classroom_id") Long classroom_id,
                                                                           @Validated @RequestBody ClassroomDTO classroomDTO) {
         try{
@@ -161,7 +161,7 @@ public class ClassroomController {
      * @author beom-i
      */
     @DeleteMapping("/classroom/{classroom_id}/student")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER')")
     public ResponseEntity<Void> deleteStudentOfClassroom(@PathVariable("classroom_id") Long classroom_id,
                                                          @Validated @RequestBody ClassroomDTO classroomDTO) {
         boolean result = classroomService.deleteStudentOfClassroom(classroom_id,classroomDTO);
