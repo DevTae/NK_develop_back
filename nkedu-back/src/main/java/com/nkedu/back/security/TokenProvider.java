@@ -19,6 +19,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
+import com.nkedu.back.exception.errorCode.AuthErrorCode;
+import com.nkedu.back.exception.exception.CustomException;
 import com.nkedu.back.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;

@@ -130,15 +130,18 @@ public class HomeworkOfStudentController {
 																		@PathVariable("homework_id") Long homeworkId,
 																		@RequestBody HomeworkOfStudentDTO homeworkOfStudentDTO) {
 		
-		homeworkOfStudentDTO.setHomeworkId(homeworkId);
-		
-		HomeworkOfStudentDTO homeworkOfStudentDTO_ = homeworkOfStudentService.createHomeworkOfStudent(homeworkOfStudentDTO);
-		
-		if (homeworkOfStudentDTO_ != null) {
-			return new ResponseEntity<>(homeworkOfStudentDTO_, HttpStatus.OK); 
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		try {
+			
+			homeworkOfStudentDTO.setHomeworkId(homeworkId);
+			
+			HomeworkOfStudentDTO homeworkOfStudentDTO_ = homeworkOfStudentService.createHomeworkOfStudent(homeworkOfStudentDTO);
+			
+			return new ResponseEntity<>(homeworkOfStudentDTO_, HttpStatus.OK);
+			
+		} catch (Exception e) {
+			throw e;
 		}
+		
 	}
 	
 	/**
@@ -155,16 +158,19 @@ public class HomeworkOfStudentController {
 																		@PathVariable("submit_id") Long homeworkOfStudentId,
 																		@RequestBody HomeworkOfStudentDTO homeworkOfStudentDTO) {
 
-		homeworkOfStudentDTO.setId(homeworkOfStudentId);
-		homeworkOfStudentDTO.setHomeworkId(homeworkId);
-		
-		HomeworkOfStudentDTO homeworkOfStudentDTO_ = homeworkOfStudentService.updateHomeworkOfStudent(homeworkOfStudentDTO);
-		
-		if (homeworkOfStudentDTO_ != null) {
-			return new ResponseEntity<>(homeworkOfStudentDTO_, HttpStatus.OK); 
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		try {
+
+			homeworkOfStudentDTO.setId(homeworkOfStudentId);
+			homeworkOfStudentDTO.setHomeworkId(homeworkId);
+			
+			HomeworkOfStudentDTO homeworkOfStudentDTO_ = homeworkOfStudentService.updateHomeworkOfStudent(homeworkOfStudentDTO);
+			
+			return new ResponseEntity<>(homeworkOfStudentDTO_, HttpStatus.OK);
+			
+		} catch (Exception e) {
+			throw e;
 		}
+		
 	}
 	
 	/**

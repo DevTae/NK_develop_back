@@ -25,6 +25,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     // 일반 Exception 바탕으로 예외 처리 진행
+    // (24.6.9) 태현 - 이외의 모든 Exception (JWT 인증 실패) 또한, INTERNAL_SERVER_ERROR 로 반환하여 이에 대한 주석 처리를 진행하였습니다.
+    /*
     @ExceptionHandler({Exception.class}) // ②
     public ResponseEntity<Object> handleIllegalArgument(Exception e) {
         ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
@@ -32,8 +34,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 //        log.info("Failed: " + e.getMessage(), e);
         return handleExceptionInternal(errorCode);
     }
+    */
 
     // ArithmeticException 바탕으로 예외 처리 진행
+    /*
     @ExceptionHandler(ArithmeticException.class) // ③
     public ResponseEntity<Object> handleArithmeticException(ArithmeticException e) {
         ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
@@ -41,6 +45,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 //        log.info("Failed: " + e.getMessage(), e);
         return handleExceptionInternal(errorCode, e.getMessage());
     }
+    */
     
     
     /**

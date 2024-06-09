@@ -13,11 +13,9 @@ public enum AuthErrorCode implements ErrorCode {
 	 */
 	
 	// UNAUTHORIZED : 401
-	// FORBIDDEN : 403
-	ACCESS_JWT_TIME_EXPIRED(HttpStatus.FORBIDDEN, "Access JWT 유효기간이 초과되었습니다."),
-	ACCESS_JWT_AUTH_FAILED(HttpStatus.UNAUTHORIZED, "JWT 인증 자격에 실패하였습니다."),
-	REFRESH_JWT_TIME_EXPIRED(HttpStatus.FORBIDDEN, "Refresh JWT 유효기간이 초과되었습니다."),
-	REFRESH_JWT_AUTH_FAILED(HttpStatus.UNAUTHORIZED, "Refresh JWT 인증 자격에 실패하였습니다."),
+	REFRESH_JWT_AUTH_FAILED(HttpStatus.UNAUTHORIZED, "Refresh Token 인증에 실패하였습니다."),
+	REFRESH_JWT_TIME_EXPIRED(HttpStatus.UNAUTHORIZED, "Refresh Token 유효기간이 만료되었습니다."),
+	
 	NOT_ADMIN(HttpStatus.UNAUTHORIZED, "관리자 계정이 아닙니다."),
 	NOT_TEACHER(HttpStatus.UNAUTHORIZED, "선생님 계정이 아닙니다."),
 	NOT_STUDENT(HttpStatus.UNAUTHORIZED, "학생 계정이 아닙니다."),

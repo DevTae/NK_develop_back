@@ -59,7 +59,7 @@ public class AuthController {
         	
         	// 유저 이름 찾기 실패 시, Login Failed 반환 진행
         	throw new CustomException(LoginErrorCode.LOGIN_FAILED);
-        } catch (org.springframework.security.authentication.BadCredentialsException e ) {
+        } catch (org.springframework.security.authentication.BadCredentialsException e) {
         	logger.debug("login failed. " + loginDTO.getUsername());
         	
         	// 로그인 실패 시, Login Failed 반환 진행
