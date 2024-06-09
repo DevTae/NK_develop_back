@@ -145,7 +145,7 @@ public class HomeworkServiceImpl implements HomeworkService {
 			}
 			
 			// Page 전체 정보 저장
-			pageDTO.setCurrentPage(pageOfHomework.getNumber());
+			pageDTO.setCurrentPage(pageOfHomework.getNumber() + 1);
 			pageDTO.setTotalPage(pageOfHomework.getTotalPages());
 			
 			for(Homework homework : pageOfHomework.getContent()) {
@@ -213,7 +213,7 @@ public class HomeworkServiceImpl implements HomeworkService {
 			}
 			
 			// Page 전체 정보 저장
-			pageDTO.setCurrentPage(pageOfHomework.getNumber());
+			pageDTO.setCurrentPage(pageOfHomework.getNumber() + 1);
 			pageDTO.setTotalPage(pageOfHomework.getTotalPages());
 			
 			for(Homework homework : pageOfHomework.getContent()) {

@@ -209,7 +209,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
             }
             
             // 페이지 정보 저장
-            pageDTO.setCurrentPage(pageOfAdminNotice.getNumber());
+            pageDTO.setCurrentPage(pageOfAdminNotice.getNumber() + 1);
 			pageDTO.setTotalPage(pageOfAdminNotice.getTotalPages());
 
             for(AdminNotice adminNotice : pageOfAdminNotice.getContent()){

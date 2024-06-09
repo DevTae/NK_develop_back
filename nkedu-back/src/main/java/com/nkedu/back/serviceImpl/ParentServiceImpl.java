@@ -261,7 +261,7 @@ public class ParentServiceImpl implements ParentService {
 			// Page 조회
 			Page<Parent> pageOfParent = parentRepository.findAllByParentName(pageable,keyword);
 
-			pageDTO.setCurrentPage(pageOfParent.getNumber());
+			pageDTO.setCurrentPage(pageOfParent.getNumber() + 1);
 			pageDTO.setTotalPage(pageOfParent.getTotalPages());
 
 			for(Parent parent : pageOfParent.getContent()) {
