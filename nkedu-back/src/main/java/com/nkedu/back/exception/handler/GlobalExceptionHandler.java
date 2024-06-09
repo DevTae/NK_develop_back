@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+	// CustomException (RuntimeException + ErrorCode) 바탕으로 예외 처리 진행
     @ExceptionHandler(CustomException.class) // ①
     public ResponseEntity<Object> handleCustomException(CustomException e) {
         ErrorCode errorCode = e.getErrorCode();
@@ -23,6 +24,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(errorCode);
     }
 
+    // 일반 Exception 바탕으로 예외 처리 진행
     @ExceptionHandler({Exception.class}) // ②
     public ResponseEntity<Object> handleIllegalArgument(Exception e) {
         ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
@@ -31,6 +33,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(errorCode);
     }
 
+    // ArithmeticException 바탕으로 예외 처리 진행
     @ExceptionHandler(ArithmeticException.class) // ③
     public ResponseEntity<Object> handleArithmeticException(ArithmeticException e) {
         ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
@@ -38,6 +41,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 //        log.info("Failed: " + e.getMessage(), e);
         return handleExceptionInternal(errorCode, e.getMessage());
     }
+    
+    
+    /**
+     * errorCode 와 errorCode 내의 message 로 ResponseEntity 반환
+     */
 
     private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode) {
         return ResponseEntity.status(errorCode.getHttpStatus())
@@ -50,7 +58,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .message(errorCode.getMessage())
                 .build();
     }
+    
 
+    /**
+     * errorCode + message 로 ResponseEntity 반환
+     */
+    
     private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode, String message) {
         return ResponseEntity.status(errorCode.getHttpStatus())
                 .body(makeErrorResponse(errorCode, message));
@@ -62,4 +75,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .message(message)
                 .build();
     }
+    
 }

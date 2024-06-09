@@ -20,6 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nkedu.back.dto.LoginDTO;
 import com.nkedu.back.dto.RefreshTokenDTO;
 import com.nkedu.back.dto.TokenDTO;
+import com.nkedu.back.exception.errorCode.AuthErrorCode;
+import com.nkedu.back.exception.errorCode.ClassErrorCode;
+import com.nkedu.back.exception.errorCode.LoginErrorCode;
+import com.nkedu.back.exception.exception.CustomException;
 import com.nkedu.back.security.TokenProvider;
 
 import jakarta.validation.Valid;
@@ -52,7 +56,14 @@ public class AuthController {
         	authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         } catch (UsernameNotFoundException e) {
         	logger.debug("login failed. " + loginDTO.getUsername());
-        	return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        	
+        	// 유저 이름 찾기 실패 시, Login Failed 반환 진행
+        	throw new CustomException(LoginErrorCode.LOGIN_FAILED);
+        } catch (org.springframework.security.authentication.BadCredentialsException e ) {
+        	logger.debug("login failed. " + loginDTO.getUsername());
+        	
+        	// 로그인 실패 시, Login Failed 반환 진행
+        	throw new CustomException(LoginErrorCode.LOGIN_FAILED);
         }
 
         // 해당 객체를 SecurityContextHolder에 저장하고
@@ -70,14 +81,27 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<TokenDTO> refresh(@Valid @RequestBody RefreshTokenDTO refreshTokenDTO) {
         
-    	String accessToken = tokenProvider.createAccessToken(refreshTokenDTO.getRefreshToken());
+    	String accessToken = null;
     	
+    	try {
+    		accessToken = tokenProvider.createAccessToken(refreshTokenDTO.getRefreshToken());
+    	} catch (io.jsonwebtoken.ExpiredJwtException e) {
+    		// refresh token 기한이 종료되었다면, 유효 시간 종료 오류 반환
+    		throw new CustomException(AuthErrorCode.REFRESH_JWT_TIME_EXPIRED);
+    	}
+    	
+    	// access token 생성에 실패하였다면, refresh token 검증 실패 오류 반환
     	if (accessToken == null) {
-    		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);    		
+    		throw new CustomException(AuthErrorCode.REFRESH_JWT_AUTH_FAILED);
     	}
     	
     	return new ResponseEntity<>(new TokenDTO(refreshTokenDTO.getRefreshToken(), accessToken), HttpStatus.OK);
     }
+    
+    
+    /**
+     * 테스트 용도 코드 (사용 x)
+     */
     
     // 로그인 체크
     @GetMapping("/login_check")
