@@ -216,7 +216,7 @@ public class ParentServiceImpl implements ParentService {
 				parentDTO.setUsername(parent.getUsername());
 				parentDTO.setNickname(parent.getNickname());
 				parentDTO.setPhoneNumber(parent.getPhoneNumber());
-				parentDTO.setBirth(parent.getBirth());
+				//parentDTO.setBirth(parent.getBirth());
 
 				// 부모님에 대한 학생 정보 추가
 				List<StudentDTO> studentDTOs = new ArrayList<StudentDTO>();
@@ -270,7 +270,7 @@ public class ParentServiceImpl implements ParentService {
 				parentDTO.setUsername(parent.getUsername());
 				parentDTO.setNickname(parent.getNickname());
 				parentDTO.setPhoneNumber(parent.getPhoneNumber());
-				parentDTO.setBirth(parent.getBirth());
+				//parentDTO.setBirth(parent.getBirth());
 
 				// 부모님에 대한 학생 정보 추가
 				List<StudentDTO> studentDTOs = new ArrayList<StudentDTO>();
@@ -313,7 +313,7 @@ public class ParentServiceImpl implements ParentService {
 			parentDTO.setUsername(parent.getUsername());
 			parentDTO.setNickname(parent.getNickname());
 			parentDTO.setPhoneNumber(parent.getPhoneNumber());
-			parentDTO.setBirth(parent.getBirth());
+			//parentDTO.setBirth(parent.getBirth());
 
 			// 부모님에 대한 학생 정보 추가
 			List<StudentDTO> studentDTOs = new ArrayList<StudentDTO>();
