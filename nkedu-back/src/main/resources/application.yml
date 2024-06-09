@@ -42,5 +42,5 @@ logging:
 jwt:
   header: Authorization
   secret: oyIDVJvNIvVvEXSwaaFjm0mnkAUpWQg7pwsTxPAJoCpctNEctTnU6yeYVgw8RqMAXlHpu51GemvWrjIRJoCpctNEctTnU6yeYVgw8RqMAXlHpu51GemvWrjIAJIaiwirajARaharwh1241hwrHAi
-  access-token-validity-in-seconds: 3600 # 약 1시간
-  refresh-token-validity-in-seconds: 43200 # 약 30일
+  access-token-validity-in-seconds: 86400 # 1일
+  refresh-token-validity-in-seconds: 2592000 # 30일
