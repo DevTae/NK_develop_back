@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum ClassErrorCode implements ErrorCode {
 
     DUPLICATE_CLASSROOM(HttpStatus.CONFLICT,"이미 등록된 수업 입니다."),
+    TEACHER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 선생님입니다."),
     TEACHING_TEACHER_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 티칭 선생님입니다."),
     ASSISTANT_TEACHER_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 조교 선생님입니다."),
     CLASSROOM_NOT_FOUND(HttpStatus.NOT_FOUND,"수업이 존재하지 않습니다."),

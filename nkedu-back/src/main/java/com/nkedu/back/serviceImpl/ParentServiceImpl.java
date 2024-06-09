@@ -9,6 +9,8 @@ import java.util.Set;
 
 import com.nkedu.back.entity.*;
 import com.nkedu.back.exception.errorCode.UserErrorCode;
+import com.nkedu.back.exception.exception.CustomException;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -59,8 +61,8 @@ public class ParentServiceImpl implements ParentService {
 
 		try{
 			if (!ObjectUtils.isEmpty(parentRepository.findOneByUsername(parentDTO.getUsername()))) {
-				throw new RuntimeException("이미 가입되어 있는 유저입니다.");
-//				throw new CustomException(UserErrorCode.DUPLICATE_USERNAME)
+				
+				throw new CustomException(UserErrorCode.DUPLICATE_USERNAME);
 			}
 
 			System.out.println("getUserName: " + parentDTO.getUsername());
@@ -112,8 +114,9 @@ public class ParentServiceImpl implements ParentService {
 				parentRepository.delete(parent);
 
 			log.error("Failed: " + e.getMessage(),e);
+			
+			throw e;
         }
-        return false;
 	}
 
 	@Override
@@ -158,12 +161,10 @@ public class ParentServiceImpl implements ParentService {
 	@Override
 	public boolean updateParent(String username, ParentDTO parentDTO) {
 		try {
-			Parent searchedParent = parentRepository.findOneByUsername(username).get();
-
-			if(ObjectUtils.isEmpty(searchedParent)){
-				return false;
-//				throw new CustomException(UserErrorCode.USER_NOT_FOUND)
-			}
+			Optional<Parent> searchedParent_optional = parentRepository.findOneByUsername(username);
+			if(searchedParent_optional.isEmpty())
+				throw new CustomException(UserErrorCode.USER_NOT_FOUND);
+			Parent searchedParent = searchedParent_optional.get();
 
 			if(!ObjectUtils.isEmpty(parentDTO.getUsername()))
 				searchedParent.setUsername(parentDTO.getUsername());
@@ -198,9 +199,10 @@ public class ParentServiceImpl implements ParentService {
 			return true;
 		} catch (Exception e) {
 			log.info("[Failed] e : " + e.getMessage());
+			
+			throw e;
 		}
 
-		return false;
 	}
 
 	@Override
@@ -362,7 +364,8 @@ public class ParentServiceImpl implements ParentService {
 			// 중복 등록 방지를 위한 조건문
 			if (!ObjectUtils.isEmpty(optionalParentOfStudent)) {
 				log.info("[Failed] Duplicated ParentOfStudent record occured. Skip it.");
-				return null;
+
+				throw new CustomException(UserErrorCode.DUPLICATE_USERNAME);
 			}
 
 			ParentOfStudent parentOfStudent = ParentOfStudent.builder()
@@ -377,9 +380,9 @@ public class ParentServiceImpl implements ParentService {
 
 		} catch (Exception e) {
 			log.info("[Failed] e : " + e.getMessage());
+			
+			throw e;
 		}
-
-		return null;
 	}
 
 	// 서비스 내부에서 사용하는 함수, Parent, Student, Relationship 정보를 활용하여 부모-자식 간의 관계를 형성함.
@@ -394,7 +397,8 @@ public class ParentServiceImpl implements ParentService {
 			// 중복 등록 방지를 위한 조건문
 			if (!ObjectUtils.isEmpty(optionalParentOfStudent)) {
 				log.info("[Failed] Duplicated ParentOfStudent record occured. Skip it.");
-				return;
+
+				throw new CustomException(UserErrorCode.DUPLICATE_USERNAME);
 			}
 
 			ParentOfStudent parentOfStudent = ParentOfStudent.builder()
@@ -407,6 +411,8 @@ public class ParentServiceImpl implements ParentService {
 
 		} catch (Exception e) {
 			log.info("[Failed] e : " + e.getMessage());
+			
+			throw e;
 		}
 	}
 
