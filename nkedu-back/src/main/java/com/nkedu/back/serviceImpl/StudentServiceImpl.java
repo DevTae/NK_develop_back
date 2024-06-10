@@ -230,7 +230,7 @@ public class StudentServiceImpl implements StudentService  {
 			// Page 조회
 			Page<Student> pageOfStudent = studentRepository.findAllByStudentName(pageable,keyword);
 			
-			pageDTO.setCurrentPage(pageOfStudent.getNumber());
+			pageDTO.setCurrentPage(pageOfStudent.getNumber() + 1);
 			pageDTO.setTotalPage(pageOfStudent.getTotalPages());
 			
 			for(Student student : pageOfStudent.getContent()) {

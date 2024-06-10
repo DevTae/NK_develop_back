@@ -178,13 +178,15 @@ public class HomeworkController {
 	@PreAuthorize("hasRole('ROLE_TEACHER')")
 	public ResponseEntity<HomeworkDTO> createHomework(@PathVariable("class_id") Long classId,
 							   				@RequestBody HomeworkDTO homeworkDTO) {
-		HomeworkDTO homeworkDTO_ = homeworkService.createHomework(homeworkDTO);
 		
-		if (homeworkDTO_ != null) {
+		try {
+			HomeworkDTO homeworkDTO_ = homeworkService.createHomework(homeworkDTO);
+			
 			return new ResponseEntity<>(homeworkDTO_, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			throw e;
 		}
+		
 	}
 	
 	/**
@@ -200,17 +202,20 @@ public class HomeworkController {
 							   @PathVariable("homework_id") Long homeworkId,
 							   @RequestBody HomeworkDTO homeworkDTO) {
 		
-		// pk, fk 정보 입력
-		homeworkDTO.setClassroomId(classId);
-		homeworkDTO.setId(homeworkId);
-		
-		HomeworkDTO homeworkDTO_ = homeworkService.updateHomework(homeworkDTO);
-		
-		if (homeworkDTO_ != null) {
+		try {
+			
+			// pk, fk 정보 입력
+			homeworkDTO.setClassroomId(classId);
+			homeworkDTO.setId(homeworkId);
+			
+			HomeworkDTO homeworkDTO_ = homeworkService.updateHomework(homeworkDTO);
+			
 			return new ResponseEntity<>(homeworkDTO_, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			
+		} catch (Exception e) {
+			throw e;
 		}
+		
 	}
 	
 	/**

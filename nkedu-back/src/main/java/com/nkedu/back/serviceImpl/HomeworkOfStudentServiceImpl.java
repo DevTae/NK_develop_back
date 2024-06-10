@@ -3,6 +3,7 @@ package com.nkedu.back.serviceImpl;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -15,6 +16,9 @@ import com.nkedu.back.entity.Homework;
 import com.nkedu.back.entity.HomeworkOfStudent;
 import com.nkedu.back.entity.HomeworkOfStudent.Status;
 import com.nkedu.back.entity.Student;
+import com.nkedu.back.exception.errorCode.HomeworkErrorCode;
+import com.nkedu.back.exception.errorCode.UserErrorCode;
+import com.nkedu.back.exception.exception.CustomException;
 import com.nkedu.back.repository.FileDataRepository;
 import com.nkedu.back.repository.HomeworkOfStudentRepository;
 import com.nkedu.back.repository.HomeworkRepository;
@@ -179,18 +183,19 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 			// 신규 등록만 가능하도록 진행 (이미 존재한다면 실패)
 			List<HomeworkOfStudent> list_of_hos = homeworkOfStudentRepository.findAllByHomeworkIdAndStudentId(homeworkId, studentId);
 			if(list_of_hos.size() > 0) {
-				throw new Exception("hos already exists");
+				throw new CustomException(HomeworkErrorCode.DUPLICATE_HOMEWORK_OF_STUDENT);
 			}
 			
 			// 숙제 및 학생에 대한 확인
-			Homework homework = homeworkRepository.findById(homeworkId).get();
-			if(ObjectUtils.isEmpty(homework)) {
-				throw new Exception("homework doesn't found");
-			}
-			Student student = studentRepository.findById(studentId).get();
-			if(ObjectUtils.isEmpty(student)) {
-				throw new Exception("student doesn't found");
-			}
+			Optional<Homework> homework_optional = homeworkRepository.findById(homeworkId);
+			if(homework_optional.isEmpty())
+				throw new CustomException(HomeworkErrorCode.HOMEWORK_NOT_FOUND);
+			Homework homework = homework_optional.get();
+
+			Optional<Student> student_optional = studentRepository.findById(studentId);
+			if(student_optional.isEmpty())
+				throw new CustomException(UserErrorCode.USER_NOT_FOUND);
+			Student student = student_optional.get();
 
 			// 생성 시간 입력
 			Timestamp now = new Timestamp(System.currentTimeMillis());
@@ -233,9 +238,9 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 									   
 		} catch (Exception e) {
 			log.error("Failed: " + e.getMessage(),e);
+			
+			throw e;
 		}
-		
-		return null;
 	}
 	
 	@Override
@@ -282,9 +287,9 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 			
 		} catch (Exception e) {
 			log.error("Failed: " + e.getMessage(),e);
+			
+			throw e;
 		}
-		
-		return null;
 	}
 
 	@Override

@@ -24,6 +24,10 @@ import com.nkedu.back.entity.HomeworkOfStudent;
 import com.nkedu.back.entity.Parent;
 import com.nkedu.back.entity.HomeworkOfStudent.Status;
 import com.nkedu.back.entity.Teacher;
+import com.nkedu.back.exception.errorCode.ClassErrorCode;
+import com.nkedu.back.exception.errorCode.HomeworkErrorCode;
+import com.nkedu.back.exception.errorCode.UserErrorCode;
+import com.nkedu.back.exception.exception.CustomException;
 import com.nkedu.back.repository.ClassroomRepository;
 import com.nkedu.back.repository.HomeworkOfStudentRepository;
 import com.nkedu.back.repository.HomeworkRepository;
@@ -145,7 +149,7 @@ public class HomeworkServiceImpl implements HomeworkService {
 			}
 			
 			// Page 전체 정보 저장
-			pageDTO.setCurrentPage(pageOfHomework.getNumber());
+			pageDTO.setCurrentPage(pageOfHomework.getNumber() + 1);
 			pageDTO.setTotalPage(pageOfHomework.getTotalPages());
 			
 			for(Homework homework : pageOfHomework.getContent()) {
@@ -213,7 +217,7 @@ public class HomeworkServiceImpl implements HomeworkService {
 			}
 			
 			// Page 전체 정보 저장
-			pageDTO.setCurrentPage(pageOfHomework.getNumber());
+			pageDTO.setCurrentPage(pageOfHomework.getNumber() + 1);
 			pageDTO.setTotalPage(pageOfHomework.getTotalPages());
 			
 			for(Homework homework : pageOfHomework.getContent()) {
@@ -338,8 +342,17 @@ public class HomeworkServiceImpl implements HomeworkService {
 	public HomeworkDTO createHomework(HomeworkDTO homeworkDTO) {
 		
 		try {
-			Classroom classroom = classroomRepository.findById(homeworkDTO.getClassroomId()).get();
-			Teacher teacher = teacherRepository.findById(homeworkDTO.getTeacherId()).get();
+			// classroom 불러오기
+			Optional<Classroom> classroom_optional = classroomRepository.findById(homeworkDTO.getClassroomId());
+			if(classroom_optional.isEmpty())
+				throw new CustomException(ClassErrorCode.CLASSROOM_NOT_FOUND);
+			Classroom classroom = classroom_optional.get();
+			
+			// teacher 불러오기
+			Optional<Teacher> teacher_optional = teacherRepository.findById(homeworkDTO.getTeacherId());
+			if(teacher_optional.isEmpty())
+				throw new CustomException(UserErrorCode.USER_NOT_FOUND);
+			Teacher teacher = teacher_optional.get();
 			
 			Timestamp now = new Timestamp(System.currentTimeMillis());
 			
@@ -378,18 +391,20 @@ public class HomeworkServiceImpl implements HomeworkService {
 			
 		} catch (Exception e) {
 			log.info("Failed e : " + e.getMessage());
+			
+			throw e;
 		}
-		return null;
 	}
 
 	@Override
 	public HomeworkDTO updateHomework(HomeworkDTO homeworkDTO) {
 
 		try {
-			Homework searchedHomework = homeworkRepository.findById(homeworkDTO.getId()).get();
-			
-			if(ObjectUtils.isEmpty(searchedHomework))
-				return null;
+			// searchedHomework 불러오기
+			Optional<Homework> searchedHomework_optional = homeworkRepository.findById(homeworkDTO.getId());
+			if(searchedHomework_optional.isEmpty())
+				throw new CustomException(HomeworkErrorCode.HOMEWORK_NOT_FOUND);	
+			Homework searchedHomework = searchedHomework_optional.get();
 			
 			if(!ObjectUtils.isEmpty(homeworkDTO.getTitle()))
 				searchedHomework.setTitle(homeworkDTO.getTitle());
@@ -407,9 +422,9 @@ public class HomeworkServiceImpl implements HomeworkService {
 			
 		} catch (Exception e) {
 			log.info("Failed e : " + e.getMessage());
+			
+			throw e;
 		}
-		
-		return null;
 	}
 
 	@Override

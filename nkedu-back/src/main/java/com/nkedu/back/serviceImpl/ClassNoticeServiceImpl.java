@@ -209,7 +209,7 @@ public class ClassNoticeServiceImpl implements ClassNoticeService {
             }
             
             // 페이지 정보 추가
-            pageDTO.setCurrentPage(pageOfClassNotice.getNumber());
+            pageDTO.setCurrentPage(pageOfClassNotice.getNumber() + 1);
 			pageDTO.setTotalPage(pageOfClassNotice.getTotalPages());
 
             for(ClassNotice classNotice : pageOfClassNotice.getContent()) {

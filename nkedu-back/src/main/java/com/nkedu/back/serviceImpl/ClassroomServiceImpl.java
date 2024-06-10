@@ -300,7 +300,7 @@ public class ClassroomServiceImpl implements ClassroomService {
             // Page 조회
             Page<Classroom> pageOfClassroom = classroomRepository.findAllByClassname(pageable,keyword);
 
-            pageDTO.setCurrentPage(pageOfClassroom.getNumber());
+            pageDTO.setCurrentPage(pageOfClassroom.getNumber() + 1);
             pageDTO.setTotalPage(pageOfClassroom.getTotalPages());
 
             for(Classroom classroom : pageOfClassroom.getContent()) {

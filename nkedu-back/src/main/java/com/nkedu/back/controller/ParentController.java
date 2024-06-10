@@ -77,25 +77,29 @@ public class ParentController {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Void> updateParent(@PathVariable("username") String username, @RequestBody ParentDTO parentDTO) {
 
-		boolean result = parentService.updateParent(username, parentDTO);
-		
-		if (result == true) {
+		try {
+
+			boolean result = parentService.updateParent(username, parentDTO);
+			
 			return new ResponseEntity<>(null, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			
+		} catch (Exception e) {
+			throw e;
 		}
+		
 	}
 
 	@PostMapping("/parent")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Void> createParent(@Validated @RequestBody ParentDTO parentDTO) {
 
-		boolean result = parentService.createParent(parentDTO);
-
-		if (result == true) {
+		try {
+			boolean result = parentService.createParent(parentDTO);
+			
 			return new ResponseEntity<>(null, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			
+		} catch (Exception e) {
+			throw e;
 		}
 	}
 
@@ -150,18 +154,20 @@ public class ParentController {
 																	@PathVariable("studentname") String studentname,
 																	@Valid @RequestBody RelationshipDTO relationshipDTO) {
 		
-		ParentOfStudentDTO parentOfStudentDTO = ParentOfStudentDTO.builder()
-												.parentDTO(ParentDTO.builder().username(parentname).build())
-												.studentDTO(StudentDTO.builder().username(studentname).build())
-												.relationship(relationshipDTO.getRelationship())
-												.build();
-		
-		parentOfStudentDTO = parentService.createParentOfStudent(parentOfStudentDTO);
+		try {
+			
+			ParentOfStudentDTO parentOfStudentDTO = ParentOfStudentDTO.builder()
+					.parentDTO(ParentDTO.builder().username(parentname).build())
+					.studentDTO(StudentDTO.builder().username(studentname).build())
+					.relationship(relationshipDTO.getRelationship())
+					.build();
 
-		if (ObjectUtils.isNotEmpty(parentOfStudentDTO)) {
+			parentOfStudentDTO = parentService.createParentOfStudent(parentOfStudentDTO);
+			
 			return new ResponseEntity<>(parentOfStudentDTO, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			
+		} catch (Exception e) {
+			throw e;
 		}
 		
 	}

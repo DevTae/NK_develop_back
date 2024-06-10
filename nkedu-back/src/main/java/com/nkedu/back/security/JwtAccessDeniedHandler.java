@@ -16,7 +16,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 					   HttpServletResponse response,
 					   AccessDeniedException accessDeniedException) throws IOException {
 		// 권한 없이 접근할 때 403(FORBIDDEN) 반환
-		response.sendError(HttpServletResponse.SC_FORBIDDEN);
+		response.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT 인증 정보 없이 API 호출은 불가능합니다.");
 	}
 }
 
