@@ -6,9 +6,11 @@ import com.nkedu.back.entity.ClassNotice.ClassNoticeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +45,8 @@ public interface ClassNoticeRepository extends JpaRepository<ClassNotice,Long> {
     @Query("SELECT not FROM ClassNotice not WHERE not.teacher.activated = true")
     Page<ClassNotice> findAll(Pageable pageable);
 
+    @Modifying
+    @Transactional
     @Query("DELETE FROM ClassNotice not WHERE not.classroom.id = :classroom_id AND not.id = :classNotice_id")
     void deleteByClassroomIdAndClassNoticeId(@Param("classroom_id") Long classroom_id, @Param("classNotice_id") Long classNotice_id);
 }

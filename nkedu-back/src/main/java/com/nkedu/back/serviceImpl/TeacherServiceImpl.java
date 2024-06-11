@@ -187,7 +187,7 @@ public class TeacherServiceImpl implements TeacherService {
 			// Page 조회
             Page<Teacher> pageOfTeacher = teacherRepository.findAllByTeacherName(pageable,keyword);
 			
-			pageDTO.setCurrentPage(pageOfTeacher.getNumber());
+			pageDTO.setCurrentPage(pageOfTeacher.getNumber()+1);
 			pageDTO.setTotalPage(pageOfTeacher.getTotalPages());
 			
 			for(Teacher teacher : pageOfTeacher.getContent()) {
