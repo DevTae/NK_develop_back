@@ -216,6 +216,7 @@ public class ParentServiceImpl implements ParentService {
 				ParentDTO parentDTO = new ParentDTO();
 				parentDTO.setId(parent.getId());
 				parentDTO.setUsername(parent.getUsername());
+				parentDTO.setBirth(parent.getBirth());
 				parentDTO.setNickname(parent.getNickname());
 				parentDTO.setPhoneNumber(parent.getPhoneNumber());
 				//parentDTO.setBirth(parent.getBirth());
@@ -270,6 +271,7 @@ public class ParentServiceImpl implements ParentService {
 				ParentDTO parentDTO = new ParentDTO();
 				parentDTO.setId(parent.getId());
 				parentDTO.setUsername(parent.getUsername());
+				parentDTO.setBirth(parent.getBirth());
 				parentDTO.setNickname(parent.getNickname());
 				parentDTO.setPhoneNumber(parent.getPhoneNumber());
 				//parentDTO.setBirth(parent.getBirth());
@@ -313,6 +315,7 @@ public class ParentServiceImpl implements ParentService {
 			ParentDTO parentDTO = new ParentDTO();
 			parentDTO.setId(parent.getId());
 			parentDTO.setUsername(parent.getUsername());
+			parentDTO.setBirth(parent.getBirth());
 			parentDTO.setNickname(parent.getNickname());
 			parentDTO.setPhoneNumber(parent.getPhoneNumber());
 			//parentDTO.setBirth(parent.getBirth());
