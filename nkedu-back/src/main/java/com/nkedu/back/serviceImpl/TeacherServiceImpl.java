@@ -182,12 +182,12 @@ public class TeacherServiceImpl implements TeacherService {
 			// 정렬 기준
 			List<Sort.Order> sorts = new ArrayList<>();
 			sorts.add(Sort.Order.asc("nickname"));
-			Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
+			Pageable pageable = PageRequest.of(page - 1, 16, Sort.by(sorts));
 
 			// Page 조회
             Page<Teacher> pageOfTeacher = teacherRepository.findAllByTeacherName(pageable,keyword);
 			
-			pageDTO.setCurrentPage(pageOfTeacher.getNumber()+1);
+			pageDTO.setCurrentPage(pageOfTeacher.getNumber() + 1);
 			pageDTO.setTotalPage(pageOfTeacher.getTotalPages());
 			
 			for(Teacher teacher : pageOfTeacher.getContent()) {

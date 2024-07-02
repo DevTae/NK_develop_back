@@ -44,7 +44,7 @@ public class TeacherController {
     
     // 페이지 별 조회
  	@GetMapping("/teacher")
- 	public ResponseEntity<PageDTO<TeacherDTO>> getTeachers(@RequestParam(value="page", defaultValue="0") Integer page,
+ 	public ResponseEntity<PageDTO<TeacherDTO>> getTeachers(@RequestParam(value="page", defaultValue="1") Integer page,
                                                             @RequestParam(value="keyword", defaultValue="",required=false) String keyword) {
 
         PageDTO<TeacherDTO> pageDTO = teacherService.getTeachersByKeyword(page, keyword);

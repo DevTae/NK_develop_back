@@ -59,7 +59,7 @@ public class StudentController  {
 	 * @author devtae
 	 */
 	@GetMapping("/student")
-	public ResponseEntity<PageDTO<StudentDTO>> getStudents(@RequestParam(value="page", defaultValue="0") Integer page,
+	public ResponseEntity<PageDTO<StudentDTO>> getStudents(@RequestParam(value="page", defaultValue="1") Integer page,
 														   @RequestParam(value="keyword", defaultValue="",required=false) String keyword) {
 
 		PageDTO<StudentDTO> pageDTO = studentService.getStudentsByKeyword(page, keyword);

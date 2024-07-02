@@ -259,7 +259,7 @@ public class ParentServiceImpl implements ParentService {
 			// 정렬 기준
 			List<Sort.Order> sorts = new ArrayList<>();
 			sorts.add(Sort.Order.asc("nickname"));
-			Pageable pageable = PageRequest.of(page, 16, Sort.by(sorts));
+			Pageable pageable = PageRequest.of(page - 1, 16, Sort.by(sorts));
 
 			// Page 조회
 			Page<Parent> pageOfParent = parentRepository.findAllByParentName(pageable,keyword);

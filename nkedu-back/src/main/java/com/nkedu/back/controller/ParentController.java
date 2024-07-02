@@ -48,7 +48,7 @@ public class ParentController {
 	
 	// 페이지 별 부모님 조회 + 검색기능
 	@GetMapping("/parent")
-	public ResponseEntity<PageDTO<ParentDTO>> getParents(@RequestParam(value="page", defaultValue="0") Integer page,
+	public ResponseEntity<PageDTO<ParentDTO>> getParents(@RequestParam(value="page", defaultValue="1") Integer page,
 														 @RequestParam(value="keyword", defaultValue="",required=false) String keyword) {
 		
 		PageDTO<ParentDTO> pageDTO = parentService.getParentsByKeyword(page,keyword);

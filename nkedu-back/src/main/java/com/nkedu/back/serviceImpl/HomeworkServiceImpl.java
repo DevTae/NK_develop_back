@@ -137,7 +137,7 @@ public class HomeworkServiceImpl implements HomeworkService {
 			// 정렬 기준
 			List<Sort.Order> sorts = new ArrayList<>();
 			sorts.add(Sort.Order.desc("created"));
-			Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+			Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(sorts));
 
 			// Page 조회
 			Page<Homework> pageOfHomework = null;
@@ -205,7 +205,7 @@ public class HomeworkServiceImpl implements HomeworkService {
 			// 정렬 기준
 			List<Sort.Order> sorts = new ArrayList<>();
 			sorts.add(Sort.Order.desc("created"));
-			Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+			Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(sorts));
 
 			// Page 조회
 			Page<Homework> pageOfHomework = null;
