@@ -12,11 +12,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import com.nkedu.back.api.ClassroomService;
+import com.nkedu.back.api.HomeworkOfStudentService;
 import com.nkedu.back.api.HomeworkService;
 import com.nkedu.back.dto.ClassroomDTO;
 import com.nkedu.back.dto.HomeworkDTO;
+import com.nkedu.back.dto.HomeworkOfStudentDTO;
 import com.nkedu.back.dto.PageDTO;
 import com.nkedu.back.dto.ParentDTO;
+import com.nkedu.back.dto.StudentDTO;
 import com.nkedu.back.dto.TeacherDTO;
 import com.nkedu.back.entity.Classroom;
 import com.nkedu.back.entity.Homework;
@@ -41,12 +45,13 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class HomeworkServiceImpl implements HomeworkService {
 
+	private final ClassroomService classroomService;
+	private final HomeworkOfStudentService homeworkOfStudentService;
 	private final HomeworkRepository homeworkRepository;
 	private final HomeworkOfStudentRepository homeworkOfStudentRepository;
 	private final ClassroomRepository classroomRepository;
 	private final TeacherRepository teacherRepository;
 	
-	// 현재 사용X
 	@Override
 	public List<HomeworkDTO> getHomeworks(Long classId) {
 		
@@ -74,6 +79,55 @@ public class HomeworkServiceImpl implements HomeworkService {
 			}
 			
 			return homeworkDTOs;
+		} catch (Exception e) {
+			log.info("Failed e : " + e.getMessage());
+		}
+		return null;
+	}
+	
+	@Override
+	public PageDTO<HomeworkDTO> getHomeworks(Long classId, Integer page) {
+		
+		try {
+			PageDTO<HomeworkDTO> pageDTO = new PageDTO<>();
+			List<HomeworkDTO> homeworkDTOs = new ArrayList<HomeworkDTO>();
+
+			// 정렬 기준
+			List<Sort.Order> sorts = new ArrayList<>();
+			sorts.add(Sort.Order.desc("created"));
+			Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(sorts));
+
+			// Page 조회
+			Page<Homework> pageOfHomework = null;
+			pageOfHomework = homeworkRepository.findAllByClassroomId(classId, pageable);
+			
+			// Page 전체 정보 저장
+			pageDTO.setCurrentPage(pageOfHomework.getNumber() + 1);
+			pageDTO.setTotalPage(pageOfHomework.getTotalPages());
+			
+			for(Homework homework : pageOfHomework.getContent()) {
+				homeworkDTOs.add(HomeworkDTO.builder()
+										    .id(homework.getId())
+										    .title(homework.getTitle())
+										    .teacherDTO(TeacherDTO.builder()
+										 			   .id(homework.getTeacher().getId())
+										 			   .nickname(homework.getTeacher().getNickname())
+										 		       .build())
+										    .classroomDTO(ClassroomDTO.builder()
+									    			 .id(homework.getClassroom().getId())
+									    			 .classname(homework.getClassroom().getClassname())
+									    			 .build())
+										    //.teacherId(homework.getTeacher().getId())
+										    .created(homework.getCreated())
+										    .updated(homework.getUpdated())
+										    .deadline(homework.getDeadline())
+										    .build());
+			}
+			
+			pageDTO.setResults(homeworkDTOs);
+			
+			return pageDTO;
+			
 		} catch (Exception e) {
 			log.info("Failed e : " + e.getMessage());
 		}
@@ -367,6 +421,18 @@ public class HomeworkServiceImpl implements HomeworkService {
 										.build();
 			
 			homeworkRepository.save(homework);
+			
+			// 해당 수업에 해당되는 모든 학생에 대하여 숙제 제출 엔티티 추가 (HomeworkOfStudent 추가)
+			List<StudentDTO> studentDTOs = classroomService.getStudentOfClassroomsByClassroomId(homework.getClassroom().getId());
+			
+			for(StudentDTO studentDTO : studentDTOs) {
+				HomeworkOfStudentDTO homeworkOfStudentDTO = HomeworkOfStudentDTO.builder()
+																				.homeworkId(homework.getId())
+																				.studentId(studentDTO.getId())
+																				.build();
+				
+				homeworkOfStudentService.createHomeworkOfStudent(homeworkOfStudentDTO);
+			}
 			
 			HomeworkDTO homeworkDTO_ = HomeworkDTO.builder()
 												 .id(homework.getId())

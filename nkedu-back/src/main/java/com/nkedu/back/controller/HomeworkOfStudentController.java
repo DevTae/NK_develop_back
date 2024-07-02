@@ -49,6 +49,59 @@ public class HomeworkOfStudentController {
 	 * @param homeworkId
 	 * @return
 	 */
+	@GetMapping("/classroom/{classroom_id}/homework/{homework_id}/submit/list")
+	public ResponseEntity<List<HomeworkOfStudentDTO>> getHomeworkOfStudents(@PathVariable("classroom_id") Long classroomId,
+																  @PathVariable("homework_id") Long homeworkId,
+																  @RequestParam(value="filter", required=false) String filterOption) {
+		// Get Parameter 에 따른 리스트 조회 기능 제공
+		Status filterStatus = null;
+		
+		if(!ObjectUtils.isEmpty(filterOption)) {
+			switch(Status.valueOf(filterOption)) {
+			case TODO:
+				filterStatus = Status.TODO;
+				break;
+			case COMPLETE:
+				filterStatus = Status.COMPLETE;
+				break;
+			case REJECT:
+				filterStatus = Status.REJECT;
+				break;
+			case SUBMIT:
+				filterStatus = Status.SUBMIT;
+				break;
+			default:
+			}
+		}
+		
+		// 권한에 따라 선생님의 경우 모든 제출을 확인할 수 있도록 함.
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+		String roles = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
+		
+		List<HomeworkOfStudentDTO> homeworkOfStudentDTOs;
+		
+		if(roles.contains("ROLE_ADMIN") || roles.contains("ROLE_TEACHER")) {
+			homeworkOfStudentDTOs = homeworkOfStudentService.getHomeworkOfStudents(homeworkId, filterStatus);
+		} else {
+			homeworkOfStudentDTOs = null;
+		}
+		
+		if (homeworkOfStudentDTOs != null) {
+			return new ResponseEntity<>(homeworkOfStudentDTOs, HttpStatus.OK); 
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param classroomId
+	 * @param homeworkId
+	 * @param filterOption
+	 * @return
+	 */
 	@GetMapping("/classroom/{classroom_id}/homework/{homework_id}/submit")
 	public ResponseEntity<List<HomeworkOfStudentDTO>> getHomeworkOfStudent(@PathVariable("classroom_id") Long classroomId,
 																  @PathVariable("homework_id") Long homeworkId,
@@ -74,26 +127,19 @@ public class HomeworkOfStudentController {
 			}
 		}
 		
-		// 권한에 따라 선생님의 경우 모든 제출을 확인할 수 있도록 하고, 학생의 경우 본인의 제출만을 확인할 수 있도록 함.
+		// 학생의 경우 본인의 제출만을 확인할 수 있도록 함.
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = authentication.getName();
-		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-		String roles = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
 		
 		List<HomeworkOfStudentDTO> homeworkOfStudentDTOs;
 		
-		if(roles.contains("ROLE_ADMIN") || roles.contains("ROLE_TEACHER")) {
-			homeworkOfStudentDTOs = homeworkOfStudentService.getHomeworkOfStudents(homeworkId, filterStatus);
-		} else {
-			homeworkOfStudentDTOs = homeworkOfStudentService.getHomeworkOfStudents(homeworkId, username, filterStatus);
-		}
+		homeworkOfStudentDTOs = homeworkOfStudentService.getHomeworkOfStudents(homeworkId, username, filterStatus);
 		
 		if (homeworkOfStudentDTOs != null) {
 			return new ResponseEntity<>(homeworkOfStudentDTOs, HttpStatus.OK); 
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-		
 	}
 	
 	/**

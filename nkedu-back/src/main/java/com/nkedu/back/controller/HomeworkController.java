@@ -68,35 +68,19 @@ public class HomeworkController {
 	 * @return
 	 */
 	@GetMapping("/classroom/{class_id}/homework")
-	public ResponseEntity<PageDTO<HomeworkDTO>> getHomeworks(@PathVariable("class_id") Long classId, @RequestParam(name="page", defaultValue="1") Integer page, @RequestParam(value="filter", required=false) String filterOption) {
+	public ResponseEntity<PageDTO<HomeworkDTO>> getHomeworks(@PathVariable("class_id") Long classId, @RequestParam(name="page", defaultValue="1") Integer page) {
 		
-		// Get Parameter 에 따른 리스트 조회 기능 제공
-		Status filterStatus = null;
-				
-		if(!ObjectUtils.isEmpty(filterOption)) {
-			switch(Status.valueOf(filterOption)) {
-			case TODO:
-				filterStatus = Status.TODO;
-				break;
-			case COMPLETE:
-				filterStatus = Status.COMPLETE;
-				break;
-			case REJECT:
-				filterStatus = Status.REJECT;
-				break;
-			case SUBMIT:
-				filterStatus = Status.SUBMIT;
-				break;
-			default:
-			}
-		}
-		
+		/*
+		 * 해당 기능 제거
 		// 유저에 따라 정보를 가져오도록 함.
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = authentication.getName();
-				
-		PageDTO<HomeworkDTO> pageDTO = homeworkService.getHomeworks(classId, username, page, filterStatus); 
-				
+		
+		PageDTO<HomeworkDTO> pageDTO = homeworkService.getHomeworks(classId, username, page, filterStatus);
+		*/
+		
+		PageDTO<HomeworkDTO> pageDTO = homeworkService.getHomeworks(classId, page);		
+			
 		if (pageDTO != null) {
 			return new ResponseEntity<>(pageDTO, HttpStatus.OK);
 		} else {

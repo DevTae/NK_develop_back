@@ -22,6 +22,13 @@ public interface HomeworkService {
 	public List<HomeworkDTO> getHomeworks(Long classId);
 	
 	/**
+	 * Homework 페이지별 리스트 반환
+	 * @param class_id
+	 * @return
+	 */
+	public PageDTO<HomeworkDTO> getHomeworks(Long classId, Integer page);
+	
+	/**
 	 * Homework 리스트 변환 (학생 숙제에 대한 status 포함)
 	 * @param classId
 	 * @param studentId

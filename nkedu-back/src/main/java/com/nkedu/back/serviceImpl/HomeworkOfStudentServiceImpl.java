@@ -177,6 +177,8 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 		
 		try {
 			
+			boolean imageUploaded = false;
+			
 			Long homeworkId = homeworkOfStudentDTO.getHomeworkId();
 			Long studentId = homeworkOfStudentDTO.getStudentId();
 			
@@ -203,17 +205,23 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 			// 파일 엔티티 불러오기
 			List<FileData> list_of_fileDatas = new ArrayList<FileData>();
 			
-			for(Long id : homeworkOfStudentDTO.getFileIds()) {
-				FileData fileData = fileDataRepository.findById(id).get();
+			if(!ObjectUtils.isEmpty(homeworkOfStudentDTO.getFileIds())) {
 				
-				list_of_fileDatas.add(fileData);
+				// image 업로드부터 진행했다면, 바로 제출로 인정해줌.
+				imageUploaded = true;
+				
+				for(Long id : homeworkOfStudentDTO.getFileIds()) {
+					FileData fileData = fileDataRepository.findById(id).get();
+					
+					list_of_fileDatas.add(fileData);
+				}
 			}
 			
-			// 새로운 HomeworkOfStudent 생성
+			// 새로운 HomeworkOfStudent 생성 (/homework/{id}/submit/list 를 바탕으로 전체 학생에 대한 현황 볼 수 있도록 함)
 			HomeworkOfStudent hos = HomeworkOfStudent.builder()
 													 .homework(homework)
 													 .student(student)
-													 .status(Status.TODO)
+													 .status(imageUploaded ? Status.SUBMIT : Status.TODO)
 													 .feedback("") // 기본 속성 값
 													 .created(now)
 													 .updated(now)
