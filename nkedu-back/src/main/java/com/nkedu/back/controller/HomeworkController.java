@@ -68,7 +68,8 @@ public class HomeworkController {
 	 * @return
 	 */
 	@GetMapping("/classroom/{class_id}/homework")
-	public ResponseEntity<PageDTO<HomeworkDTO>> getHomeworks(@PathVariable("class_id") Long classId, @RequestParam(name="page", defaultValue="1") Integer page) {
+	public ResponseEntity<PageDTO<HomeworkDTO>> getHomeworks(@PathVariable("class_id") Long classId, 
+															 @RequestParam(name="page", defaultValue="0") Integer page) {
 		
 		/*
 		 * 해당 기능 제거
@@ -95,7 +96,7 @@ public class HomeworkController {
 	 * @return
 	 */
 	@GetMapping("/homework")
-	public ResponseEntity<PageDTO<HomeworkDTO>> getHomeworks(@RequestParam(name="page", defaultValue="1") Integer page, @RequestParam(value="filter", required=false) String filterOption) {
+	public ResponseEntity<PageDTO<HomeworkDTO>> getHomeworks(@RequestParam(name="page", defaultValue="0") Integer page, @RequestParam(value="filter", required=false) String filterOption) {
 		// Get Parameter 에 따른 리스트 조회 기능 제공
 		Status filterStatus = null;
 				

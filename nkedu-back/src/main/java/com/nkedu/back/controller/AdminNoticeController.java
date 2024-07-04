@@ -99,7 +99,7 @@ public class AdminNoticeController {
      * @author DevTae
      */
     @GetMapping("/admin-notice")
-    public ResponseEntity<PageDTO<AdminNoticeDTO>> getAdminNotices(@RequestParam(name="page", defaultValue="1") Integer page,
+    public ResponseEntity<PageDTO<AdminNoticeDTO>> getAdminNotices(@RequestParam(name="page", defaultValue="0") Integer page,
                                                                    @RequestParam(name="type", required=false) List<AdminNoticeType> types,
                                                                    @RequestParam(value="keyword", defaultValue="", required=false) String keyword) {
 
