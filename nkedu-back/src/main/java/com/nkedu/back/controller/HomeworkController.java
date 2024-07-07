@@ -71,16 +71,49 @@ public class HomeworkController {
 	public ResponseEntity<PageDTO<HomeworkDTO>> getHomeworks(@PathVariable("class_id") Long classId, 
 															 @RequestParam(name="page", defaultValue="0") Integer page) {
 		
-		/*
-		 * 해당 기능 제거
+		PageDTO<HomeworkDTO> pageDTO = homeworkService.getHomeworks(classId, page);		
+			
+		if (pageDTO != null) {
+			return new ResponseEntity<>(pageDTO, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	/**
+	 * 해당 class 에 대한 페이지 별 homework 리스트 조회 (계정에 속한 숙제만 반환되도록 진행)
+	 * @return
+	 */
+	@GetMapping("/classroom/{class_id}/homework/my")
+	public ResponseEntity<PageDTO<HomeworkDTO>> getMyHomeworks(@PathVariable("class_id") Long classId, 
+															 @RequestParam(name="page", defaultValue="0") Integer page,
+															 @RequestParam(value="filter", required=false) String filterOption) {
+		// Get Parameter 에 따른 리스트 조회 기능 제공
+		Status filterStatus = null;
+				
+		if(!ObjectUtils.isEmpty(filterOption)) {
+			switch(Status.valueOf(filterOption)) {
+			case TODO:
+				filterStatus = Status.TODO;
+				break;
+			case COMPLETE:
+				filterStatus = Status.COMPLETE;
+				break;
+			case REJECT:
+				filterStatus = Status.REJECT;
+				break;
+			case SUBMIT:
+				filterStatus = Status.SUBMIT;
+				break;
+			default:
+			}
+		}
+		
 		// 유저에 따라 정보를 가져오도록 함.
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = authentication.getName();
 		
 		PageDTO<HomeworkDTO> pageDTO = homeworkService.getHomeworks(classId, username, page, filterStatus);
-		*/
-		
-		PageDTO<HomeworkDTO> pageDTO = homeworkService.getHomeworks(classId, page);		
 			
 		if (pageDTO != null) {
 			return new ResponseEntity<>(pageDTO, HttpStatus.OK);
