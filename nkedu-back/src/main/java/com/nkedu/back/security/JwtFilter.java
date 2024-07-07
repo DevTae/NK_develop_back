@@ -35,13 +35,14 @@ public class JwtFilter extends GenericFilterBean {
 		String jwt = resolveToken(httpServletRequest);
 		String requestURI = httpServletRequest.getRequestURI();
 
-		if (StringUtils.hasText(jwt) && tokenProvider.validateAccessToken(jwt)) {
+		if(requestURI.equals("/api/login") || requestURI.equals("/api/refresh")) {
+			logger.debug("로그인 혹은 리프레쉬 API 를 호출했습니다.");
+		} else if (StringUtils.hasText(jwt) && tokenProvider.validateAccessToken(jwt)) {
 			Authentication authentication = tokenProvider.getAuthentication(jwt);
 			SecurityContextHolder.getContext().setAuthentication(authentication); // 저장
 			logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
 		} else {
 			logger.debug("유효한 JWT 토큰이 없습니다. uri: {}", requestURI);
-			
 	        httpServletResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT 토큰이 유효하지 않습니다.");
 	        return;
 		}

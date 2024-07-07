@@ -62,7 +62,6 @@ public class SecurityConfig {
 						.requestMatchers("/api/class-notice/**").permitAll()
 						.requestMatchers("/api/admin-notice/**").permitAll()
 
-
 						// favicon.ico 파일
 						.requestMatchers("/favicon.ico").permitAll()
 						
