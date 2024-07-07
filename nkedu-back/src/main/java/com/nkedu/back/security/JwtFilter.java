@@ -41,7 +41,8 @@ public class JwtFilter extends GenericFilterBean {
 			logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
 		} else {
 			logger.debug("유효한 JWT 토큰이 없습니다. uri: {}", requestURI);
-	        httpServletResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "유효한 JWT 토큰이 없습니다.");
+			
+	        httpServletResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT 토큰이 유효하지 않습니다.");
 	        return;
 		}
 
