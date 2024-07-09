@@ -1,18 +1,17 @@
 # NK에듀 학생 관리 시스템 백엔드 개발 프로젝트
 
 - 프로젝트 설명
-  - `NK인피니트영수전문학원`에서의 학생 관리 시스템을 위한 백엔드 프로젝트 레포지토리이다. 학생, 학부모, 관리자에 대한 데이터베이스 설정과 이에 대한 API 를 제공하고자 한다.
+  - `NK인피니트영수전문학원`에서의 학생 숙제 관리 플랫폼을 위한 백엔드 프로젝트 저장소이다. 학생, 학부모, 관리자에 대한 데이터베이스 설정과 이에 대한 API 를 제공하고자 한다.
 
 - API 명세서
-  - [다음 링크](https://www.notion.so/00d0bf199c184008a23bd0795b3637dc?v=08a86e2587a6418fb1a48c641bdb8865&pvs=4)에서 확인이 가능함.
-  - 계속해서 추가 기능 소요에 대한 파악 후 정의를 이어가고자 한다.
-  - 계정에 대한 세부 정보 컬럼을 반영하였다.
+  - [다음 링크](https://legend-sceptre-7da.notion.site/API-aaba977ac1354949b5228e3840e11dd1?pvs=4)에서 API 명세서 확인이 가능함.
+  - 계정 및 수업, 공지, 숙제에 대한 세부 API 기능 및 역할을 정의하였다.
 
 - 데이터베이스 ERD
-  - 아래와 같은 관계도로 데이터베이스 시스템을 구성하고자 한다.
-  - 이외의 기능에 대한 데이터베이스 테이블은 추후 기능 회의를 진행하며 피드백을 반영할 예정이다.
+  - 아래와 같은 ERD로 데이터베이스 시스템을 구성하였다.
 
-    ![23 12 9 NK에듀 데이터베이스](https://github.com/NKdevelop1/NK_develop_back/assets/55177359/bd3d1ca7-1c9b-4cc5-95b2-02faa4a54bf0)
+    ![image](https://github.com/NKdevelop1/NK_develop_back/assets/55177359/0b82acb7-2954-49a5-9c4c-d3cc5cb21ad6)
+
 
 - 개발 환경
   - Java 17
@@ -33,6 +32,7 @@
   - `com.nkedu.back.dto` : 데이터베이스 DTO (Data Transfer Object) 클래스
 
   - `com.nkedu.back.security` : Spring Security 관련 클래스
+  - `com.nkedu.back.exception` : 예외처리 관련 클래스
 
 - 프론트와의 협업을 위한 도커 이미지 제공
   1. `cd nkedu-back`
