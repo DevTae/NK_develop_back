@@ -53,6 +53,7 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 															  .id(homeworkOfStudentId)
 															  .homeworkId(hos.getHomework().getId())
 															  .studentId(hos.getStudent().getId())
+															  .studentName(hos.getStudent().getNickname())
 															  .status(hos.getStatus())
 															  .feedback(hos.getFeedback())
 															  .created(hos.getCreated())
@@ -100,6 +101,7 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 																  .id(hos.getId())
 																  .homeworkId(hos.getHomework().getId())
 																  .studentId(hos.getStudent().getId())
+																  .studentName(hos.getStudent().getNickname())
 																  .status(hos.getStatus())
 																  //.feedback(hos.getFeedback()) // 세부 조회에서 반환하도록
 																  .created(hos.getCreated())
@@ -153,6 +155,7 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 																  .id(hos.getId())
 																  .homeworkId(hos.getHomework().getId())
 																  .studentId(hos.getStudent().getId())
+																  .studentName(hos.getStudent().getNickname())
 																  .status(hos.getStatus())
 																  //.feedback(hos.getFeedback()) // 세부 조회에서 반환
 																  .created(hos.getCreated())
@@ -236,6 +239,7 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 									   .id(hos.getId())
 									   .homeworkId(hos.getHomework().getId())
 									   .studentId(hos.getStudent().getId())
+									   .studentName(hos.getStudent().getNickname())
 									   .status(hos.getStatus())
 									   .feedback(hos.getFeedback())
 									   .created(hos.getCreated())
@@ -285,6 +289,62 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 			return HomeworkOfStudentDTO.builder()
 									   .homeworkId(hos.getHomework().getId())
 									   .studentId(hos.getStudent().getId())
+									   .studentName(hos.getStudent().getNickname())
+									   .status(hos.getStatus())
+									   .feedback(hos.getFeedback())
+									   .created(hos.getCreated())
+									   .updated(hos.getUpdated())
+									   .fileIds(homeworkOfStudentDTO.getFileIds())
+									   .stopwatch(hos.getStopwatch())
+									   .build();		
+			
+		} catch (Exception e) {
+			log.error("Failed: " + e.getMessage(),e);
+			
+			throw e;
+		}
+	}
+	
+	@Override
+	public HomeworkOfStudentDTO updateHomeworkOfStudent(HomeworkOfStudentDTO homeworkOfStudentDTO, String username) {
+		
+		try {
+			
+			Long homeworkId = homeworkOfStudentDTO.getHomeworkId();
+			List<HomeworkOfStudent> list_of_hos = homeworkOfStudentRepository.findAllByHomeworkIdAndUsername(homeworkId, username);
+			if(list_of_hos == null || list_of_hos.size() != 1) return null; // 숙제 제출 엔티티 비정상 상황에서 null 반환 (internal server error)
+			
+			// 검색된 숙제 제출 엔티티
+			HomeworkOfStudent hos = list_of_hos.get(0);
+			
+			if(!ObjectUtils.isEmpty(homeworkOfStudentDTO.getFeedback()))
+				hos.setFeedback(homeworkOfStudentDTO.getFeedback());
+				
+			if(!ObjectUtils.isEmpty(homeworkOfStudentDTO.getStatus()))
+				hos.setStatus(homeworkOfStudentDTO.getStatus());
+			
+			if(!ObjectUtils.isEmpty(homeworkOfStudentDTO.getStopwatch()))
+				hos.setStopwatch(homeworkOfStudentDTO.getStopwatch());
+				
+			if(!ObjectUtils.isEmpty(homeworkOfStudentDTO.getFileIds())) {
+				List<FileData> list_of_fileData = new ArrayList<FileData>();
+				
+				for(Long id : homeworkOfStudentDTO.getFileIds()) {
+					FileData fileData = fileDataRepository.findById(id).get();
+					
+					list_of_fileData.add(fileData);
+				}
+				
+				hos.setFiles(list_of_fileData);
+			}
+			
+			homeworkOfStudentRepository.save(hos);
+			
+			// DTO 반환 진행
+			return HomeworkOfStudentDTO.builder()
+									   .homeworkId(hos.getHomework().getId())
+									   .studentId(hos.getStudent().getId())
+									   .studentName(hos.getStudent().getNickname())
 									   .status(hos.getStatus())
 									   .feedback(hos.getFeedback())
 									   .created(hos.getCreated())
@@ -301,7 +361,7 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 	}
 
 	@Override
-	public boolean deleteHomeworkOfStudent(Long homeworkOfStudentId) {
+	public Boolean deleteHomeworkOfStudent(Long homeworkOfStudentId) {
 		
 		try {
 			
@@ -320,7 +380,7 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 	
 	
 	@Override
-	public double getStopwatch(Long homeworkOfStudentId) throws Exception {
+	public Double getStopwatch(Long homeworkOfStudentId) throws Exception {
 		try {
 			
 			HomeworkOfStudent hos = homeworkOfStudentRepository.findById(homeworkOfStudentId).get();
@@ -337,7 +397,28 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 	}
 	
 	@Override
-	public boolean setStopwatch(Long homeworkOfStudentId, HomeworkOfStudentDTO homeworkOfStudentDTO) {
+	public Double getStopwatch(Long homeworkId, String username) throws Exception {
+		try {
+			
+			List<HomeworkOfStudent> list_of_hos = homeworkOfStudentRepository.findAllByHomeworkIdAndUsername(homeworkId, username);
+			if(list_of_hos == null || list_of_hos.size() != 1) return null; // 숙제 제출 엔티티 비정상 상황에서 null 반환 (internal server error)
+			
+			// 검색된 숙제 제출 엔티티
+			HomeworkOfStudent hos = list_of_hos.get(0);
+			
+			Double result = hos.getStopwatch();
+			
+			return result;
+			
+		} catch (Exception e) {
+			log.error("Failed: " + e.getMessage(),e);
+			
+			throw new Exception(e.getMessage());
+		}
+	}
+	
+	@Override
+	public Boolean setStopwatch(Long homeworkOfStudentId, HomeworkOfStudentDTO homeworkOfStudentDTO) {
 		try {
 			if(ObjectUtils.isEmpty(homeworkOfStudentDTO.getStopwatch()))
 				return false;
@@ -346,6 +427,32 @@ public class HomeworkOfStudentServiceImpl implements HomeworkOfStudentService {
 			
 			HomeworkOfStudent hos = homeworkOfStudentRepository.findById(homeworkOfStudentId).get();
 			hos.setStopwatch(value);
+			homeworkOfStudentRepository.save(hos);
+			
+			return true;
+			
+		} catch (Exception e) {
+			log.error("Failed: " + e.getMessage(),e);
+		}
+
+		return false;
+	}
+	
+	@Override
+	public Boolean setStopwatch(Long homeworkId, String username, HomeworkOfStudentDTO homeworkOfStudentDTO) {
+		try {
+			if(ObjectUtils.isEmpty(homeworkOfStudentDTO.getStopwatch()))
+				return false;
+			
+			Double value = homeworkOfStudentDTO.getStopwatch();
+			
+			List<HomeworkOfStudent> list_of_hos = homeworkOfStudentRepository.findAllByHomeworkIdAndUsername(homeworkId, username);
+			if(list_of_hos == null || list_of_hos.size() != 1) return null; // 숙제 제출 엔티티 비정상 상황에서 null 반환 (internal server error)
+			
+			// 검색된 숙제 제출 엔티티
+			HomeworkOfStudent hos = list_of_hos.get(0);
+			hos.setStopwatch(value);
+			
 			homeworkOfStudentRepository.save(hos);
 			
 			return true;

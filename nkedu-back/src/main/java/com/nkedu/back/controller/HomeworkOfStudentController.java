@@ -191,7 +191,7 @@ public class HomeworkOfStudentController {
 	}
 	
 	/**
-	 * 숙제 제출 수정 (검토 및 반려 진행 가능)
+	 * 숙제 제출 수정 (검토 및 반려 진행 가능 / submit_id 같이 들어올 때)
 	 * @param classroomId
 	 * @param homeworkId
 	 * @param homeworkOfStudentId
@@ -210,6 +210,37 @@ public class HomeworkOfStudentController {
 			homeworkOfStudentDTO.setHomeworkId(homeworkId);
 			
 			HomeworkOfStudentDTO homeworkOfStudentDTO_ = homeworkOfStudentService.updateHomeworkOfStudent(homeworkOfStudentDTO);
+			
+			return new ResponseEntity<>(homeworkOfStudentDTO_, HttpStatus.OK);
+			
+		} catch (Exception e) {
+			throw e;
+		}
+		
+	}
+	
+	/**
+	 * 숙제 제출 수정 (검토 및 반려 진행 가능 / 학생 본인에 대한 제출 여부 조정할 때만)
+	 * @param classroomId
+	 * @param homeworkId
+	 * @param homeworkOfStudentId
+	 * @param homeworkOfStudentDTO
+	 * @return
+	 */
+	@PutMapping("/classroom/{classroom_id}/homework/{homework_id}/submit")
+	public ResponseEntity<HomeworkOfStudentDTO> updateHomeworkOfStudent(@PathVariable("classroom_id") Long classroomId,
+																		@PathVariable("homework_id") Long homeworkId,
+																		@RequestBody HomeworkOfStudentDTO homeworkOfStudentDTO) {
+
+		try {
+
+			// 학생의 경우 본인의 제출만을 확인할 수 있도록 함.
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			String username = authentication.getName();
+			
+			homeworkOfStudentDTO.setHomeworkId(homeworkId);
+			
+			HomeworkOfStudentDTO homeworkOfStudentDTO_ = homeworkOfStudentService.updateHomeworkOfStudent(homeworkOfStudentDTO, username);
 			
 			return new ResponseEntity<>(homeworkOfStudentDTO_, HttpStatus.OK);
 			
@@ -262,7 +293,33 @@ public class HomeworkOfStudentController {
 	}
 	
 	/**
-	 * 스탑워치 정보 설정하기
+	 * 스탑워치 정보 가져오기 (학생 개인 숙제 제출에서 조회) 
+	 * @param classroomId
+	 * @param homeworkId
+	 * @param homeworkOfStudentId
+	 * @return
+	 */
+	@GetMapping("/classroom/{classroom_id}/homework/{homework_id}/submit/stopwatch")
+	public ResponseEntity<Double> getStopwatch(@PathVariable("classroom_id") Long classroomId,
+												@PathVariable("homework_id") Long homeworkId) {
+
+		try {
+			
+			// 학생의 경우 본인의 제출만을 확인할 수 있도록 함.
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			String username = authentication.getName();
+			
+			double result = homeworkOfStudentService.getStopwatch(homeworkId, username);
+			
+			return new ResponseEntity<>(result, HttpStatus.OK);
+			
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	/**
+	 * 스탑워치 정보 설정하기 (사용 x 예정)
 	 * @param homeworkOfStudentDTO
 	 * @param classroomId
 	 * @param homeworkId
@@ -275,6 +332,31 @@ public class HomeworkOfStudentController {
 												@PathVariable("homework_id") Long homeworkId,
 												@PathVariable("submit_id") Long homeworkOfStudentId) {
 		boolean result = homeworkOfStudentService.setStopwatch(homeworkOfStudentId, homeworkOfStudentDTO);
+		
+		if(result == true) {
+			return new ResponseEntity<>(result, HttpStatus.OK);				
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	/**
+	 * 스탑워치 정보 설정하기 (학생 개인 숙제 제출에 대한 스탑워치 수정)
+	 * @param homeworkOfStudentDTO
+	 * @param classroomId
+	 * @param homeworkId
+	 * @param homeworkOfStudentId
+	 * @return
+	 */
+	@PutMapping("/classroom/{classroom_id}/homework/{homework_id}/submit/stopwatch")
+	public ResponseEntity<Boolean> setStopwatch(@RequestBody(required=true) HomeworkOfStudentDTO homeworkOfStudentDTO,
+												@PathVariable("classroom_id") Long classroomId,
+												@PathVariable("homework_id") Long homeworkId) {
+		// 학생의 경우 본인의 제출만을 확인할 수 있도록 함.
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+		
+		boolean result = homeworkOfStudentService.setStopwatch(homeworkId, username, homeworkOfStudentDTO);
 		
 		if(result == true) {
 			return new ResponseEntity<>(result, HttpStatus.OK);				

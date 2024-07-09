@@ -30,6 +30,8 @@ public class HomeworkOfStudentDTO {
 	
 	private Long studentId;
 	
+	private String studentName;
+	
 	@JsonProperty("student")
 	private StudentDTO studentDTO;
 	

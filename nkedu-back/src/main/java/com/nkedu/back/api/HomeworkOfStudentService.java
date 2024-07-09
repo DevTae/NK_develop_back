@@ -48,18 +48,33 @@ public interface HomeworkOfStudentService {
 	public HomeworkOfStudentDTO updateHomeworkOfStudent(HomeworkOfStudentDTO homeworkOfStudentDTO);
 	
 	/**
+	 * 숙제 제출 수정 (username 기반 찾아 수정 진행)
+	 * @param homeworkOfStudentDTO
+	 * @param username
+	 * @return
+	 */
+	public HomeworkOfStudentDTO updateHomeworkOfStudent(HomeworkOfStudentDTO homeworkOfStudentDTO, String username);
+	
+	/**
 	 * 숙제 제출 삭제
 	 * @param homeworkId
 	 * @return
 	 */
-	public boolean deleteHomeworkOfStudent(Long homeworkOfStudentId);
+	public Boolean deleteHomeworkOfStudent(Long homeworkOfStudentId);
 	
 	/**
 	 * 숙제 스탑워치 가져오기
 	 * @param homeworkOfStudentId
 	 * @return
 	 */
-	public double getStopwatch(Long homeworkOfStudentId) throws Exception;
+	public Double getStopwatch(Long homeworkOfStudentId) throws Exception;
+
+	/**
+	 * 숙제 스탑워치 가져오기 (hw id 및 username 활용)
+	 * @param homeworkId, username
+	 * @return
+	 */
+	public Double getStopwatch(Long homeworkId, String username) throws Exception;
 	
 	/**
 	 * 숙제 스탑워치 수정하기
@@ -67,5 +82,14 @@ public interface HomeworkOfStudentService {
 	 * @param homeworkOfStudenDTO
 	 * @return
 	 */
-	public boolean setStopwatch(Long homeworkOfStudentId, HomeworkOfStudentDTO homeworkOfStudenDTO);
+	public Boolean setStopwatch(Long homeworkOfStudentId, HomeworkOfStudentDTO homeworkOfStudenDTO);
+	
+	/**
+	 * 숙제 스탑워치 수정하기 (hw id 및 username 활용)
+	 * @param homeworkId
+	 * @param username
+	 * @param homeworkOfStudenDTO
+	 * @return
+	 */
+	public Boolean setStopwatch(Long homeworkId, String username, HomeworkOfStudentDTO homeworkOfStudenDTO);
 }
